@@ -1,0 +1,69 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type
+     HYDRANT KNOCKED DOWN WD-02 -->
+
+<apex:page standardcontroller="Case" id="page">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+            
+            <script type="text/javascript">
+            
+            function HydKnoD1(data) {                
+                if(data.value == 'Yes'){    
+                alert('Contact Water Emergency by calling 215- 685-6300.');                     
+            }     
+         }   
+           
+            
+                
+             </script>
+             
+             <!-- Input Fields specific to Street Light Outage service request type-->
+                    <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Water_Coming_Out_of_Hydrant__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Water_Coming_Out_of_Hydrant__c.label}" /> 
+                        <apex:outputPanel >
+                      <!--  <apex:actionFunction action="{!Save}" name="af"/> -->
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Water_Coming_Out_of_Hydrant__c}" StyleClass="RemoveNone" required="false" onchange="HydKnoD1(this)"/>
+                         </div>
+                      </apex:outputPanel>  
+                      </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Hydrant_Location__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Hydrant_Location__c.label}"  /> 
+                         <apex:outputPanel >
+                          <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Hydrant_Location__c}" required="false" />
+                            </div>
+                        </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Intersection_or_Mid_Block__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Intersection_or_Mid_Block__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Intersection_or_Mid_Block__c}" StyleClass="RemoveNone" required="false" id="InterMidblock" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                  
+                     <apex:inputfield value="{!Case.Owner__c}" required="false" id="addressOwner"  />
+                      
+                   <!--  <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Owner__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Owner__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Owner__c}" required="false" id="addressOwner"  />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                   -->   
+            
+            </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

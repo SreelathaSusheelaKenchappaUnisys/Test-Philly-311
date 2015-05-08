@@ -1,0 +1,89 @@
+<apex:page controller="FeedbackController" sidebar="false" showHeader="false" cache="false" standardStylesheets="false">
+
+<!-- 
+Copyright 2012, Xede Consulting Group, Inc.
+-->
+
+    <apex:composition template="FeedbackPopupTemplate">
+    	
+        <apex:define name="content">
+        	 <script>
+        	 $(function(){
+            		
+				$('form').jqTransform();
+			});
+        	 </script>
+        	<apex:actionStatus id="submit" onstop="showStatus()">
+		        <apex:facet name="start" >
+		            <div class="waitingSearchDiv" id="el_loading" style="background-color: #fbfbfb;
+		                height: 100%;opacity:0.75;width:100%;"> 
+		                <div class="waitingHolder" >
+		                    <img class="waitingImage" src="/img/loading.gif" title="Please Wait..." />
+		                    <span class="waitingDescription">Please Wait...</span>
+		                </div>
+		            </div>
+		        </apex:facet>
+    	</apex:actionStatus>
+    <div id="container">
+       	<apex:form id="feedbackForm" styleClass="feedback-form jqtransform">
+           	
+           	<div class="rowElem">
+           		<apex:outputPanel rendered="{!!IsBlank($CurrentPage.parameters.related)}">
+       				<apex:outputLabel for="relationship"  value="Relationship" />
+                   <apex:inputField id="relationship" value="{!xproxy.Relationship__c}" />
+                </apex:outputPanel>
+           	</div>
+           	
+           	<div class="rowElem">
+           		<apex:outputLabel for="feedback-type"  value="Type of Feedback"/>
+                <apex:inputField id="feedback-type"  value="{!proxy.Type__c}"/>
+           	</div>
+           	<div class="rowElem">
+           		<apex:outputLabel for="feedback-desc"  value="Description"  />
+                <apex:inputTextArea id="feedback-desc"   value="{!proxy.Description__c}" />
+           	</div>
+           	<div class="rowElem">
+           		<apex:outputLabel for="buttons"  value=""  />
+           		<a id="feedback-Send" class="clean-gray" onclick="sendFeedBack();">Submit</a>
+				<a id="feedback-close" class="clean-gray"  onclick="window.close();">Cancel</a>
+           	</div>
+           	
+            <apex:actionFunction name="sendFeedBack" status="submit"  action="{!sendFeedback}"  rerender="feedbackPanel" />
+            <apex:actionFunction name="rerender" rerender="feedbackPanel" />
+            
+     	</apex:form>
+        	
+        	
+        	
+		<apex:outputPanel id="feedbackPanel">
+        	<apex:outputPanel rendered="{!recordId !=null}">
+	            <p> Thank you for your feedback!</p> <br />
+	            
+	            
+	            
+	            <ul>
+	            	<li>Feedback Type: {!proxy.Type__c}</li>
+	            	<li>Feedback Description: {!proxy.Description__c} </li>
+	            	<li>Feedback Number: {!recordNumber}</li>
+	            	
+	           		<li><a id="feedback-close" class="button clean-gray"  onclick="window.close();">Close</a></li>
+	            </ul>
+	            
+	        
+	            <script>
+	            
+		            
+            		
+            		function showStatus(){
+            			$('.feedback-form').hide();
+            		}
+            		
+            		
+	            </script>
+	        </apex:outputPanel>
+		</apex:outputPanel>	
+	</div>    	 	
+        	
+        </apex:define>
+    </apex:composition>
+</apex:page>

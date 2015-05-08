@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Manhole_Cover">
+    </flow:interview>
+</apex:page>

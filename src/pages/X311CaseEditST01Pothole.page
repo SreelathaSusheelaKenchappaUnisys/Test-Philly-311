@@ -1,0 +1,177 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+         <script type="text/javascript">
+    onload= init();
+        
+         function Pothole(data)    {
+        if(data.value == 'Yes')        
+           alert('Make a hot transfer to 911.');
+        }
+        
+          function Pothole1(data)    {
+        if(data.value == 'Yes')        
+           alert('If a pothole is within 18” of trolley tracks or inside trolley tracks, then it is serviced by SEPTA. Call SEPTA at (215) 580-7800 or (215) 580-7853 (TDD/TYY).');
+        }
+    
+        function Pothole2(data)    {
+        if(data.value == 'Yes')    
+       alert('If a pothole is on a state highway, then it is filled by Pennsylvania Department of Transportation (PennDOT). Call PennDOT at 1-800-FIX-ROAD');
+      }
+      
+       function Pothole3(data)    {
+        if(data.value == 'Yes')     
+       alert('If there is running water in the pothole, then call the Water Department at 215-685-6300 (open 24 hours a day/7 days a week).');
+      }
+      
+        function Pothole4(data)    {
+        if(data.value == 'Yes')    
+       alert('If a utility company has recently worked at the site of the hole, then the constituent is responsible for contacting the utility company.')
+      }
+        
+    </script>    
+        
+         <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Gas_Escaping_from_the_Hole__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Gas_Escaping_from_the_Hole__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Gas_Escaping_from_the_Hole__c}" required="false" onchange="Pothole(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+        
+        
+
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Manmade__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Manmade__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Manmade__c}" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Inside_or_Within_18_of_Trolley_Tracks__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Inside_or_Within_18_of_Trolley_Tracks__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Inside_or_Within_18_of_Trolley_Tracks__c}" required="false" onchange="Pothole1(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Shape__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Shape__c.label}"  /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Shape__c}" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.On_State_Highway__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.On_State_Highway__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.On_State_Highway__c}" required="false" onchange="Pothole2(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                  
+                    
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Condition__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Condition__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Condition__c}" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Running_Water__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Running_Water__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Running_Water__c}" required="false" onchange="Pothole3(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                    
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Depth__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Depth__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Depth__c}" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:inputfield value="{!Case.Private_Road__c}" required="false"/>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Width__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Width__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Width__c}" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+               
+                 
+            
+                    
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Has_Utility_Company_Worked_at_Location__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Has_Utility_Company_Worked_at_Location__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Has_Utility_Company_Worked_at_Location__c}" required="false" onchange="Pothole4(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Parking_or_Driving_Lane__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Parking_or_Driving_Lane__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Parking_or_Driving_Lane__c}" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:inputfield value="{!Case.Utility_Company__c}" required="false"/>
+                     
+                    
+               <!--      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Property_Type_pothole__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Property_Type_pothole__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Property_Type_pothole__c}" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>  -->
+               
+                     
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

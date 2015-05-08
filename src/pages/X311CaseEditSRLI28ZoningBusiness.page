@@ -1,0 +1,249 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+        function zonb1(data) {
+           if(data.value=='Yes' ) {
+               
+             if(  confirm('For a commercial property being used as RESIDENTIAL without proper zoning permits, submit a Zoning Residential service request.')) {
+             
+               j$("[id $='caseRecordType']").val('Zoning Residential');
+               j$('[id*=SubjectForCase]').val('Zoning Residential');
+               rsChange();
+             } 
+           }
+       }
+        function zonb2(data) {
+           if(data.value=='Yes' ) {
+               
+           if( confirm('The City currently does not take these requests.'))
+             
+              SaveAndServiceNotNeededLI06();
+
+           }
+       }
+       function zonb3(data) {
+           if(data.value=='Yes' ) {
+               
+           if( confirm('L&I only regulates honor boxes in certain locations.'))
+             
+              SaveAndServiceNotNeededLI06();
+
+           }
+       }
+    /*   function zonb4(data) {
+           if(data.value=='Yes' ) {
+               
+            if(confirm('To file a complaint regarding improper maintenance, unlicensed or improperly placed honor boxes, enter an LI Request at 311HelpDesk so it can be processed by an L&I Subject Matter Expert.')){
+              SaveAndServiceNotNeededLI06();
+             }
+
+           }
+       }*/
+       function zonb5(data) {
+           if(data.value=='Yes' ) {
+               
+            if(confirm('The Office of Consumer Affairs (OCA) receives complaints of consumer abuse and unfair commercial practices. Contact 215-686-7599.'))
+             SaveAndServiceNotNeededLI06();
+             
+
+           }
+       }
+        /*  Commenting as per new requirements Case Number 05012710
+        function address() {
+           if(j$("[id $='hansenAddress']").val() == '' || j$("[id $='hansenAddress']").val() == Null ) {
+             
+          if(confirm('A zoning violation case can be submitted only if the exact L&I address key is validated.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       }*/
+       function zonb123() {
+          if(j$("[id $='rtmrc']").val() =='Property Used Without Proper Zoning') {
+             j$("[id $='cpu']").removeAttr("disabled");
+            j$("[id *='cpu']").css("background-color","White");
+            j$("[id $='cr']").removeAttr("disabled");
+            j$("[id *='cr']").css("background-color","White");
+             j$("[id $='pi']").removeAttr("disabled");
+            j$("[id *='pi']").css("background-color","White");
+           
+             
+          } else {
+          j$("[id $='cpu']").val('');
+          j$("[id $='cpu']").attr("disabled","disabled");
+          j$("[id *='cpu']").css("background-color","#EDEDED"); 
+          j$("[id $='cr']").val('');
+          j$("[id $='cr']").attr("disabled","disabled");
+          j$("[id *='cr']").css("background-color","#EDEDED");
+          j$("[id $='pi']").val(''); 
+          j$("[id $='pi']").attr("disabled","disabled");
+          j$("[id *='pi']").css("background-color","#EDEDED"); 
+           
+          }
+          if(j$("[id $='rtmrc']").val() =='Business Operating Without Proper License') {
+             j$("[id $='bho']").removeAttr("disabled"); 
+              j$("[id *='bho']").css("background-color","White");
+          } else {
+           j$("[id $='bho']").val('');          
+          j$("[id $='bho']").attr("disabled","disabled");
+           j$("[id *='bho']").css("background-color","#EDEDED");  
+          
+          } 
+          if(j$("[id $='rtmrc']").val() =='Advertising Sign Complaint' || j$("[id $='rtmrc']").val() =='Business Operating Without Proper License') {
+             j$("[id $='bt']").removeAttr("disabled"); 
+             j$("[id *='bt']").css("background-color","White");
+          } else {
+          j$("[id $='bt']").val('');
+          j$("[id $='bt']").attr("disabled","disabled");
+          j$("[id *='bt']").css("background-color","#EDEDED");  
+          
+          } 
+          if(j$("[id $='rtmrc']").val() =='Advertising Sign Complaint') {
+             j$("[id $='spo']").removeAttr("disabled");
+             j$("[id *='spo']").css("background-color","White"); 
+              j$("[id $='sl']").removeAttr("disabled"); 
+              j$("[id *='sl']").css("background-color","White");
+          
+          } 
+          
+          
+          else {
+          j$("[id $='spo']").val('');
+          j$("[id $='spo']").attr("disabled","disabled");
+          j$("[id *='spo']").css("background-color","#EDEDED");  
+          j$("[id $='sl']").val('');
+          j$("[id $='sl']").attr("disabled","disabled");
+          j$("[id *='sl']").css("background-color","#EDEDED");  
+          
+          } 
+          
+          if(j$("[id $='rtmrc']").val() =='Honor Box Problem') {
+             j$("[id $='hi']").removeAttr("disabled");
+             j$("[id *='hi']").css("background-color","White"); 
+              
+          
+          } 
+          
+          
+          else {
+           j$("[id $='hi']").val('');
+          j$("[id $='hi']").attr("disabled","disabled");
+          j$("[id *='hi']").css("background-color","#EDEDED");  
+         
+          
+          }   
+           if(j$("[id $='rtmrc']").val() =='Towing Company Complaint') {
+             j$("[id $='srvnr']").removeAttr("disabled");
+            j$("[id *='srvnr']").css("background-color","White");
+            j$("[id $='tbn']").removeAttr("disabled");
+             j$("[id *='tbn']").css("background-color","White"); 
+            j$("[id $='lvt']").removeAttr("disabled");
+             j$("[id *='lvt']").css("background-color","White"); 
+            j$("[id $='tfc']").removeAttr("disabled");
+             j$("[id *='tfc']").css("background-color","White"); 
+             j$("[id $='tcho']").removeAttr("disabled");
+              j$("[id *='tcho']").css("background-color","White"); 
+         
+      }else {
+            j$("[id $='srvnr']").val('');
+            j$("[id $='srvnr']").attr("disabled","disabled");
+          j$("[id *='srvnr']").css("background-color","#EDEDED");
+            j$("[id $='tbn']").val('');   
+          j$("[id $='tbn']").attr("disabled","disabled");
+          j$("[id *='tbn']").css("background-color","#EDEDED"); 
+           j$("[id $='lvt']").val('');
+          j$("[id $='lvt']").attr("disabled","disabled");
+          j$("[id *='lvt']").css("background-color","#EDEDED");
+            j$("[id $='tfc']").val('');
+          j$("[id $='tfc']").attr("disabled","disabled");
+          j$("[id *='tfc']").css("background-color","#EDEDED"); 
+           j$("[id $='tcho']").val('');
+          j$("[id $='tcho']").attr("disabled","disabled");
+           j$("[id *='tcho']").css("background-color","#EDEDED");  
+          }  
+      }
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Request_Type__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Request_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Request_Type__c}" StyleClass="RemoveNone" required="false" id="rtmrc" onchange="zonb123()" />
+                         </div>
+                    </apex:outputPanel>  
+                    </apex:pageblocksectionitem>
+                    <apex:inputfield value="{!Case.Seeking_Refund_for_Vehicle_Not_Released__c}"  StyleClass="RemoveNone" required="false" id="srvnr" onchange="zonb5(this)"  />
+                    
+                    <apex:pageBlockSectionItem helpText="What type of building is it? (Commercial or residential.)">
+                        <apex:outputLabel value="{!$ObjectType.Case.Fields.Commercial_or_Residential__c.label}"/>
+                            <apex:inputfield value="{!Case.Commercial_or_Residential__c}" id="cr" StyleClass="RemoveNone" required="false"   />    
+                    </apex:pageBlockSectionItem>
+                   
+                    <apex:inputfield value="{!Case.Towing_Business_Name__c}" required="false" id="tbn"   />
+                     <apex:inputfield value="{!Case.Property_Improperly_Used_as_Residential__c}" StyleClass="RemoveNone" id="pi" required="false" onchange="zonb1(this)"  />    
+                    <apex:inputfield value="{!Case.Location_Vehicle_Towed_From__c}" required="false" id="lvt"  />
+                    <apex:inputfield value="{!Case.Current_Property_Use__c}" StyleClass="RemoveNone" required="false" id="cpu"   />
+                     <apex:inputfield value="{!Case.Towing_Fees_Complaint__c}" required="false" id="tfc"   />
+                     <apex:inputfield value="{!Case.Business_Hours_of_Operation__c}" StyleClass="RemoveNone" required="false" id="bho"   />
+                     <apex:inputfield value="{!Case.Towing_Company_Hours_of_Operation__c}" required="false" id="tcho"   />
+                      <apex:inputfield value="{!Case.Business_Type__c}" StyleClass="RemoveNone" required="false" id="bt"  />
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Zoning_Permit_text__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Zoning_Permit_text__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Zoning_Permit_text__c}" required="false" id="zoningPermitActive"   />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     <apex:inputfield value="{!Case.Sign_on_Street_Pole_Median_or_Curb__c}" StyleClass="RemoveNone" required="false" id="spo" onchange="zonb2(this)"   />
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Zoning_License__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Zoning_License__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Zoning_License__c}" required="false" id="po" onchange="mrc3()"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                   <apex:inputfield value="{!Case.Sign_Location__c}" StyleClass="RemoveNone" required="false" id="sl"   />
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                   <apex:inputfield value="{!Case.Honor_Box_Outside_Regulated_Area__c}" id="hi" StyleClass="RemoveNone" required="false" onchange="zonb3(this)"   />
+                   
+                     <!--commenting as per new requirements Case Number 05012710   
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                             <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>!-->
+                       <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"/>
+                    
+                    
+                   <!-- <apex:inputfield value="{!Case.Honor_Box_Improperly_Maintained__c}" required="false" onchange="zonb4(this)"   /> -->
+                    
+                 
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

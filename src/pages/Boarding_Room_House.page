@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Boarding_Room_House">
+    </flow:interview>
+</apex:page>

@@ -1,0 +1,108 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type
+    VACANT LOT CLEAN UP NS-03 -->
+
+<apex:page standardcontroller="Case" id="page">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+            
+            <script type="text/javascript">
+            
+            function vacant1(data)    {                
+            if((data.value == 'Yard') || (data.value == 'Parking lot')){    
+                if(confirm('L & I is responsible for parking lots and yards. The system has changed the Case Record Type to Maintenance Residential.')){  
+                j$('[id*=departmnt]').val('License & Inspections');  
+                j$('[id*=caseRecordType]').val('Maintenance Residential or Commercial');
+                 j$('[id*=SubjectForCase]').val('Maintenance Residential or Commercial');
+                 j$('[id*=sreq]').val('');
+                 crts();      
+               }
+            }      
+            else if(data.value == 'Park'){    
+                if(confirm('The Case Record has changed to Parks  Safety and Maintenance.')){  
+                
+                j$('[id*=caseRecordType]').val('Parks and Rec Safety and Maintenance');
+                 j$('[id*=SubjectForCase]').val('Parks and Rec Safety and Maintenance');
+                j$('[id*=sreq]').val('Parks and Rec Safety and Maintenance');
+                j$('[id*=departmnt]').val('Parks & Recreation');  
+                crts();
+               }               
+            }  
+          }     
+             function vacant2(data)    {                
+                if(data.value == 'Yes'){    
+                if(confirm('The Case Record has changed Type to Street Trees.')){  
+                j$('[id*=departmnt]').val('Parks & Recreation');  
+                j$('[id*=caseRecordType]').val('Street Trees');
+                 j$('[id*=SubjectForCase]').val('Street Trees');
+                j$('[id*=sreq]').val('Street Trees');
+                crts(); 
+               }      
+            }    
+       }     
+           
+         
+           
+            function vacant3(data)    {                
+                if(data.value == 'Yes'){   
+                j$('[id*=othriss]').prop('disabled', false);
+                }
+                else
+                j$('[id*=othriss]').prop('disabled', 'disabled');
+            }
+                 
+             </script>
+             
+             <!-- Input Fields specific to Street Light Outage service request type-->
+                    <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_this_a_tree_issue__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_this_a_tree_issue__c.label}" /> 
+                        <apex:outputPanel >
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Is_this_a_tree_issue__c}" StyleClass="RemoveNone" required="false" onchange="vacant2(this)"/>
+                         </div>
+                      </apex:outputPanel>  
+                      </apex:pageblocksectionitem>
+                     
+                     
+                      
+                           
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Lot_Type__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Lot_Type__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Lot_Type__c}" required="false" StyleClass="RemoveNone" onchange="vacant1(this)" />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Are_there_any_other_issues_with_the_lot__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Are_there_any_other_issues_with_the_lot__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Are_there_any_other_issues_with_the_lot__c}" StyleClass="RemoveNone" required="false" onchange="vacant3(this)"/>
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Type_of_violation__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Type_of_violation__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Type_of_violation__c}" StyleClass="RemoveNone" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                  
+                     
+                      
+            
+            </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

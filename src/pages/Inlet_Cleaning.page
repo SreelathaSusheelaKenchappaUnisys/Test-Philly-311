@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Inlet_Cleaning">
+    </flow:interview>
+</apex:page>

@@ -1,0 +1,231 @@
+<apex:page docType="html-5.0" standardStylesheets="true" standardController="Feedback__c" extensions="FeedbackEmailHandler,XedeRemote" >
+	 <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes;" />
+      </head>
+   </html>
+<!-- 
+Copyright 2013, Xede Consulting Group, Inc.
+-->
+
+	<apex:includeScript value="{!URLFOR($Resource.Feedback,'js/jquery.min.js')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.Feedback,'css/tabbed.css')}" />
+	
+	<apex:outputLink styleClass="output-link" value="mailto:?subject={!Feedback__c.Name} : {!Feedback__c.Summary__c}&cc={!emailAddress}">Create Email</apex:outputLink>
+    
+    <apex:tabPanel switchType="client" value="{!BlankValue($CurrentPage.parameters.tab, 'detail')}" id="tabPanel" tabClass="all-tabs" activeTabClass="active-tab" inactiveTabClass="inactive-tab" contentClass="tabs-content">
+		<apex:tab label="Chatter" name="chatter" id="chatterTab">
+			<div>
+				<div style="float: left; width: 55%;">
+					<chatter:follow entityId="{!id}" />
+					<chatter:feed entityId="{!id}" />
+				</div>
+
+				<div style="float: left;">
+					<chatter:followers entityId="{!id}" />
+				</div>
+			</div>
+		</apex:tab>
+		
+		<apex:tab label="Detail" name="detail" id="detailTab">
+			<apex:detail subject="{!Feedback__c.id}" relatedList="false" title="true" inlineEdit="true" />
+		</apex:tab>
+		
+		<apex:tab label="Activity History" name="activityHistory" id="activityHistoryTab" labelWidth="150">
+			<apex:relatedList id="activityHistory" subject="{!id}" list="ActivityHistories" pageSize="25" />
+		</apex:tab>
+		
+		<apex:tab label="Open Activities" name="openActivities" id="openActivitiesTab" labelWidth="150">
+			<apex:relatedList id="openActivities" subject="{!id}" list="OpenActivities" pageSize="25" />
+		</apex:tab>
+		
+		<apex:tab label="Notes/Attachments" name="notes" id="notesTab" labelWidth="160">
+			<apex:relatedList id="notes" subject="{!id}" list="NotesAndAttachments" pageSize="25" />
+		</apex:tab>
+		
+		<apex:tab label="Depends On" name="dependsOn" id="dependsOnTab">
+			<apex:relatedList id="dependsOn" subject="{!id}" list="Relates_To__r" pageSize="25" />
+		</apex:tab>
+		
+		<apex:tab label="Dependents" name="dependents" id="dependentsTab">
+			<apex:relatedList id="dependents" subject="{!id}" list="Related_To__r" pageSize="25" />		
+		</apex:tab>
+		
+		<apex:tab label="Effort" name="effort" id="effortTab">
+			<apex:relatedList id="effort" subject="{!id}" list="Feedback_Effort__r" pageSize="25" />
+		</apex:tab>
+		
+		<apex:tab label="Hours" name="hours" id="hoursTab">
+			<p>
+			Warning!!!  This page really isn't doing yet what you hope it's 
+			doing.
+			</p>
+			
+			<apex:relatedList id="hours" subject="{!id}" list="Feedback_Weeks__r" pageSize="25" />		
+		</apex:tab>
+		
+		<apex:tab label="History" name="history" id="historyTab">
+			<apex:pageBlock mode="maindetail" id="history">            
+	            <apex:pageBlockTable value="{!Feedback__c.Histories}" var="c" >
+	                <apex:column headerValue="Date"  value="{!c.createddate}"/>
+	                <apex:column headerValue="What" value="{!c.field}"/>
+	                <apex:column headerValue="From" value="{!c.oldvalue}"/>
+	                <apex:column headerValue="To"   value="{!c.newvalue}"/>
+	            </apex:pageBlockTable>
+        	</apex:pageBlock>
+		</apex:tab>
+			
+	</apex:tabPanel>
+	    
+	<script>
+
+	 	$.noConflict();
+		jQuery(document).ready(function($) {
+			var spanNum = '<span class="num"></span>';
+			$('[id$=notesTab_lbl]').append(spanNum);
+			$('[id$=openActivitiesTab_lbl]').append(spanNum);
+			$('[id$=activityHistoryTab_lbl]').append(spanNum);
+			
+			var QueryPairs  = [ 
+							    [ 
+							    	"SELECT Id, ParentId from Feedback__History WHERE ParentId = '{!$CurrentPage.parameters.id}'",
+							    	"[id$=historyTab_lbl]"
+							    ], 
+							    [
+							    	"SELECT f.Id, f.Feedback__c From Feedback_Week__c f WHERE Feedback__c = '{!$CurrentPage.parameters.id}'",
+							    	"[id$=hoursTab_lbl]"
+							    ],
+							    [
+							    	"SELECT Id, Feedback__c From Feedback_Effort__c WHERE Feedback__c = '{!$CurrentPage.parameters.id}'",
+							    	"[id$=effortTab_lbl]"
+							    ],
+							    [
+							    	"Select Id, Feedback__c From Feedback_Feedback__c WHERE Feedback__c = '{!$CurrentPage.parameters.id}'",
+							    	"[id$=dependsOnTab_lbl]"
+							    ],
+							    [
+							    	"Select Id From Feedback_Feedback__c WHERE Related_Feedback__c = '{!$CurrentPage.parameters.id}'",
+							    	"[id$=dependentsTab_lbl]"
+							    ]
+							];
+	
+			function fetchAndDisplayCountsFor(aSOQLQuery, aJSQueryThing) {
+				XedeRemote.Query(aSOQLQuery,
+					function(result,event) {
+						var resultQuery = result.queryData.length;
+							if (event.status) {
+								if (resultQuery > 0)
+									$(aJSQueryThing).append('<span class="num">'+ " " + resultQuery + '</span>');
+							}
+						else {
+						}
+							
+					},{escape:true, buffer:false}
+				);
+			}
+			
+			QueryPairs.forEach(function(each, index, array) {
+			    fetchAndDisplayCountsFor(each[0], each[1]);
+			});	
+			
+			// Tabs that have 2 labels
+			// Current events under Open Activities tab
+			var eventsCount = 0;
+			XedeRemote.Query("Select Id From Event WHERE WhatId = '{!$CurrentPage.parameters.id}' AND StartDateTime > now()",
+				function(result,event) {
+					if (event.status) {
+							eventsCount += result.queryData.length;
+								if (eventsCount > 0)
+									$('[id$=openActivitiesTab_lbl] .num').html(" " + eventsCount);
+					}
+					else {
+					
+					}
+						
+				},{escape:true, buffer:false}
+			);
+			
+			// incomplete Tasks under Open Activities tab
+			XedeRemote.Query("Select Id From Task WHERE WhatId = '{!$CurrentPage.parameters.id}' AND Status != 'Completed'",
+				function(result,event) {
+					if (event.status) {
+							eventsCount += result.queryData.length;
+								if (eventsCount > 0)
+									$('[id$=openActivitiesTab_lbl] .num').html(" " + eventsCount);
+					}
+					else {
+					
+					}
+						
+				},{escape:true, buffer:false}
+			);
+			
+			// Closed Events under Activities history tab
+			var historyCount = 0;
+				XedeRemote.Query("Select Id From Event WHERE WhatId = '{!$CurrentPage.parameters.id}' AND StartDateTime <= now()",
+					function(result,event) {
+						if (event.status) {
+								historyCount += result.queryData.length;
+									if (historyCount > 0)
+										$('[id$=activityHistoryTab_lbl] .num').html(" " + historyCount);
+						}	
+					else {
+					
+					}
+						
+				},{escape:true, buffer:false}
+			);
+			
+			// Completed Tasks under Activities Historeis tab
+			XedeRemote.Query("Select Id From Task WHERE WhatId = '{!$CurrentPage.parameters.id}' AND Status = 'Completed'",
+				function(result,event) {
+					if (event.status) {
+							historyCount += result.queryData.length;
+								if (historyCount > 0)
+									$('[id$=activityHistoryTab_lbl] .num').html(" " + historyCount);
+					}
+					else {
+					
+					}
+						
+				},{escape:true, buffer:false}
+			);
+			
+			// Notes Query
+			var notesCount = 0;
+				XedeRemote.Query("Select ParentId, Id From Note WHERE ParentId = '{!$CurrentPage.parameters.id}'",
+					function(result,event) {
+						if (event.status) {
+								notesCount += result.queryData.length;
+									if (notesCount > 0)
+										$('[id$=notesTab_lbl] .num').html(" " + notesCount);
+						}
+					else {
+					
+					}
+						
+				},{escape:true, buffer:false}
+			);
+			
+		
+		// Attachments Query
+			XedeRemote.Query("Select ParentId, Id From Attachment WHERE ParentId = '{!$CurrentPage.parameters.id}'",
+				function(result,event) {
+					if (event.status) {
+							notesCount += result.queryData.length;
+								if (notesCount > 0)
+									$('[id$=notesTab_lbl] .num').html(" " + notesCount);
+					}
+					else {
+					
+					}
+						
+				},{escape:true, buffer:false}
+			);
+			
+	}); 
+
+	</script>
+	  
+
+</apex:page>

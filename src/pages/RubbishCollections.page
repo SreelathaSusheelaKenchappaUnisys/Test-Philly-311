@@ -1,0 +1,4 @@
+<apex:page >
+ <flow:interview name="Rubbish_Collection">
+ </flow:interview>
+</apex:page>

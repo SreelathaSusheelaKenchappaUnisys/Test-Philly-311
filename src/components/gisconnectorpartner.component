@@ -1,0 +1,101 @@
+<apex:component controller="X311GISConnectorClr">
+	<apex:attribute name="recordType" type="string" description="the value to use for a record type" required="true" />
+
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets, '/js/jquery-1.10.2.min.js')}"/>
+	
+	<script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js" />
+	
+	<script>
+	
+	var j$ = jQuery.noConflict();
+    
+    var aGisApi;
+    var aGisPoint = null;
+    
+    function viewportChangeHandler(aValue) {
+        getCaseList(aValue, function(result) {
+
+            var dataArray = [];
+            result.forEach(function(each, index, array){
+                var aCasePoint = {
+                    x: each.x,
+                    y: each.y,
+                    label: each.label,
+                    description: each.description,
+                    uniqueId: each.id
+                };
+    
+                dataArray.push(aCasePoint);
+            });
+        
+            aGisApi.drawDataArray(dataArray);
+        });
+    }
+    
+    // this function is used to add layers to the map.  GisAPI's addLayer() 
+    // this function is called by the iframe's gismap.component.  If the component
+    // isn't inside an iframe, the code I have there "window.parent.setGisApi()"
+    // probably isn't going to work.
+    function setGisApi(anObject) {
+        aGisApi = anObject;
+        aGisApi.onViewportChange(viewportChangeHandler);
+    }
+    
+    j$(function(){
+        var win;
+        
+        j$("<button class='btn' id='gis'>...</button>").insertAfter("input[id$=street]");
+
+        j$("button#gis").click(function(){
+			win=window.open('{!URLFOR($Page.X311GISMap)}','gisMap','toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=1100,height=600,top=200,left=200');
+			return false;
+  		});
+        
+        j$(window).unload(function() {
+            win ? win.close() : '';
+        });
+    }); 
+    
+    function getGeoCodeSpec(callback) {
+        X311GISConnectorClr.getGeoCodeSpec(j$("input[id$=street]").val(), 
+				'{!recordtype}', function(result, event) {
+            if (event.status == "false") {
+                alert(result.message[0]);
+            } else {
+                callback(result);
+            }
+        }, {escape:true, buffer:false});            
+    }
+    
+    function getCaseList(viewPort, callback) {
+        X311GISConnectorClr.Query(
+            j$("input[id$=recordtype]").val(), { xmin: viewPort.xmin, xmax: viewPort.xmax, ymin: viewPort.ymin, ymax: viewPort.ymax },
+            function(result, event) {
+            if (event.status == "false") {
+                alert(result.message[0]);
+            } else {
+                callback(result);
+            }
+        }, {escape:true, buffer:false});            
+    }
+    
+    function saveGeodata(geoData) {
+        window.console && console.log(geoData);
+        j$("input[id$=clMatchType]").val(geoData.gisData.matchType);
+        j$("input[id$=clLatitude]").val(geoData.x);
+        j$("input[id$=clLongitude]").val(geoData.y);
+        j$("input[id$=street]").val(geoData.description);
+        j$("input[id$=cl2272x]").val(geoData.x2272);
+        j$("input[id$=cl2272y]").val(geoData.y2272);
+        j$("input[id$=featureData]").val(geoData.featureData);
+        if (geoData.parentId && geoData.parentId.trim()) {
+			j$("input[id$=parentId]").val(geoData.label);
+			j$("input:hidden[id$=parentId_lkid]").val(geoData.parentId);
+		}
+        
+        for (var fld in geoData.attributes) {
+            j$("input[id$=" + fld + "]").val(geoData.attributes[fld]);
+        }
+    }
+    </script>
+</apex:component>

@@ -1,0 +1,123 @@
+<apex:page standardController="FAQ1__kav" extensions="X311TemplateControllerSample" title="FAQ"  sidebar="false">
+<apex:includeScript value="/support/console/22.0/integration.js"/>
+<script>
+sforce.console.setTabTitle("FAQ");
+</script>
+<apex:stylesheet value="{!$Resource.rateStar}" />
+<html>
+
+<apex:form >
+
+<apex:pagemessages />
+
+    <apex:pageBlock >
+    <script src="{!URLFOR($Resource.jQuery)}"></script>
+    <script type="text/javascript">
+        var j$ = jQuery.noConflict();
+        j$( document ).ready(function() {
+                 
+                 if('{!rating}' == 1 )
+                     j$( "#firstStar" ).attr("class","chosenStar");
+                 else if('{!rating}' == 2 )
+                     j$( "#firstStar,#secondStar" ).attr("class","chosenStar");
+                 else if('{!rating}' == 3 )
+                     j$( "#firstStar,#secondStar,#thirdStar" ).attr("class","chosenStar");
+                 else if('{!rating}' == 4 )
+                     j$( "#firstStar,#secondStar,#thirdStar,#fourthStar" ).attr("class","chosenStar");
+                 else if('{!rating}' == 5 )
+                     j$( "#firstStar,#secondStar,#thirdStar,#fourthStar,#fifthStar" ).attr("class","chosenStar");
+                     
+                      
+              });
+         
+    </script>
+    
+         <apex:pageBlockButtons >
+            <apex:commandButton action="{!logCase}" value="Log Information Request" onclick="return confirm('This will insert a new case. Are you sure?');" rendered="{!ISBLANK(srcUpUrl)}"/>
+            <apex:commandButton value="Subscribe To Article" action="{!redirectSubscribe}" />
+             <apex:commandButton value="Rate Article" action="{!rateArticleRedirect}"  />
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection title="" showHeader="false" >
+                           <table>
+                           <tr> 
+                                <td>
+                                    <table class="stars mouseOut" >
+                
+                                        <tr>
+                                            <td>Your Rating For This Article</td>
+                                            <td><div id="firstStar" class="idleStar"
+                                                    ></div></td>
+                                            <td><div id="secondStar" class="idleStar"
+                                                    ></div></td>
+                                            <td><div id="thirdStar" class="idleStar"
+                                                    ></div></td>
+                                            <td><div id="fourthStar" class="idleStar"
+                                                    ></div></td>
+                                            <td><div id="fifthStar" class="idleStar"
+                                                    ></div></td>
+                                        
+                                        </tr>
+                                    </table>
+                                </td>
+                        </tr>
+                     </table>   
+                   
+              </apex:pageBlockSection>
+       
+       <div style="font-size : 150%">
+              <apex:pageBlockSection title="Standard Information" showHeader="true" columns="1">
+                    <apex:outputField label="Question" value="{!FAQ1__kav.title}" style="h1"/>
+                    <apex:outputField value="{!FAQ1__kav.Summary}"/>
+                     </apex:pageBlockSection>
+                    
+       
+            <apex:pageBlockSection title="Article Information" showHeader="true" columns="1" >
+                    <apex:outputField value="{!FAQ1__kav.Department__c}" rendered="{!FAQ1__kav.Department__c != null}"/>
+                    <apex:outputField value="{!FAQ1__kav.Special_Info_311__c}" rendered="{!FAQ1__kav.Special_Info_311__c != null}"/>
+                     <apex:outputField value="{!FAQ1__kav.Special_Info_Public__c}" rendered="{!FAQ1__kav.Special_Info_Public__c != null}"/> 
+                    <apex:outputField value="{!FAQ1__kav.Public_Info__c}" rendered="{!FAQ1__kav.Public_Info__c != null}" />
+                    <apex:outputField value="{!FAQ1__kav.Agent_Info__c}" rendered="{!FAQ1__kav.Agent_Info__c != null}" />
+                    <apex:outputField value="{!FAQ1__kav.Supervisor_Info__c}" rendered="{!FAQ1__kav.Supervisor_Info__c != null}"  />
+                    <apex:outputField value="{!FAQ1__kav.City_Employees_Info__c}" rendered="{!FAQ1__kav.City_Employees_Info__c != null}"  />
+                    <apex:outputField value="{!FAQ1__kav.ArticleNumber}" rendered="false"/>
+                    </apex:pageBlockSection>
+              
+               <apex:pageBlockSection title="Additional Information" showHeader="true" columns="1">  
+                   <apex:outputField value="{!FAQ1__kav.Related_Case__c}" />
+                    
+              <apex:outputField value="{!FAQ1__kav.Related_Articles__c}" />
+                   <!-- <apex:inputFile value="{!FAQ1__kav.Attachments__c}"/> !-->
+                   <!--  If the attachment is to be directly downloaded 
+                   <object data="{!URLFOR($Action.FAQ1__kav.FileFieldDownload,FAQ1__kav.Id, ['field'=$ObjectType.FAQ1__kav.fields.Attachements__Body__s.name])}">
+                   <embed src="{!URLFOR($Action.FAQ1__kav.FileFieldDownload,FAQ1__kav.id, ['field'=$ObjectType.FAQ1__kav.fields.Attachements__Body__s.name])}"  width="100%" height="600px"/>
+                   </object> -->
+                    <apex:outputField value="{!FAQ1__kav.Attachments__c}" />
+                   <apex:outputText label="Attachments" >
+                   <apex:outputLink value="{!URLFOR($Action.FAQ1__kav.FileFieldDownload,FAQ1__kav.Id, ['field'=$ObjectType.FAQ1__kav.fields.Attachements2__Body__s.name])}">{!FAQ1__kav.Attachements2__Name__s}</apex:outputLink>
+                   </apex:outputText>                 
+                   
+                   
+                    <apex:outputField value="{!FAQ1__kav.Keywords__c}" rendered="{!FAQ1__kav.Keywords__c != null}"  />
+                   <apex:outputField value="{!FAQ1__kav.Modified_Date_Time__c}" rendered="{!FAQ1__kav.Modified_Date_Time__c!= null}" />
+                   <apex:outputField value="{!FAQ1__kav.Created_Date__c}" rendered="{!FAQ1__kav.Created_Date__c!= null}" /> 
+                   
+                   <apex:outputField value="{!FAQ1__kav.Author_Name__c}" rendered="{!FAQ1__kav.Author_Name__c!= null}" /> 
+                    
+              </apex:pageBlockSection>
+          </div>          
+    </apex:pageBlock>
+    <apex:outputPanel rendered="{!NOT(ISBLANK(srcUpUrl))}">
+    <script>
+    if(typeof(srcUp)=='function') {
+        //sforce.console.openPrimaryTab(null, '{!srcUpUrl}', true);   
+        srcUp('{!srcUpUrl}?isdtp=vw');
+    } else {
+        parent.location.href='{!srcUpUrl}';
+    }
+    </script>
+    </apex:outputPanel>
+</apex:form>
+</html>
+Position:   Ln 90, Ch 189   Total:  Ln 113, Ch 6293 
+
+</apex:page>

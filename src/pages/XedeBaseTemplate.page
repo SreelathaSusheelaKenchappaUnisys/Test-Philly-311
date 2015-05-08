@@ -1,0 +1,83 @@
+<apex:page standardStylesheets="false" doctype="html-5.0" >
+
+<!--  
+Copyright 2013, Xede Consulting Group, Inc.
+-->
+	<apex:includeScript value="/support/console/27.0/integration.js"/>
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-1.10.2.min.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-ui.min.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/handlebars.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/encoder.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery.dataTables.min.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/handlebars.helpers.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XedeJs,'XedeJS/js/prototype.js')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.GISAssets,'visualforceBootstrap/css/bootstrap.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.XedeDefaultAssets,'css/data-tables.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.XedeDefaultAssets,'css/overrides.css')}" />
+
+	<script>
+		var $$=$.noConflict(); 
+		 if (!Number.prototype.asYMD) {
+            Number.prototype.asDate=function() { return new Date(this); };
+            Number.prototype.asYMD=function() { var aDate = new Date(this); return aDate.getFullYear() + '-' + (aDate.getMonth() + 1) + '-' + aDate.getDate(); };
+        }
+	</script>
+	
+	<style>
+		.alert{
+			margin-top:4px;
+			
+		}
+		
+		.text-right {
+    		text-align: right !important;
+		}
+
+		.text-center {
+    		text-align: center !important;
+    	}
+		.text-left {
+    		text-align: left !important;
+		}
+		
+   		.action-status-wrapper{
+		    left: 0;
+		 	position: absolute;
+			text-align: center;
+			top: 0;
+			z-index: 9002;
+			background-color: #fbfbfb;
+			height: 100%;
+			opacity:0.65;
+			width:100%;
+		}
+		.action-status-wrapper .action-status-container{
+			background-color: transparent;
+		    margin: auto;
+		    padding: 0;
+		    position: relative;
+		    top: 50%;
+		    white-space: nowrap;
+		    width: 100px;
+		}
+		.status-description {
+			font-weight: bold;
+			margin-left: 6px;
+		}
+		
+		#accountsTable a, .event-link{
+			 color: #266781 !important;
+    		 cursor: pointer;
+		}
+		
+		#accountsTable a:hover, .event-link:hover{
+			 text-decoration: underline;
+		}
+		
+		
+
+   	
+	</style>
+    <apex:insert name="content" />
+	
+</apex:page>

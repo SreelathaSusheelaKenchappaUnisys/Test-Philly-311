@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="DaycareResidential">
+    </flow:interview>
+</apex:page>

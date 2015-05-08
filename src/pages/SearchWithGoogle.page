@@ -1,0 +1,166 @@
+<apex:page controller="SearchController" showHeader="false">
+    <apex:composition template="XedeBaseTemplate">
+        <apex:define name="content">
+        
+            <apex:form >
+                <apex:actionFunction name="logInfoRequest" action="{!logInfoRequest}"/>
+            </apex:form>
+            
+            <style>
+                .feedback {
+                    float:right;
+                }
+                
+                .all-tabs{
+                    font-size: 1em;
+                    height: 15px;
+                    padding: 4px 15px;
+                    background-image:none;
+                    background-color: #199ED2;
+                    min-width:81px;
+                 }
+        
+                .all-tabs, .inactive-tab{
+                    border : 1px solid #199ED2 !important;
+                 }
+        
+                .active-tab {
+                    background-color:#FFFFFF;
+                    border : 1px solid #199ED2 !important;
+                }
+                
+            </style>
+            
+            <c:ActionStatus />   
+            
+        
+
+            <div id="force">
+                
+                <div class="container-fluid" style="padding:5px;" > 
+                    
+                    <span class="default-search" >
+                        <input id ="searchFieldDefault"  type="text" class="input-medium searchField"/>
+                        <button id="searchButtonDefault" type="submit" class="btn searchButton" onClick="submitSearch();">Search</button>
+                        <button id= "logRequest" class="btn searchButton" onclick="logInfReq();" >Log Information request</button>
+                        <img  id="waitingImageDefault" class="waitingImage" src="/img/loading.gif" title="Please Wait..." style="display:none" />
+                    </span>
+                    <apex:outputPanel >    
+                        <div style="float:right">
+                            <a class="btn btn-mini" onclick="openFeedback();"><i class="icon-comment"></i>Feedback</a>
+                            <c:Feedback config="Default2" />
+                        </div>
+                    </apex:outputPanel>
+                    <div style="clear:both"></div>
+                    <br />
+                </div>
+            </div>  
+            
+            <script type="text/javascript">
+                function getURLParameter(name) {
+                    return decodeURI(
+                        (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,null])[1]
+                    );
+                }
+                
+                var previousOnload = window.onload;        
+                
+                window.onload = function() { 
+                    if (previousOnload) { 
+                        previousOnload();
+                    }
+                    
+                    searchText = getURLParameter('q');
+                    
+                    if (searchText != 'null') { // getURLParameter returns 'null' rather than null  
+                        $$('#searchFieldDefault').val(searchText);        
+                        submitSearch();                        
+                    }
+                }
+                
+                function submitSearch() {
+                    var searchValue = $$('#searchFieldDefault').val();
+                    document.getElementById('gsc-i-id1').value = searchValue;
+                    $$('.gsc-search-button').trigger('click');
+                }
+                 
+                function searchActionStatusOn() {
+                    $$('#waitingImageAdvanced').css('display','inline');
+                }
+                
+                function searchActionStatusOff() {
+                    $$('.waitingImage').css('display','none');
+                }
+                
+                 function logInfReq()  {
+                   sforce.console.openPrimaryTab(
+                        null, 
+                        '/500/e?ekp=500&ent=Case&RecordType=012G00000014BWoIAM&x311rt=Information_Request',     
+                        true, 
+                        'Information Request'
+                    );
+                }
+                       
+            </script>
+            <apex:tabPanel switchType="client"  id="tabPanel" tabClass="all-tabs" activeTabClass="active-tab" inactiveTabClass="inactive-tab" contentClass="tabs-content">
+                <apex:tab label="Create Case" id="sfCaseTypes">  
+                    <apex:pageBlock title="Create Case">
+                        <div id="caseTypeResponse"></div>
+                    </apex:pageBlock>
+                </apex:tab>
+                
+                <apex:tab label="Contacts" id="sfContacts">
+                    <apex:pageBlock title="Contacts">
+                        <div id="contactResponse"></div>
+                    </apex:pageBlock>
+                </apex:tab>
+                
+                <apex:tab label="Cases" id="sfCases">   
+                    <apex:pageBlock title="Cases">
+                        <div id="caseResponse"></div>
+                    </apex:pageBlock>
+                </apex:tab>
+
+                <apex:tab label="Directory" id="sfDirectory">   
+                    <apex:pageBlock title="Directory">
+                        <div id="directoryResponse"></div>
+                    </apex:pageBlock>
+                </apex:tab>
+    
+                <apex:tab label="Articles" id="sfArticles"> 
+                    <apex:pageBlock title="Articles">
+                        <div id="articleResponse"></div>
+                    </apex:pageBlock>
+                </apex:tab>
+                
+                <c:SalesforceSearch />
+    
+                <apex:tab label="Google Result" id="tabGoogle">
+                   <!-- <p>
+                        <b>Warning</b>, this page uses a Google API that is limited to 100 queries/day.  Please re-load sparingly
+                        so the developers will not have to stop working until tomorrow.
+                    </p> -->
+            
+                    <a href="https://code.google.com/apis/console/b/0/?noredirect#project:539796439403:overview">Google CustomSearch Project Dashboard</a><br />
+                    <a href="https://www.google.com/cse/manage/all">Google Control Panel</a>
+                    
+                    <script>
+                      (function() {
+                       // var cx = '002389132043775836885:ifvud9dwxua';
+                        var cx = '012281970149422056935:e3col_wgefa';
+                        var gcse = document.createElement('script');
+                        gcse.type = 'text/javascript';
+                        gcse.async = true;
+                        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                            '//www.google.com/cse/cse.js?cx=' + cx;
+                        var s = document.getElementsByTagName('script')[0];
+                        s.parentNode.insertBefore(gcse, s);
+                      })();
+                    </script>
+                    <!--  <gcse:search></gcse:search>  -->
+                    <div class="gcse-search"></div>
+                </apex:tab>
+            </apex:tabPanel>
+        </apex:define>
+    </apex:composition>
+</apex:page>

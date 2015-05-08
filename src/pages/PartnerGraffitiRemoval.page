@@ -1,0 +1,455 @@
+<apex:page standardcontroller="Case" sidebar="true" extensions="X311CaseEditClrExt">
+    
+   <c:gisConnector recordType="{!Case.RecordTypeId}"/>
+   
+   <apex:pageMessages />
+   <apex:includeScript value="/support/console/26.0/integration.js"/>   
+    <script type="text/javascript">
+        var j$=jQuery.noConflict();
+        
+      <!-- A javascript function used for preventing the user getting back to previous screen on the hit of backspace key -->
+        j$(function() {
+            //Set the current tabs title
+            sforce.console.setTabTitle('{!Case.CaseNumber}'=='' ? 'New Case' : '{!Case.CaseNumber}');
+            j$('[id*=powerBlock]').prop('disabled', 'disabled');
+                if(j$('[id*=plate]').val() != 'None')  {
+                    if(j$('[id*=plate]').val() != 'none')  {
+                        j$('[id*=lic]').prop('disabled', 'disabled');
+                    }  
+                }      
+            
+            
+            j$(document).keydown(function(e) {
+                var element = e.target.nodeName;
+                if (element != 'INPUT' && element != 'TEXTAREA') {
+                    if (e.keyCode === 8) {
+                        return false;
+                    }
+                }
+            });            
+            
+      <!-- A javascript function to close the tab when user cancels -->
+            j$("input[value=Cancel]").click(function(event) {
+                sforce.console.getEnclosingTabId(function(result) {
+                    var tabId = result.id;
+                    sforce.console.closeTab(tabId);
+                    event.preventDefault();
+                    event.stopPropagation();                    
+                });
+            });
+            setTimeout(X311CaseEdit.loadScript, 1000);
+        });
+
+      <!-- Functions for flip functionality on record type change -->
+          var PartnerMisc= function(){
+            var rsOnChange = function(el){
+                if (j$(el).val()!="") {
+                    rsChange(); 
+                }
+            };          
+            var srtOnChange = function(el){
+                if (j$(el).val()!="") {
+                    srtChange();    
+                }
+            };            
+      <!-- Function for implementing Save and Close button -->
+             var SaveAndServiceNotNeeded = function(el){              
+                if (j$(el).val()!="") {      
+                    SaveAndServiceNotNeeded();    
+                }
+            };
+            
+             var addAcc=function() {             
+                addAcc(); 
+               }; 
+      
+      <!-- Function for auto population of zip code based on contact selected -->     
+           var contactOnChange=function() {
+                contactChange();
+           }
+           var contactOnComplete=function() {             
+            j$("input[id$=customerZip]").focus(); 
+           }
+            
+      <!-- Function for changing the script dynamically based on case record type selected -->     
+           var loadScript = function(el){
+                if ("{!ScriptName}"!="") {
+                    var patt1 = /\/apex\/[^\?]+/i;
+    
+                    for(var i=0; i<parent.frames.length; i++) {
+                        try {
+                            if (patt1.test(parent.frames[i].location.href) && parent.frames[i]!=window) {
+                                parent.frames[i].location.href=parent.frames[i].location.href.replace(patt1,"/apex/{!ScriptName}");
+                            }
+                        } catch(e) {
+                            console.log("e=", e);
+                        }
+                    }
+                }
+            };
+            
+            return {rsOnChange:rsOnChange, 
+                    srtOnChange:srtOnChange, 
+                    SaveAndServiceNotNeeded:SaveAndServiceNotNeeded,
+                    loadScript:loadScript,
+                    addAcc:addAcc, 
+                    contactOnChange:contactOnChange,
+                    contactOnComplete:contactOnComplete};
+        }();
+        
+        function powerwash(data)    {
+               j$("[id $='ps'] option[value='']").remove();
+               j$("[id $='pw'] option[value='']").remove();
+               var $y = j$("[id $='pw'] option[value='Yes']");
+               var $n = j$("[id $='pw'] option[value='No']");
+               if(data.value == 'Yes')    {
+                    j$("[id $='pw']").val('No');
+                    $y.hide();                  
+               }
+               else    {    
+               j$("[id $='pw']").val('Yes');              
+                  $n.hide();
+               }           
+           } 
+            
+             function centerCityDistrict() {
+                 var centerCityDistrict  = j$("[id$='SA_CENTER_CITY_DISTRICT']").val(); 
+                 var floor = j$("[id$='floor']").val();
+                 var railCorridor = j$("[id$='railCorridor']").val(); 
+                 var propOwner = j$("[id$='propOwner']").val(); 
+                 if(centerCityDistrict == 'In')    {
+                     j$("[id*=graf1]").prop('disabled', 'disabled'); 
+                     j$("[id*=graf2]").prop('disabled', 'disabled'); 
+                     j$("[id*=graf3]").prop('disabled', 'disabled'); 
+                     j$("[id*=graf4]").prop('disabled', 'disabled'); 
+                     j$("[id*=graf5]").prop('disabled', 'disabled');  
+                     j$("[id*=pw]").prop('disabled', 'disabled'); 
+                     j$("[id*=ps]").prop('disabled', 'disabled'); 
+                     if(floor == '2nd' || floor == '3rd or above')    {
+                         if(propOwner == 'Yes')    {
+                             if(confirm('The Graffiti Abatement Team does not remove any graffiti located above the second floor of a building.'))
+                                   SaveAndServiceNotNeeded(); 
+                         }
+                         else if (propOwner == 'No')    {
+                             if(confirm('Open Maintenance Residential or Commercial Service Request in Novo.'))
+                                 SaveAndCaseCreatedinNovo();
+                         }
+                     }
+                     if((floor == '1st' || floor == 'N/A') && (railCorridor == 'No' || railCorridor == 'Not Known') )    {
+                         if(confirm('The Center City District is responsible for graffiti located within the Center City boundaries.  Please contact CCD at 215-440-5500.'))
+                             SaveAndServiceNotNeeded();
+                     } 
+                 }
+                 else {
+                     j$("[id*=graf1]").prop('disabled', false); 
+                     j$("[id*=graf2]").prop('disabled', false); 
+                     j$("[id*=graf3]").prop('disabled', false); 
+                     j$("[id*=graf4]").prop('disabled', false); 
+                     j$("[id*=graf5]").prop('disabled', false);  
+                     j$("[id*=pw]").prop('disabled', false); 
+                     j$("[id*=ps]").prop('disabled', false); 
+                     if(floor == '3rd or above')    {
+                         if(confirm('The Graffiti Abatement Team does not remove any graffiti located above the second floor of a building.'))
+                               SaveAndServiceNotNeeded(); 
+                     }
+                     else if (railCorridor == 'Yes')    {
+                         if(confirm('SEPTA is responsible for graffiti on rail corridors.  Please contact SEPTA at 215-580-7800.'))
+                                SaveAndServiceNotNeeded(); 
+                     }  
+                }       
+             }
+
+      
+      <!-- For contact look up functionality -->
+        
+        function openLookup(baseURL, width, modified, searchParam) {
+            var originalbaseURL = baseURL;
+            var originalwidth = width;
+            var originalmodified = modified;
+            var originalsearchParam = searchParam;
+            
+            var lookupType = baseURL.substr(baseURL.length-3, 3);
+            if (modified == '1') baseURL = baseURL + searchParam;
+            
+            var isCustomLookup = false;
+            
+            // Following "003" is the lookup type for Contact object
+            if (lookupType == "003") {
+                var urlArr = baseURL.split("&");
+                var txtId = '';
+                if (urlArr.length > 2) {
+                   urlArr = urlArr[1].split('=');
+                   txtId = urlArr[1];
+                }
+                //showProfieId();
+                // Following is the url of Custom Lookup page.
+                if(('{!$Profile.Name}' == 'City Department Heads') || ('{!$Profile.Name}' == 'Partner User') ||('{!$Profile.Name}' == 'Department WOM (Field Worker) User')||('{!$Profile.Name}' == 'City Council')||('{!$Profile.Name}' == 'State Reps')||('{!$Profile.Name}' == 'Various Civic City Groups, Kensignton CDC, Northern Liberties CDC')||('{!$Profile.Name}' == 'City Department Heads'))
+                    baseURL = "/internal/CustomAccountLookup?txt=" + txtId;
+                    
+                else
+                    baseURL = "/liaisons/CustomAccountLookup?txt=" + txtId;
+                
+                // Following is the id of apex:form control "myForm". 
+                baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+                if (modified == '1') {
+                   baseURL = baseURL + "&lksearch=" + searchParam;
+                }
+                
+                 // Following is the ID of inputField that is the lookup to be customized as custom lookup
+                 if(txtId.indexOf('Account') > -1 ){
+                   isCustomLookup = true;
+                }
+            }
+            if(isCustomLookup == true){
+                openPopup(baseURL, "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+            }
+            else {
+                if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+                    openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+            } 
+        }
+        
+     <!-- End of contact look up functionality -->  
+        
+    </script>
+    
+    <apex:sectionheader title="{!$ObjectType.Case.label} Edit" subtitle="{!IF(ISNULL(Case.casenumber), 'New Case',Case.casenumber)}"/>
+
+        <apex:form id="mainForm">
+        
+        <!-- Fields that are hidden and auto populated -->
+        <apex:inputHidden value="{!Case.Centerline__Latitude__s}" id="clLatitude"/>
+        <apex:inputHidden value="{!Case.Centerline__Longitude__s}" id="clLongitude"/>
+        <apex:inputHidden value="{!Case.Centerline_Match_Type__c}" id="clMatchType"/>
+        <apex:inputHidden value="{!Case.Centerline_2272x__c}" id="cl2272x"/>
+        <apex:inputHidden value="{!Case.Centerline_2272y__c}" id="cl2272y"/>
+        <apex:inputHidden value="{!Case.Feature_Data__c}" id="featureData"/>        
+        <apex:inputHidden value="{!Case.PhillyRising__c}" id="SA_PHILLYRISING"/>
+        <apex:inputHidden value="{!Case.RecordTypeId}" id="recordtype" />
+        <apex:inputHidden value="{!Case.Sanitation_District__c}" id="SA_STREETS_Sanitation_Districts"/>
+        <apex:inputHidden value="{!Case.ZipCode__c}" id="SA_STREETS_ZipCode"/>  
+
+        <apex:actionFunction name="rsChange" action="{!rsChange}"  />
+            <apex:actionFunction name="srtChange" action="{!srtChange}"  />
+            <apex:actionFunction name="addAcc" action="{!addAcc}"  /> 
+            <apex:actionFunction name="contactChange" action="{!contactChange}" rerender="caseInformation" oncomplete="PartnerMisc.contactOnComplete();" />
+            <apex:actionFunction name="saveAndClose" action="{!SaveAndClose}"  />
+            <apex:actionFunction name="SaveAndServiceNotNeeded" action="{!SaveAndServiceNotNeeded}"  />
+            
+            <apex:pageblock mode="edit" title="{!$ObjectType.Case.label} Edit">
+                <apex:pageblockbuttons >
+                    <apex:commandbutton value="Save" action="{!CustomSave}">
+                          <apex:actionSupport event="onclick"  rerender="msg"/>
+                     </apex:commandbutton>                         
+                     <apex:commandbutton value="Cancel" action="{!Cancel}"/>
+                </apex:pageblockbuttons>
+
+            <apex:outputpanel >
+                <apex:pageblocksection title="Department Details" showheader="true" columns="1">
+                    <apex:outputfield value="{!Case.Type}" />                    
+                    <apex:outputfield value="{!Case.Department__c}" />
+                    <apex:outputfield value="{!Case.Case_Record_Type__c}" id="caseRecordType" />
+                    <apex:selectList value="{!Case.Service_Request_Type__c}" size="1">
+                         <apex:selectOptions value="{!GraffitiServiceReq}"/> 
+                    </apex:selectList>         
+                </apex:pageblocksection>
+
+               <apex:outputPanel id="caseInformation"> 
+
+                     <apex:pageblocksection title="Case Information" showheader="true" columns="2">
+                        <apex:outputfield value="{!Case.OwnerId}"/>                    
+                        <apex:outputfield value="{!Case.CaseNumber}"/>                   
+                        <apex:inputfield value="{!Case.ContactId}" required="false" id="Account" onchange="PartnerMisc.contactOnChange();"/>
+                        <apex:inputfield value="{!Case.Zip_code__c}" id="customerZip"/>                    
+                        <apex:inputfield value="{!Case.AccountId}" required="false" onchange="addAcc();"/> 
+                        <apex:inputfield value="{!Case.ParentId}" required="false" id="parentId" />
+                        <apex:inputfield value="{!Case.Status}" required="true" />
+                         <apex:selectList value="{!Case.Origin}" size="1"  required="true" >
+                         <apex:selectOptions value="{!Origin}"/> 
+                        </apex:selectList>
+                        <apex:inputfield value="{!Case.Reason}"  rendered="false"/>
+                     <!--   <apex:inputfield value="{!Case.Priority}" required="false" /> -->
+                        <apex:pageblocksectionitem />
+                     </apex:pageblocksection>
+               </apex:outputPanel>
+                         
+               <apex:pageblocksection title="Service Request Location" showheader="true" collapsible="true" columns="2">
+                    <apex:pageblocksectionitem >   
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Street__c.label}" />
+                          <apex:outputPanel >
+                             <div class='requiredInput'>
+                                 <div class='requiredBlock'></div>
+                                    <apex:inputfield value="{!Case.Street__c}"  id="street"/>
+                             </div>
+                         </apex:outputPanel>
+                    </apex:pageblocksectionitem>  
+                    <apex:inputfield value="{!Case.ZipCode__c}" required="false" id="SA_STREETS_ZipCode" />   
+               </apex:pageblocksection>
+                
+                <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Floor__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Floor__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Floor__c}" required="false" onchange="centerCityDistrict()" id="floor" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Property_Type__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Property_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Property_Type__c}" required="false" id="graf1" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Rail_Corridor__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Rail_Corridor__c.label}"  /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Rail_Corridor__c}" required="false" onchange="centerCityDistrict()" id="railCorridor" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Location_on_Property__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Location_on_Property__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Location_on_Property__c}" required="false" id="graf2" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                  
+                    
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Painted_Surface__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Painted_Surface__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Painted_Surface__c}" required="false" id="ps" onchange="powerwash(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                                  
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Property_Owner__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Property_Owner__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Property_Owner__c}" required="false" id="propOwner" onchange="centerCityDistrict()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Surface_Type__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Surface_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Surface_Type__c}" required="false" id="graf4" />
+                         </div>
+                    </apex:outputPanel>  
+                    </apex:pageblocksectionitem>
+                    
+                      
+                      
+                    <!-- Deleting the reference as per John Tucci - Change Starts -->
+                    
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Graffiti_Pamphlet__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Graffiti_Pamphlet__c.label}" /> 
+                    <apex:outputPanel >
+                               <apex:inputfield value="{!Case.Graffiti_Pamphlet__c}" required="false" id="graf5" />
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                    
+                   <!-- Deleting the reference as per John Tucci - Change Ends --> 
+                   
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Powerwash__c.inlineHelpText}">
+                  <apex:outputLabel value="{!$ObjectType.Case.Fields.Powerwash__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Powerwash__c}" required="false" id="pw" />
+                         </div>
+                    </apex:outputPanel>  
+                  </apex:pageblocksectionitem> 
+                                                 
+                     
+                    <apex:inputfield value="{!Case.Blight_Pamphlet__c}" required="false" id="graf5" />
+                    
+                    <apex:inputfield value="{!Case.Paint_Color__c}" required="false" id="graf3" />                                                    
+                    
+                    <apex:inputfield value="{!Case.Center_City_District__c}" required="false" onchange="centerCityDistrict()" id="SA_CENTER_CITY_DISTRICT" />        
+            
+                    <!--
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Center_City_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Center_City_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Center_City_District__c}" required="false" onchange="centerCityDistrict(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>  -->
+                     </apex:pageblocksection>
+          
+                    
+               <apex:pageblocksection title="Description Information" showheader="true" columns="2">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Case.Fields.Subject.label}" />
+                        <apex:outputPanel >
+                         <apex:inputfield value="{!Case.Subject}" style="height:15px ; width:300px" />                            
+                       </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                
+                    <apex:pageblocksectionitem />
+                    
+                    <apex:pageBlockSectionItem >
+                      <apex:outputLabel value="Comments" />
+                    <!--    <apex:outputLabel value="{!$ObjectType.Case.Fields.Description.label}" /> !-->
+                        <apex:outputPanel >
+                            
+                                <apex:inputfield value="{!Case.Description}" style="height:50px ; width:400px" />
+                                </apex:outputPanel>
+                     </apex:pageBlockSectionItem>  
+                      <apex:pageblocksectionitem />
+                      
+                      <!--- Changes for fixing Internal Comments fields Visibility in communities(Case #05005672) Start -->
+                      <apex:pageBlockSectionItem >
+                  <apex:outputLabel >Internal Comments</apex:outputLabel>                    
+                 <apex:inputTextArea id="caseInternalComments" value="{!Comment}" cols="75" rows="6" />
+                 </apex:pageBlockSectionItem> 
+                 </apex:pageblocksection>
+                     <!--- Changes for fixing Internal Comments fields Visibility in communities(Case #05005672) End -->
+
+
+                                       <!--  <apex:pageBlockSection id="pgBlockSectionAdditional" title="Additional Information" collapsible="false" columns="1" rendered="false">
+                     <apex:inputHidden value="{!Case.PhillyRising__c}" id="SA_PHILLYRISING"/>
+                     <apex:inputHidden value="{!Case.Police_District__c}" id="SA_POLICE_District"/>
+                     <!--  
+                     <apex:inputHidden value="{!Case.Center_City_District__c}" id="SA_PWD_CenterCityDistrict"/>
+                     
+                     <apex:inputHidden value="{!Case.Sanitation_District__c}" id="SA_STREETS_Sanitation_Districts"/>
+                     <apex:inputHidden value="{!Case.ZipCode__c}" id="SA_STREETS_ZipCode"/>  
+                     <apex:inputHidden value="{!Case.Pickup_Day__c}" id="SA_STREETS_Rubbish"/>
+                </apex:pageBlockSection>   -->
+                
+                
+                    
+                <apex:pageBlockSection id="pgBlockSectionOptional" title="Optional" collapsible="false" columns="1">
+                    <apex:inputCheckBox value="{!sendEmailNotification}" label="Send Email Notification" />
+                </apex:pageBlockSection>
+  </apex:outputpanel>
+       </apex:pageblock>
+        </apex:form>   
+</apex:page>

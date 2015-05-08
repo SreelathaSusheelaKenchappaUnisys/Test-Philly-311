@@ -1,0 +1,252 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+         function BusinessCons1(data) {
+            
+            if(data.value == 'Building'){  
+               j$("[id $='sreq']").val('Building Construction'); 
+               
+            }
+            else if(data.value == 'Electrical'){
+                 j$("[id $='sreq']").val('Electrical Construction'); 
+                 
+             }  
+            else if(data.value == 'Plumbing'){
+                 j$("[id $='sreq']").val('Plumbing Construction'); 
+                
+             }
+             else if(data.value == 'Zoning'){
+                 j$("[id $='sreq']").val('Zoning Construction');  
+                 
+             } 
+         } 
+         
+          function BusinessCons5(data) {
+            if(data.value == 'Yes')  {
+               if(confirm('The system has changed the Case Record Type to Construction Site Task Force.')){
+                 j$('[id*=departmnt]').val('License & Inspections');
+                 j$("[id $='caseRecordType']").val('Construction Site Task Force');
+                 j$('[id*=SubjectForCase]').val('Construction Site Task Force');
+                 j$("[id $='sreq']").val('Construction Site Task Force'); 
+                 crts(); 
+             }
+             }
+             
+         }
+         
+      
+                         
+                         
+                         function BusinessCons7(data)    {
+                            if(data.value == 'Yes')   { 
+                               if(confirm('The system has changed the Case Record Type to Fire Residential or Commercial')){
+                               j$('[id*=departmnt]').val('License & Inspections');
+                               j$("[id $='caseRecordType']").val('Fire Residential or Commercial');
+                              j$('[id*=SubjectForCase]').val('Fire Residential or Commercial');
+                               j$("[id $='sreq']").val('');
+                                
+                               crts();
+                               }
+                           }    
+                               
+                                                                                                                        
+                         }
+                         function BusinessCons8(data) { 
+                              if(((data.value == 'Under 4' || data.value=='4')&& j$("[id $='fen']").val()=='Front'))  {
+                                   if(confirm('If a fence is 4 feet high or lower and in the front of the property or along a street, no case will be submitted.')){
+                                        SaveAndServiceNotNeeded();   
+                                    }    
+                              }
+                          } 
+                          
+                          
+                          function BusinessCons9(data) { 
+                              if(((data.value == 'Under 4' || data.value=='4'||data.value=='5'||data.value=='6')&& j$("[id $='fen']").val()=='Back'))  {
+                                   if(confirm('If a fence 6 feet high or lower and in the rear of the property, no case will be submitted.')){
+                                        SaveAndServiceNotNeeded();   
+                                    }    
+                              }
+                          } 
+                          
+                          /*  Commenting as per new requirements Case Number 05012710
+                          function address() {
+                              if(j$("[id $='hansenAddress']").val() == null || j$("[id $='hansenAddress']").val() == '') {         
+                                              if(confirm('A Building Construction case can be submitted only if the exact L&I address key is validated.'))
+                                                   SaveAndServiceNotNeeded();    
+                               
+                                                  }
+                                                      }*/
+                      function e23() {
+    
+           if((j$("[id $='tyw']").val()=='Electrical')) {
+                j$("[id *='sp']").removeAttr("disabled");
+                j$("[id *='sp']").css("background-color","White");
+                 
+           } 
+           else {
+                j$("[id *='sp']").prop('disabled','disabled') ;  
+                j$("[id *='sp']").css("background-color","#EDEDED");      
+                          
+           }
+       }   
+       
+       function e24() {
+    
+           if((j$("[id $='tyw']").val()=='Zoning')) {
+                j$("[id *='fpa']").removeAttr("disabled");
+                j$("[id *='fpa']").css("background-color","White");
+                 
+           } 
+           else {
+                j$("[id *='fpa']").val('');
+                j$("[id *='fpa']").prop('disabled','disabled') ;  
+                j$("[id *='fpa']").css("background-color","#EDEDED");      
+                          
+           }
+       }   
+       
+       function e25() {
+    
+           if((j$("[id $='fpa']").val()=='Storage Shed')) {
+                j$("[id *='ssl']").removeAttr("disabled");
+                j$("[id *='ssl']").css("background-color","White");
+                 
+           } 
+           else {
+                j$("[id *='ssl']").prop('disabled','disabled') ;  
+                j$("[id *='ssl']").css("background-color","#EDEDED");      
+                          
+           }
+       } 
+       
+       function e26() {
+    
+           if((j$("[id $='fpa']").val()=='Fence')) {
+                j$("[id *='fen']").removeAttr("disabled");
+                j$("[id *='fen']").css("background-color","White");
+                j$("[id *='fenh']").removeAttr("disabled");
+                j$("[id *='fenh']").css("background-color","White");
+                 
+           } 
+           else {
+                j$("[id *='fen']").prop('disabled','disabled') ;  
+                j$("[id *='fen']").css("background-color","#EDEDED"); 
+                j$("[id *='fenh']").prop('disabled','disabled') ;  
+                j$("[id *='fenh']").css("background-color","#EDEDED");           
+                          
+           }
+       }                         
+           
+      
+        </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Type_of_Work_Being_Done__c.inlineHelpText}">
+
+                    <apex:outputLabel value="{!$ObjectType.Case.Fields.Type_of_Work_Being_Done__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Type_of_Work_Being_Done__c}" StyleClass="RemoveNone" id="tyw" required="false" onchange="BusinessCons1(this);e23();e24()"/>
+                        </div>
+                    </apex:outputPanel>  
+                    </apex:pageblocksectionitem>
+                     
+                     
+                     <apex:inputfield value="{!Case.Sparking_Wires_or_Illegal_Hookups__c}" StyleClass="RemoveNone" id="sp" required="false" onchange="BusinessCons7(this)" />
+                    
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Valid_Permit__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Valid_Permit__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Valid_Permit__c}"  StyleClass="RemoveNone" required="false" onchange="BusinessCons5(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                    </apex:pageblocksectionitem>
+
+
+                     <apex:inputfield value="{!Case.Fence_Paved_Area_or_Shed__c}" id="fpa" StyleClass="RemoveNone" required="false" onchange="e25();e26()"/>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Unsafe_Conditions__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Unsafe_Conditions__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Unsafe_Conditions__c}" StyleClass="RemoveNone" required="false" onchange="BusinessCons5(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                    </apex:pageblocksectionitem>
+                     
+                     
+                    <apex:inputfield value="{!Case.Fence_Location__c}" StyleClass="RemoveNone" required="false" id="fen" onchange="BusinessCons8(this);BusinessCons9(this);"/>
+                         
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Where_is_Work_Being_Done__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Where_is_Work_Being_Done__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Where_is_Work_Being_Done__c}" StyleClass="RemoveNone" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>      
+                     
+                         <apex:inputfield value="{!Case.Fence_Height_Feet__c}" StyleClass="RemoveNone" required="false" id="fenh" onchange="BusinessCons8(this);BusinessCons9(this);"/>
+                        
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Day_of_Week_Work_Being_Done__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Day_of_Week_Work_Being_Done__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Day_of_Week_Work_Being_Done__c}" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+
+
+                         <apex:inputfield value="{!Case.Storage_Shed_Location__c}" id="ssl" StyleClass="RemoveNone" required="false"/> 
+                         
+                          <apex:inputfield value="{!Case.Time_of_Day_Work_Being_Done__c}" required="false" />
+                         
+                          
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                         
+                     
+                     <apex:inputfield value="{!Case.Contractor_Company_Name__c}" required="false"/>
+                   
+                    <!--commenting as per new requirements Case Number 05012710   
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                             <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>!-->
+                       <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"/>
+                 
+            
+                    <apex:pageblocksectionitem />
+                   
+           
+                                       
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

@@ -1,0 +1,248 @@
+<apex:page controller="GISController" extensions="XedeRemote" showHeader="false" sidebar="false">
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/prototype.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/XedeHttpClient.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-1.10.2.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/encoder.js')}" />
+    
+    <style>
+    
+     #content {
+        position:absolute; 
+        left: 0; 
+        right: 0; 
+        bottom: 0; 
+        top: 39px; 
+     }
+     
+     .action-status-wrapper {
+            margin-left: 38%;
+            margin-right: auto;
+            position: absolute;
+            top: 50%;
+            width: 110px;
+        }
+    
+    </style>
+    <input id="address" type="text" value="990 spring garden"/>
+    <select id="geocodetype">
+        <option value="Best" selected="true">Default</option>
+        <option value="CenterlineOnly">Centerline</option>
+        <option value="SnapToCenterline">Snap</option>
+        <option value="SnapNearCenterline">Near</option>
+        <option value="ULRSOnly">ULRS-Only</option>
+    </select>
+    <button id="locate" onclick="AddressCandidate()">locate</button>
+    
+    <button id="saveCase" onclick="saveGeoData(JSON.stringify(aGisPoint));">save case</button>
+    
+    <button onclick="addLayer();">add layers</button>
+    <br />
+    <div id="multiple" style="display:none">
+        There are similar addresses. Please select one from the list
+        <span id="list">
+            <select id="selectAddress">
+            
+            </select>
+            <button id="locate" onclick="locateFromList()">locate</button>
+        </span>
+    </div>
+    
+    <apex:form >
+    <!--  
+        <apex:actionFunction name="saveGeoData" action="{!doSomething}" rerender="dummy" >
+            <apex:param name="gisdata" value="" />
+        </apex:actionFunction>
+        -->
+    </apex:form>
+
+    <div id="content">
+        <c:ActionStatus />  
+        <apex:iframe width="100%" height="100%" frameborder="0" src="/apex/GisSkinny" id="mapFrame" />
+    </div>
+    
+    <script>
+        var $$=$.noConflict();
+        
+        var aGisApi;
+        var aGisPoint = null;
+        
+        function viewportChangeHandler(aValue) {
+            loadCases(aValue);
+        }
+        
+        // this function is used to add layers to the map.  GisAPI's addLayer() 
+        // this function is called by the iframe's gismap.component.  If the component
+        // isn't inside an iframe, the code I have there "window.parent.setGisApi()"
+        // probably isn't going to work.
+        function setGisApi(anObject) {
+            aGisApi = anObject;
+            aGisApi.onViewportChange(viewportChangeHandler);
+        }
+        
+        function addLayer() {
+            var url = 'https://www.arcgis.com/sharing/rest/generateToken?username=311application.philly&password=IGCD15MS&client=referer&f=json&referer=www.salesforce.com';
+            var aClient = new XedeHttpClient();
+            aClient.post(url, 
+                function(result) {
+                    window.console && console.log('finished : ', url);
+                    window.console && console.log('result', result);
+                    
+                    var resultObject = JSON.parse(result);
+                    
+                    aGisApi.addLayer([
+                        [ "Street Lights", "https://services2.arcgis.com/YRlMlhu838MHTM0n/ArcGIS/rest/services/streetPoles/FeatureServer/0?token=" + resultObject.token ],  // street poles
+                        "https://services2.arcgis.com/YRlMlhu838MHTM0n/arcgis/rest/services/water_Hydrants/FeatureServer/0?token=" + resultObject.token,    // water hydrants
+                        "https://services2.arcgis.com/YRlMlhu838MHTM0n/arcgis/rest/services/water_Inlets/FeatureServer/0?token=" + resultObject.token,  // water inlets 
+                        [ "Parks", "https://services2.arcgis.com/YRlMlhu838MHTM0n/ArcGIS/rest/services/PPR_adminBound/FeatureServer/0?token=" + resultObject.token ],   // parks 
+                    
+                         //uncommented for support ticket# :08967149
+                    
+                        "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/Business/MapServer/8",               // business permits
+                        "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/Construction/MapServer/12",          // zoning permits
+                        "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/Construction/MapServer/18",          // building permits
+                        "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/Construction/MapServer/0",           // Construction Violation
+                         "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/Construction/MapServer/10",         // Mechanical Permits
+                        "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/Construction/MapServer/14",          // Electrical Permits
+                        "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/Construction/MapServer/16",          // Plumbing Permits
+                        
+                        //"{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/Hospitals/MapServer/0",                // hospital
+                        //"{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/Health_Centers/MapServer/0",           // health center
+                        
+                        "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/ServiceAreas/MapServer/8",           // police district
+                        "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/ServiceAreas/MapServer/12",          // rubbish
+                        
+                        //"{!$Setup.GIS__c.ESRIServices__c}/MDO/Philly_Rising_Boundaries/MapServer/0",  // philly rising boundaries
+                        //"{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/ServiceAreas/MapServer/19",            // L&I districts
+                        //"{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/ZoningMap/MapServer/0",                // zoning parcels
+                        //"{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/ZoningMap/MapServer/1",                // zoning overlay
+                        //"{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/ZoningMap/MapServer/6",                // zoning base
+                        [ "Zoning" , "{!$Setup.GIS__c.ESRIServices__c}/PhilaGov/ZoningMap/MapServer" ],             // zoning all
+                        "https://services2.arcgis.com/YRlMlhu838MHTM0n/arcgis/rest/services/Smoke_Alarm_Requests/FeatureServer/0?token=" + resultObject.token, // smoke alarm requests
+                    ]);
+                },
+                function(result) {
+                    window.console && console.log('FAILED   : ', url);
+                    window.console && console.log('result', result);
+                    alert("Unable to login to Philly GIS Services.");
+                }
+            );
+        }
+        
+        function AddressCandidate() {
+            actionStatusOn('Checking similar addresses');
+            $$('#multiple').css('display','none');
+            anAddress = document.getElementById('address').value;
+            GISController.AddressCandidates(anAddress, function(result, event) {
+                if (event.status == false) {
+                    alert('callout failed');
+                    return;
+                }
+
+                OnSuccess(result, event, function(result) {
+                    if (result.successful == 'false') {
+                        actionStatusOff();
+                        alert(Encoder.htmlDecode(result.message[0]));
+                        return;
+                    }
+                    
+                    window.console && console.log(result);
+                    if (result.jmap.addresses.length < 2){
+                        actionStatusOff();
+                        aGisApi.mapAddress(document.getElementById('address').value, document.getElementById('geocodetype').value, geoDataHander);
+                        
+                    } else {
+                        var addressArray = [];
+                        for (var j = 0; j < result.jmap.addresses.length; j++) {
+                            addressArray.push(Encoder.htmlDecode(result.jmap.addresses[j].standardizedAddress));
+                        }
+                        
+                        window.console && console.log("addresses :",addressArray);
+                        var select = document.getElementById("selectAddress"); 
+                        select.options.length = 0;
+                        for (var i = 0; i < addressArray.length; i++) {
+                            var opt = addressArray[i];
+                                var el = document.createElement("option");
+                            el.textContent = opt;
+                            el.value = opt;
+                            select.appendChild(el);
+                        }
+                        actionStatusOff();
+                        $$('#multiple').css('display','block');
+                    }
+                });
+            },{escape:true, buffer:false});
+        }
+        
+        function locateFromList(){
+            var selectedValue= $$('#selectAddress').val();
+            
+            aGisApi.mapAddress(selectedValue, document.getElementById('geocodetype').value, geoDataHander);
+        }
+        
+        // geoDataHandler is simply an intermediary between mapping the address and 
+        // calling the apex action function with however many and type of arguments
+        // the function above requires.     
+        function geoDataHander() {
+            aGisPoint = arguments[0];
+            window.console && console.log(aGisPoint);
+        }
+        
+        // the code below is a quick utility method
+        // to query SF through a JS Remote call
+        function SOQLQuery(aSoqlQuery, callback) {
+            XedeRemote.Query(aSoqlQuery, function(result, event) {
+                if (event.status == "false") {
+                    alert(Encoder.htmlDecode(result.message[0]));
+                } else {
+                    OnSuccess(result, event, function(result) {
+                        callback(result);
+                    });
+                }
+            },{escape:true, buffer:false});
+        }
+        
+        // the method below queries cases, builds a data array, then asks the map
+        // to map each point and include it in the right-hand side list of cases
+        function loadCases(anExtent) {
+            SOQLQuery(
+                    ('select    centerline__longitude__s, centerline__latitude__s, caseNumber, id, subject, street__c ' + 
+                    '  from Case ' +
+                    ' where closed = false ' +
+                    '   and centerline_2272x__c < {0} and centerline_2272x__c > {1} ' +
+                    '   and centerline_2272y__c < {2} and centerline_2272y__c > {3} ' + 
+                    ' order by caseNumber desc limit 50 ' +
+                    '').format(anExtent.xmax, anExtent.xmin, anExtent.ymax, anExtent.ymin), function(response) {
+                var dataArray = [];         
+                response.queryData.forEach(function(each, index, array){
+                    var aCasePoint = {};
+                    aCasePoint.x = each.Centerline__Longitude__s;
+                    aCasePoint.y = each.Centerline__Latitude__s;
+                    aCasePoint.label = each.CaseNumber;
+                    aCasePoint.description = each.Subject + ' : ' + each.Street__c;
+                    aCasePoint.uniqueId = each.Id;
+    
+                    dataArray.push(aCasePoint);
+                });
+                
+                aGisApi.drawDataArray(dataArray);
+            });
+        }
+        
+        // easy function for handling errors from Javascript Remote requests
+        // this guy deals with the errors, and calls aFunction on success.
+        function OnSuccess(result, event, aFunction) {
+           if (event.status) {
+               aFunction(result);
+               return;
+           }
+           
+           if (event.type === 'exception' && event.message.indexOf("Logged in?") != -1) {
+               var host = window.location.host;
+               var protocol =  window.location.protocol;
+               window.top.location.href = protocol +"//" + host ;
+           }
+           else
+               alert("Exception: " + Encoder.htmlDecode(event.message));
+       }
+    </script>
+</apex:page>

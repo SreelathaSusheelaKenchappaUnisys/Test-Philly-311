@@ -1,0 +1,249 @@
+<apex:component controller="X311GISConnectorClr">
+    <apex:attribute name="recordType" type="string" description="the value to use for a record type" required="true" />
+
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets, 'js/jquery-1.10.2.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/encoder.js')}" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js" />
+    
+    <script>
+    
+    var j$ = jQuery.noConflict();
+    
+    var aGisApi;
+    var aGisPoint = null;
+    var theGeoData = null;
+    var license = null;
+    
+    window.gisConnector = this;
+    window.console && console.log('window = ', window, 'gisConnector', this);
+    
+    function viewportChangeHandler(aValue) {
+        getCaseList(aValue, function(result) {
+
+            var dataArray = [];
+            result.forEach(function(each, index, array){
+                var aCasePoint = {
+                    x: each.x,
+                    y: each.y,
+                    label: each.label,
+                    description: each.description,
+                    uniqueId: each.id
+                };
+    
+                dataArray.push(aCasePoint);
+            });
+        
+            aGisApi.drawDataArray(dataArray);
+        });
+    }
+    
+    // this function is used to add layers to the map.  GisAPI's addLayer() 
+    // this function is called by the iframe's gismap.component.  If the component
+    // isn't inside an iframe, the code I have there "window.parent.setGisApi()"
+    // probably isn't going to work.
+    function setGisApi(anObject) {
+        aGisApi = anObject;
+        aGisApi.onViewportChange(viewportChangeHandler);
+    }
+    
+    j$(function(){
+        var win;
+        
+        j$("<button class='btn' id='gis'>...</button>").insertAfter("input[id$=street]");
+
+        j$("button#gis").click(function(){
+            win=window.open('{!URLFOR($Page.X311GISMap)}','gisMap','toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=1100,height=600,top=200,left=200');
+            return false;
+        });
+        
+        j$(window).unload(function() {
+            win ? win.close() : '';
+        });
+    }); 
+    
+    function getGeoCodeSpec(callback) {
+        X311GISConnectorClr.getGeoCodeSpec(
+            j$("input[id$=street]").val(), 
+            '{!recordtype}', 
+            function(result, event) {
+                if (event.status == "false") {
+                    alert(result.message[0]);
+                } else {
+                    callback(result);
+                }
+            }, {escape:true, buffer:false}
+        );          
+    }
+    
+    function getCaseList(viewPort, callback) {
+        X311GISConnectorClr.Query(
+            '{!recordtype}', { xmin: viewPort.xmin, xmax: viewPort.xmax, ymin: viewPort.ymin, ymax: viewPort.ymax },
+            function(result, event) {
+            if (event.status == "false") {
+                alert(result.message[0]);
+            } else {
+                window.console && console.log(result);
+                callback(result);
+            }
+        }, {escape:true, buffer:false});            
+    }
+    
+    function saveGeodata(geoData) {
+        window.console && console.log('saveGeoData()');
+        window.console && console.log(geoData);
+        
+        theGeoData = geoData;
+        updatePageFromGeoData();
+    }
+    
+    function updatePageFromGeoData() {
+    /*
+    map a text field using 
+        j$("input[id$=textFieldId]").val(.. the value ..);
+    and a combo box field using
+        j$("[id$=comboBoxId]").val(.. the value ..);
+    */
+        j$("input[id$=street]").val(theGeoData.gisData.standardizedAddress);
+        j$("input[id$=clMatchType]").val(theGeoData.gisData.matchType);
+        
+        j$("input[id$=hansenAddressKey]").val(theGeoData.gisData.addressKey);
+        j$("input[id$=hansenAddress]").val(theGeoData.gisData.liAddress);
+        
+        j$("input[id$=clLongitude]").val(theGeoData.x);
+        j$("input[id$=clLatitude]").val(theGeoData.y);
+        j$("input[id$=street]").val(Encoder.htmlDecode(theGeoData.description));
+        j$("input[id$=cl2272x]").val(theGeoData.x2272);
+        j$("input[id$=cl2272y]").val(theGeoData.y2272);
+        j$("input[id$=featureData]").val(theGeoData.featureData);
+
+        if (theGeoData.parentId && theGeoData.parentId.trim()) {
+            j$("input[id$=parentId]").val(theGeoData.label);
+            j$("input:hidden[id$=parentId_lkid]").val(theGeoData.parentId);
+        }
+
+        if (j$("input[id$=clMatchType]").val() == 'Intersection') 
+             j$("[id$=InterMidblock]").val('Intersection');
+        else
+             j$("[id$=InterMidblock]").val('Mid-block');
+        
+        for (var fld in theGeoData.attributes) {
+            if(j$("input[id$=" + fld + "]").val() != theGeoData.attributes[fld])    {
+                j$("input[id$=" + fld + "]").val(theGeoData.attributes[fld]);
+                j$("input[id$=" + fld + "]").change();
+            }
+        }
+        
+        if (theGeoData.layerInfo) {
+            var attribute;
+            if (attribute = theGeoData.layerInfo.district) {
+                window.console && console.log('district', attribute);
+                
+                j$("input[id$=liDistrict]").val(attribute.DISTRICT);
+                
+            }
+            
+            if (attribute = theGeoData.layerInfo.familyDaycare) {
+                window.console && console.log('familyDaycare', attribute);
+                j$("input[id$=daycareName]").val(attribute.CONTACT_COMPANY_NAME);
+                if (attribute.STATUS == 'ACTIVE')
+                    j$("[id$=daycareLicenseActive]").val('Yes');
+                else
+                    j$("[id$=daycareLicenseActive]").val('No');
+            }
+            
+            if (attribute = theGeoData.layerInfo.foodLicense) {
+                window.console && console.log('foodLicense', attribute);
+                if (attribute.STATUS == 'ACTIVE') {   
+                    j$("[id$=foodLicenseActive]").val('Yes');
+                    if (license == null)
+                        license = 'No'; 
+                    else
+                        license = 'Yes';         
+                }    
+                else
+                    j$("[id$=foodLicenseActive]").val('No'); 
+            }
+            
+            if (attribute = theGeoData.layerInfo.rentalLicense) {
+                window.console && console.log('rentalLicense', attribute);
+                j$("input[id$=rentalLicenseDescription]").val(attribute.DESCRIPTION);
+                if (attribute.STATUS == 'ACTIVE') {
+                    window.console && console.log('STATUS=' + attribute.STATUS);
+                    j$("[id$=rentalLicenseActive]").val('Yes');
+                }
+            }
+            
+            if (attribute = theGeoData.layerInfo.rentalViolation) {
+                window.console && console.log('rentalViolation', attribute);
+                j$("input[id$=rentalViolationDescription]").val(attribute.DESCRIPTION);
+                j$("input[id$=rentalViolationStatus]").val(attribute.VIOLATION_STATUS);
+            }
+            
+            if (attribute = theGeoData.layerInfo.vacancy) {
+                window.console && console.log('vacancy', attribute);
+                j$("input[id$=vacancyDescription]").val(attribute.DESCRIPTION);
+                if (attribute.STATUS == 'ACTIVE')
+                    j$("[id$=vacancyStatus]").val('Yes');
+                else
+                    j$("[id$=vacancyStatus]").val('No'); 
+            }
+            
+            if (attribute = theGeoData.layerInfo.hospital) {
+                window.console && console.log('hospital', attribute);
+                j$("input[id$=healthName]").val(attribute.NAME);
+                j$("input[id$=hospitalName]").val(attribute.NAME);
+                j$("input[id$=hospitalPhone]").val(attribute.PHONE);
+            }
+            
+            if (attribute = theGeoData.layerInfo.healthCenter) {
+                window.console && console.log('healthCenter', attribute);
+                j$("input[id$=healthName]").val(attribute.NAME);
+                j$("input[id$=healthCenterlName]").val(attribute.NAME);
+                j$("input[id$=healthCenterPhone]").val(attribute.PHONE);
+            }
+            
+            if (attribute = theGeoData.layerInfo.dumpsterPrivate) {
+                window.console && console.log('dumpsterPrivate', attribute);
+                j$("input[id$=dumpsterDescription]").val(attribute.DESCRIPTION);
+                j$("input[id$=dumpsterStatus]").val(attribute.STATUS);
+                if(attribute.STATUS == 'ACTIVE')
+                    if (license == null)
+                        license = 'No'; 
+                    else
+                        license = 'Yes';
+            }
+            
+            if (attribute = theGeoData.layerInfo.address) {
+                window.console && console.log('address', attribute);
+                j$("input[id$=addressOwner]").val(attribute.OWNER1);
+                j$("input[id$=addressBuildingDescription]").val(attribute.BLDG_DESC);
+                if(attribute.OWNER1 != null || attribute.OWNER1 != ''){
+                    j$("[id$=resident]").val('Yes');
+                } else{
+                    j$("[id$=resident]").val('No');
+                }   
+            }
+            
+            if (attribute = theGeoData.layerInfo.zoningPermit) {
+                window.console && console.log('zoningPermit', attribute);
+                j$("input[id$=zoningPermitDescription]").val(attribute.DESCRIPTION_OF_WORK);
+                if (attribute.APNO != null) {
+                    window.console && console.log('STATUS=' + attribute.STATUS);
+                    j$("[id$=zoningPermitActive]").val('Yes');
+                }
+            }
+            
+            if (j$("input[id$=zoningPermitActive]").val() == 'Yes')
+                j$("[id$=zoningPermitActive1]").val('Yes');
+            else
+                 j$("[id$=zoningPermitActive1]").val('No');
+                 
+            if(license == 'Yes')
+                j$("[id$=dump1]").val('Yes');     
+                
+            address();
+            
+        }
+    }
+    </script>
+</apex:component>

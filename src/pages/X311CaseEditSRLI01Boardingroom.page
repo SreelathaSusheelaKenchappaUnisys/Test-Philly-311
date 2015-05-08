@@ -1,0 +1,106 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       function rental() {
+       
+           if( j$("[id $='rentalLicenseActive']").val() == 'No')  { 
+             
+          
+                if(confirm('The system has changed the Case Record Type to License Residential')){ 
+                
+               
+                j$("[id $='caseRecordType']").val('License Residential');
+                j$('[id*=SubjectForCase]').val('License Residential');
+                       crts(); 
+               }
+             }  
+               
+              if(( j$("[id $='rentalLicenseActive']").val() == 'Yes' ) && j$("[id $='zoningPermitActive']").val() == 'Yes' )
+                {
+                 if(confirm('If there is both a rental license and a valid zoning permit, there is no violation.')) {
+                          SaveAndServiceNotNeeded();
+                      }   
+                 } 
+            }
+         
+        /*  Commenting as per new requirements Case Number 05012710 
+         function address() {
+           if(j$("[id $='hansenAddress']").val() == '' || j$("[id $='hansenAddress']").val() == Null ) {
+             
+          if(confirm('A zoning violation case can be submitted only if the exact L&I address key is validated.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       }*/
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Number_of_Unrelated_Tenants__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Number_of_Unrelated_Tenants__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Number_of_Unrelated_Tenants__c}" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Property_Owner_Name__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Property_Owner_Name__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Property_Owner_Name__c}" required="false" id="addressOwner"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                
+                   <apex:inputfield value="{!Case.Rental_License__c}" required="false" onchange="rental()" StyleClass="RemoveNone" id="rentalLicenseActive" />
+                    <apex:inputfield value="{!Case.Property_Owner_Phone_Number__c}" required="false" />
+                    <apex:inputfield value="{!Case.Zoning_Permit__c}" required="false" id="zoningPermitActive" StyleClass="RemoveNone" onchange="rental()"/>
+                     
+                     
+                                <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                        
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Does_Owner_Reside_at_Property__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Does_Owner_Reside_at_Property__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Does_Owner_Reside_at_Property__c}" StyleClass="RemoveNone" required="false"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+  
+                               <!--commenting as per new requirements Case Number 05012710   
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                             <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>!-->
+                       <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"/>
+                 </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

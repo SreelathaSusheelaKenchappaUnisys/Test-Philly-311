@@ -1,0 +1,166 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+            
+            
+         
+       
+       function rental1() {              
+          if( j$("[id $='rent']").val() == 'Commercial' ) {
+                
+              if(confirm('If the report  is an infested commercial building, then this is a Health Department issue.'))
+               SaveAndServiceNotNeeded();
+           } 
+           }  
+           function rental(){
+           if((j$("[id $='rent']").val() == 'Residential') && ((j$("[id $='rent1']").val() == 'Apartment')|| (j$("[id $='rent1']").val() == 'Condo'))){
+                  
+           j$("[id $='unit']").removeAttr("disabled"); 
+             
+          } else  {
+           j$("[id $='unit']").val('');
+           j$("[id $='unit']").attr("disabled","disabled"); 
+          }
+          
+          } 
+                  
+          function Infest() {
+           if((j$("[id $='Inf']").val() == 'Fleas')||(j$("[id $='Inf']").val() == 'Rats')) { 
+            if(confirm('If the report of an infestation for rats or fleas then this is a Health Department issue.'))
+               SaveAndServiceNotNeeded(); 
+               }      
+            
+            else if(j$("[id $='Inf']").val() == 'Bedbugs'){
+           if(confirm('If the report of an infestation for bedbugs, then this is not a City responsibility.'))
+               SaveAndServiceNotNeeded();      
+               }
+         }
+         
+         function report() {
+         
+          if((j$("[id $='rep']").val() == 'Own Residence')){
+          
+             
+          if(confirm('Property owners reporting an infestation in their own residence are responsible for hiring an exterminator.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       }
+       
+       
+       function tenant() {
+        if((j$("[id $='tenant']").val() == 'Yes')){
+          
+             
+          if(confirm('Infestation is the tenant’s responsibility in a single family dwelling and the tenant should hire an exterminator to address the problem.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       }
+         /*  Commenting as per new requirements Case Number 05012710
+         function address() {
+           if(j$("[id $='hansenAddress']").val() == '' || j$("[id $='hansenAddress']").val() == Null ) {
+             
+         if( confirm('A zoning violation case can be submitted only if the exact L&I address key is validated.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       }*/
+       
+       function e9() {
+    
+           if((j$("[id $='rent']").val()=='Residential')) {
+                j$("[id *='rent1']").removeAttr("disabled");
+                j$("[id *='rent1']").css("background-color","White");
+           } 
+           else {
+               j$("[id *='rent1']").val('');
+                j$("[id *='rent1']").prop('disabled','disabled') ;  
+                j$("[id *='rent1']").css("background-color","#EDEDED");             
+           }
+       }
+                      
+      </script>
+        
+          <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Residential_or_Commerical__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Residential_or_Commerical__c.label}"  /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Residential_or_Commerical__c}" StyleClass="RemoveNone" id="rent" required="false" onchange="rental1();rental();e9()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                       <apex:inputfield value="{!Case.Unit_Number__c}" id="unit" required="false"  />
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Infestation_Type__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Infestation_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Infestation_Type__c}" StyleClass="RemoveNone" id="Inf" required="false" onchange="Infest()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tenant_in_Single_Family_Dwelling__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Tenant_in_Single_Family_Dwelling__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tenant_in_Single_Family_Dwelling__c}" StyleClass="RemoveNone" required="false" onchange="tenant()" id="tenant"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Report_Type__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Report_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Report_Type__c}" StyleClass="RemoveNone" required="false" onchange="report()" id="rep" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                
+                
+                   <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                    
+                   <apex:inputfield value="{!Case.Residential_Property_Type__c}" id="rent1" StyleClass="RemoveNone" required="false" onchange="rental()" />
+                    <!--commenting as per new requirements Case Number 05012710   
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                             <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>!-->
+                       <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"/>
+                  
+                    
+                     
+               
+                </apex:pageblocksection> 
+               
+             
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

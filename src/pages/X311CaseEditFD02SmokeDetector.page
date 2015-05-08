@@ -1,0 +1,215 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type  SMOKE DETECTOR FD 02  -->
+
+<apex:page standardcontroller="Case" id="page">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+            
+            <script type="text/javascript">
+               // onload= init();
+              
+            
+                function smoke5(data)    { 
+                if(j$('[id*=resi]').val() == "Apartment") {               
+                  
+                j$('[id*=fam]').prop('disabled', false);
+                j$('[id*=apart]').prop('disabled', false);
+                 j$("[id *='fam']").css("background-color","White");
+                }
+                else {
+                 j$('[id*=fam]').val('');
+                j$('[id*=fam]').prop('disabled', 'disabled');
+                 j$("[id *='fam']").css("background-color","#EDEDED");   
+                 j$('[id*=apart]').val('');
+                j$('[id*=apart]').prop('disabled', 'disabled');
+                } 
+                
+                if(j$('[id*=fam]').val() == '3 or More Families'){
+                
+                      j$('[id*=duhawsd]').prop('disabled', false);
+                       j$("[id *='duhawsd']").css("background-color","White");
+                }
+                else {
+                 j$('[id*=duhawsd]').val('');
+                       j$('[id*=duhawsd]').prop('disabled', 'disabled');
+                        j$("[id *='duhawsd']").css("background-color","#EDEDED");    
+                }
+               
+               }
+                
+                function smoke2() {                   
+                 if(j$('[id*=duhawsd]').val() == "Yes")  { 
+                    if(confirm('The Fire Department does not service multi-family units due to code requirements. The property owner is responsible.'))
+                    SaveAndServiceNotNeeded();
+                                           
+                      } else  if(j$('[id*=duhawsd]').val() == "No") {
+                               if( confirm('The system has changed the Case Record Type to L&I Maintenance Residential.')){
+                  
+                                          j$('[id*=caseRecordType]').val('Maintenance Residential or Commercial');
+                                          j$('[id*=SubjectForCase]').val('Maintenance Residential or Commercial');
+                                          j$('[id*=sreq]').val('');
+                                          j$('[id*=departmnt]').val('License & Inspections');
+                                          crts();
+                      
+                            }
+                      }
+                 }
+               
+                
+                function smoke3() {  
+                 if(j$('[id*=resident]').val() == 'No')  { 
+                      if(confirm('The Fire Department provides free smoke detectors only for Philadelphia residents.')) {
+                          SaveAndServiceNotNeeded();
+                      }   
+                 }
+                }
+                
+              function smoke4() {
+                   if(j$('[id*=nrt]').val() == 'No'){
+                     
+                       if(('{!$Profile.Name}' == '311 Contact Center Supervisor/Manager')|| ('{!$Profile.Name}' == '311 Contact Center Supervisors'))
+                          alert("Contact the Chief of Fire Prevention at (215) 686-1382 regarding complaints and close case.");
+                          
+                       else if(('{!$Profile.Name}' == '311 Contact Center Agents'))
+                          alert("Click on the Contact Name to retrieve the Contact Info, and open the previous case.  Review the case’s SLA and the status of the case. If within the SLA, notify the customer. If past the SLA escalate to Supervisor.");
+                      
+                 }
+              }
+              
+              
+                 
+             </script>
+             
+             <!-- Input Fields specific to Street Light Outage service request type-->
+                    <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.New_Request__c.inlineHelpText}" >
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.New_Request__c.label}" /> 
+                        <apex:outputPanel >
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.New_Request__c}" required="false" StyleClass="RemoveNone" id="nrt" onchange="smoke4()"/>
+                         </div>
+                      </apex:outputPanel>  
+                      </apex:pageblocksectionitem>  
+                      
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Access_Provided_by_Adult__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Access_Provided_by_Adult__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Access_Provided_by_Adult__c}" StyleClass="RemoveNone" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>                     
+                      
+                                            
+                   
+                      
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Residence_Type__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Residence_Type__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Residence_Type__c}" required="false" StyleClass="RemoveNone" id="resi" onchange="smoke5(this)"/>
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Disabilities_Language_Information__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Disabilities_Language_Information__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Disabilities_Language_Information__c}" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     <apex:inputfield value="{!Case.How_Many_Families__c}" StyleClass="RemoveNone" required="false" id="fam" onchange="smoke5();"/>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Installation_Time__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Installation_Time__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Installation_Time__c}" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     <apex:inputfield value="{!Case.Do_you_have_a_working_smoke_detector__c}" StyleClass="RemoveNone" required="false" id="duhawsd" onchange="smoke2()"/>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.FloorSmokeDetector__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.FloorSmokeDetector__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.FloorSmokeDetector__c}" StyleClass="RemoveNone" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Philadelphia_Resident__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Philadelphia_Resident__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Philadelphia_Resident__c}" StyleClass="RemoveNone" required="false" id="resident" onchange="smoke3()"/>
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Front_or_Back__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Front_or_Back__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Front_or_Back__c}" StyleClass="RemoveNone" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                      <apex:inputfield value="{!Case.Apartment_Building__c}" required="false" id="apart" />  
+                      
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Engine__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Engine__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Engine__c}" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>   
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Owner_Occupied_Property__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Owner_Occupied_Property__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Owner_Occupied_Property__c}"  StyleClass="RemoveNone" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                    <!-- <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Own_or_Rent__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Own_or_Rent__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Own_or_Rent__c}" required="false" id="own" onchange="smoke4()"/>
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>  -->
+                     
+                     
+                     
+                     
+                   <!--  <apex:inputField value="{!Case.Violation_Type__c}" required="false" />
+                     <apex:inputField value="{!Case.Residential_or_Commerical__c}" required="false" /> -->
+                  
+            </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

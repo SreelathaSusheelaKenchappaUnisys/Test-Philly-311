@@ -1,0 +1,202 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type
+    INLET CLEANING WD-01 -->
+
+<apex:page standardcontroller="Case" id="page">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+            
+            <script type="text/javascript">
+           
+          function Inlet1(data)    {                
+            if(data.value == 'Manhole'){    
+                if(confirm('The system has changed the Case Record Type to Manhole Cover')){ 
+              
+                                    
+                j$('[id*=caseRecordType]').val('Manhole Cover');
+                 j$('[id*=SubjectForCase]').val('Manhole Cover');
+                j$('[id*=sreq]').val('');
+                j$('[id*=departmnt]').val('Streets Department');   
+                  //rsChange();
+                 crts();   
+                                            
+                }
+               
+               }      
+                        
+            }
+            
+            function Inlet2(data)    {                
+                if(data.value == 'Yes'){    
+                if(confirm('The system has changed the Case Record Type to Street Defect.')){  
+               
+                 j$('[id*=caseRecordType]').val('Street Defect');
+                  j$('[id*=SubjectForCase]').val('Street Defect');
+                 j$('[id*=sreq]').val('');
+                 j$('[id*=departmnt]').val('Streets Department');  
+                       crts();
+               }      
+            }
+         }
+            function Inlet3(data)    {                
+                if(data.value == 'Yes'){    
+                if(confirm('The system has changed the Case Record Type to Maintenance Residential or Commercial')){
+                 
+                j$('[id*=caseRecordType]').val('Maintenance Residential or Commercial');
+                j$('[id*=SubjectForCase]').val('Maintenance Residential or Commercial'); 
+                j$('[id*=sreq]').val('');
+                j$('[id*=departmnt]').val('License & Inspections');                 
+                  crts();      
+               }      
+            }     
+         }   
+            
+           function Inlet5()    {
+               if(j$("[id$='missingCoverWater']").val() == "Yes" || j$("[id$='bad']").val() == "Yes" || j$("[id$='basement']").val() == "Yes" || j$("[id$='illegal']").val() == "Yes" || j$("[id$='Rain']").val() == "Yes" || j$("[id$='Traffic']").val() == "Yes" || j$("[id$='Flood']").val() == "Yes" )    {
+                   if(confirm('Transfer the customer to PWD Customer Service at (215) 685-6300.'))
+                       SaveAndServiceNotNeeded();
+               }
+           }
+                 
+             </script>
+             
+              <apex:actionFunction name="deptren" reRender="deptDet,pgbk"  />
+             <!-- Input Fields specific to Street Light Outage service request type-->
+                    <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Inlet_or_Manhole__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Inlet_or_Manhole__c.label}" /> 
+                        <apex:outputPanel >
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Inlet_or_Manhole__c}" StyleClass="RemoveNone" required="false" onchange="Inlet1(this)" />
+                         </div>
+                      </apex:outputPanel>  
+                      </apex:pageblocksectionitem>
+                      
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Bad_Odor__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Bad_Odor__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Bad_Odor__c}" StyleClass="RemoveNone" required="false" id="bad" onchange="Inlet5()"/>
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Pothole_Cave_In_or_Ditch__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Pothole_Cave_In_or_Ditch__c.label}" /> 
+                        <apex:outputPanel >
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Pothole_Cave_In_or_Ditch__c}" StyleClass="RemoveNone" required="false" onchange="Inlet2(this)"/>
+                         </div>
+                      </apex:outputPanel>  
+                      </apex:pageblocksectionitem>                     
+                                       
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Cover_Missing_or_Broken__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Cover_Missing_or_Broken__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Cover_Missing_or_Broken__c}" StyleClass="RemoveNone" required="false"  id="missingCoverWater" onchange="Inlet5()"/>
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Rear_of_Property__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Rear_of_Property__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Rear_of_Property__c}"  StyleClass="RemoveNone" required="false" onchange="Inlet3(this)"/>
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Water_in_Basement_or_Cellar__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Water_in_Basement_or_Cellar__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Water_in_Basement_or_Cellar__c}" StyleClass="RemoveNone" required="false" id="basement" onchange="Inlet5()" />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Hazardous_Waste__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Hazardous_Waste__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Hazardous_Waste__c}" StyleClass="RemoveNone" required="false"  />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Illegal_Dumping__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Illegal_Dumping__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Illegal_Dumping__c}" StyleClass="RemoveNone" required="false" id="illegal" onchange="Inlet5()" />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Heavy_Rain__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Heavy_Rain__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Heavy_Rain__c}" StyleClass="RemoveNone" required="false" id="Rain"   onchange="Inlet5()"  />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Intersection_or_Mid_Block__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Intersection_or_Mid_Block__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Intersection_or_Mid_Block__c}" StyleClass="RemoveNone" required="false"  id="InterMidblock"  />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Flooding__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Flooding__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Flooding__c}" StyleClass="RemoveNone" required="false" id="Flood" onchange="Inlet5()" />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Inlet_Location__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Inlet_Location__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Inlet_Location__c}" required="false"   />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Obstructing_Traffic__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Obstructing_Traffic__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Obstructing_Traffic__c}" StyleClass="RemoveNone" required="false" id="Traffic" onchange="Inlet5()" />
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                      
+                      
+            
+            </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

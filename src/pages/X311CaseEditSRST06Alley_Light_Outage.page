@@ -1,0 +1,123 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       function Alo(data) {
+           if(data.value=='Street Light') {
+               if(confirm('Service Request has been changed to Street Light Outage')){
+               j$("[id $='caseRecordType']").val('Street Light Outage');
+                 j$('[id*=SubjectForCase]').val('Street Light Outage');
+               j$('[id*=sreq]').val('');
+               j$('[id*=departmnt]').val('Streets Department');  
+               crts();
+               }        
+               
+           }
+       }
+       
+      
+       function Alo2(data) {
+           if(data.value=='New Alley' || data.value=='New Driveway' ) {
+               if(confirm('No requests are taken for new alleys or driveways lights.')){
+               SaveAndServiceNotNeeded();
+           }
+       }
+      } 
+       
+       function Alo3(data)    {
+           j$("[id $='haz'] option[value='']").remove();
+           var $y = j$("[id $='haz'] option[value='Yes']");
+           var $n = j$("[id $='haz'] option[value='No']");
+           if(data.value == 'Bulb Hanging' || data.value == 'Pole Down' || data.value == 'Wire Down' || data.value == 'Wire Sparking')    {
+              j$("[id $='haz']").val('Yes');              
+              $n.hide();
+           }
+           else {
+              j$("[id $='haz']").val('No');              
+              $y.hide();
+           }           
+       } 
+        
+       function ALL5()    {                
+            if(j$('[id*=hcato]').val() != 'Key'){   
+                j$('[id*=klop]').attr("disabled","disabled");              
+           }
+            else {
+                j$('[id*=klop]').removeAttr("disabled");              
+             }
+      } 
+      
+      
+                              
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">                
+                
+                 <apex:pageBlockSectionItem helpText="An Alley or Alleyway is a narrow, pedestrian lane which usually runs between or behind buildings.  A Street is generally intended for vehicular traffic, and has a name and designation.">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Light_Type__c.label}" /> 
+                     <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Light_Type__c}" StyleClass="RemoveNone" required="false" onchange="Alo(this)" />
+                         </div>
+                     </apex:outputPanel>  
+                 </apex:pageblocksectionitem>
+                 
+                  <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Key_location_or_passcode__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Key_location_or_passcode__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Key_location_or_passcode__c}" required="false" id="klop" /> 
+                         </div>
+                    </apex:outputPanel>  
+                 </apex:pageblocksectionitem> 
+                    
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Alley_Passable__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Alley_Passable__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Alley_Passable__c}" StyleClass="RemoveNone" id="uu" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                 </apex:pageblocksectionitem>
+                 
+                  <apex:inputfield value="{!Case.Alley_Type__c}" StyleClass="RemoveNone" required="false" onchange="Alo2(this)"/>
+                     
+                 
+                 
+                     
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.How_can_access_to_the_alley_be_obtained__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.How_can_access_to_the_alley_be_obtained__c.label}" /> 
+                     <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.How_can_access_to_the_alley_be_obtained__c}" StyleClass="RemoveNone" id="hcato" onchange="ALL5(this)"/>
+                         </div>
+                     </apex:outputPanel>  
+                 </apex:pageblocksectionitem> 
+                      
+                <apex:pageBlockSectionItem helpText="The type of problem that is causing the alley light outage.">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Problem_Type__c}" StyleClass="RemoveNone" required="false" onchange="Alo3(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                 </apex:pageblocksectionitem> 
+                        
+                
+                  <apex:pageblocksectionitem />     
+                 <apex:inputfield value="{!Case.Hazardous__c}" StyleClass="RemoveNone" required="false" id="haz"/>      
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

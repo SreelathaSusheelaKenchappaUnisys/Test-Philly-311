@@ -1,0 +1,35 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+            <script type="text/javascript">
+               
+                function salt(data)    {
+                    if(data.value == 'Icy Road Surface')
+                        j$('[id*=sreq]').val('Icy Road Surface');
+                    else if(data.value == 'Snow Removal')
+                        j$('[id*=sreq]').val('Snow Removal');
+                    else
+                        j$('[id*=sreq]').val('');     
+                }
+                
+          </script>
+            
+          <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+               
+               
+               <apex:pageBlockSectionItem helpText="What type of snow or ice problem exists?">
+                   <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type__c.label}" /> 
+                   <apex:outputPanel >
+                       <div class='requiredInput'>
+                           <div class='requiredBlock'></div>
+                           <apex:inputfield value="{!Case.Problem_Type__c}" StyleClass="RemoveNone" required="false" onchange="salt(this)" />
+                       </div>
+                   </apex:outputPanel>  
+               </apex:pageblocksectionitem>
+                    
+          </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

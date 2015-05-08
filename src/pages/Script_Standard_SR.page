@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="X311_Script_Standard_SR">
+    </flow:interview>
+</apex:page>

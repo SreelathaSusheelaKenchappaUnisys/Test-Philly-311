@@ -1,0 +1,77 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type
+     NEWSSTAND/OUTDOOR CAFE ST-15 -->
+
+<apex:page standardcontroller="Case" id="page">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+            
+            <script type="text/javascript">
+              
+              
+              function Newsstand1() { 
+
+                   if((j$("[id $='pub']").val() == 'Yes') && (j$("[id $='requiredamount']").val() == 'Yes' ||  j$('[id*=caf]').val() == 'Yes')){
+                           j$("[id $='sreq']").val('Newsstand Outdoor Cafe');
+                   }        
+                   
+                    
+                   if(j$("[id $='pub']").val() == 'No'){               
+                     if(confirm("Streets Department's Right-Of-Way Unit investigates and regulates only newsstands and outdoor cafés that are on the City's Public Right Of Way"))
+                        SaveAndServiceNotNeeded();
+                   }
+                   
+                   else if(j$('[id*=caf]').val() == 'No') {
+                        if(confirm('The café cannot have tables and chairs set up next to the curb until after 7 PM. If the tables and chairs are out after 7 PM, there is no violation.'))
+                            SaveAndServiceNotNeeded();
+                    }
+                
+                 /* commenting for Case Number 05012627 
+                  else if((j$("[id $='requiredamount']").val() == 'Yes') && (j$('[id*=caf]').val() == 'No')) {
+                      if(confirm('The City Code requires there to be a minimum of 5 ft. of clear sidewalk space in low-pedestrian activity areas and 6 ft. in high-pedestrian activity areas for sidewalks of 13 ft. across or less. If there is the required amount of clear sidewalk space, there is no violation'))
+                          SaveAndServiceNotNeeded();
+                  } */
+               }
+               
+             </script>
+             
+             <!-- Input Fields specific to Street Light Outage service request type-->
+                    <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.On_the_City_s_Public_Right_Of_Way__c.inlineHelpText}" >
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.On_the_City_s_Public_Right_Of_Way__c.label}" /> 
+                        <apex:outputPanel >
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.On_the_City_s_Public_Right_Of_Way__c}" required="false" StyleClass="RemoveNone" id="pub" onchange="Newsstand1()"/>
+                         </div>
+                      </apex:outputPanel>  
+                      </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Caf_Tables_and_Chair_Out_Before7_PM__c.inlineHelpText}" id="pgit2">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Caf_Tables_and_Chair_Out_Before7_PM__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Caf_Tables_and_Chair_Out_Before7_PM__c}" required="false" StyleClass="RemoveNone" id="caf" onchange="Newsstand1()" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Required_Amount_of_Sidewalk_Space__c.inlineHelpText}" id="pgit1">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Required_Amount_of_Sidewalk_Space__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Required_Amount_of_Sidewalk_Space__c}" required="false" StyleClass="RemoveNone" id="requiredamount" onchange="Newsstand1()" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                           
+                    
+                     
+                    
+                  
+            </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

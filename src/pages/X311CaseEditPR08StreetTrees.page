@@ -1,0 +1,284 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type  STREET TREES PR 08  -->
+
+<apex:page standardcontroller="Case" id="page">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+           
+             <!-- Functions to display error messages --> 
+            <script type="text/javascript">
+                 function Streetrees1() {
+                 
+                      if(j$("[id $='lof']").val() == 'Yes' || j$("[id $='ttpic']").val() == 'Yes' || j$("[id $='tfop']").val() == 'Yes' || j$("[id $='todwsof']").val() == 'Yes')
+                     { 
+                          if(confirm('Hot transfer the customer to 911.'))
+                               EmergencyTransfer();
+                       }
+                 } 
+                 
+                 function tree3(data) { 
+                
+                if(data.value  == 'Yes') {
+                       alert('Case is handled by Municipal Radio.');
+                       SaveAndServiceNotNeededCaseOpened();
+                     }
+                 }
+                    
+              
+                 
+             function tree4(data) { 
+                    if(data.value  =='Yes') {
+                         if(confirm('Tell caller to contact PennDOT at (717) 214-4035')){
+                           SaveAndServiceNotNeededCaseOpened();  
+                         }  
+                     }
+              }    
+                 
+                 
+                  function Streetrees5(data){
+                      if(data.value == 'Yes') {
+                            alert('Case will be dispatched by Municipal Radio.');
+                                       SaveAndServiceNotNeededCaseOpened();  
+                                       
+                       }
+                 }   
+                    
+                 function Streetrees6(data) {
+                       if(data.value=="Yes" ) {
+                           if(confirm('Sidewalk repair is the property owner’s responsibility. Change the case record type to Dangerous Sidewalk.')){
+                                   j$('[id*=departmnt]').val('Streets Department');
+                                   j$('[id*=caseRecordType]').val('Dangerous Sidewalk');
+                                  j$('[id*=SubjectForCase]').val('Dangerous Sidewalk');
+                                   j$('[id*=sreq]').val('Dangerous Sidewalk');
+                                   crts();                                                                  
+                            }                     
+                       }
+                 }   
+                 
+                 function dependencyST()    {
+                         if(j$("[id $='tiafb']").val() != 'Yes')   
+                         j$("[id $='powst']").attr("disabled","disabled"); 
+                         
+                       else 
+                          j$('[id*=powst]').removeAttr("disabled");    
+                          
+                 }
+                    
+                    function Streetrees8() { 
+                     dependencyST();
+                     var tiafb= j$("[id $='tiafb']").val();
+                     var powst= j$("[id $='powst']").val();                           
+                      if(tiafb == 'Yes'){
+                            if(powst== 'Yes'){
+                               if(confirm("Trees that are located in a alley or in a frontyard/backyard are not the City's responsibility.  It is the responsibility of the property owner, regardless of the situation."))
+                                   SaveAndServiceNotNeeded(); 
+                           }
+                           else if(powst== 'No'){
+                               if(confirm("If the tree is located in an alley or in a frontyard/backyard but do not belong to the property owner, submit a Maintenance Residential or Commercial service request.")){
+                                    j$('[id*=departmnt]').val('License & Inspections');
+                                    j$("[id $='caseRecordType']").val('Maintenance Residential or Commercial');
+                                   j$('[id*=SubjectForCase]').val('Maintenance Residential or Commercial');
+                                    j$('[id*=sreq]').val('');
+                                    crts();
+                           }
+                     } 
+                  }
+               }  
+                 
+     
+                 function Streetrees9(data) {           
+                        if(data.value=="Yes" ) {             
+                             if(confirm('If the tree is in a park or at a recreation center, submit a Parks and Rec Safety and Maintenance service request.')){
+                                  
+                                   j$('[id*=caseRecordType]').val('Parks and Rec Safety and Maintenance');
+                                  j$('[id*=SubjectForCase]').val('Parks and Rec Safety and Maintenance');
+                                   j$('[id*=sreq]').val('Parks and Rec Safety and Maintenance'); 
+                                   crts();                  
+                             }                 
+                        }
+                 }
+                     
+                 function Streetrees11(data){
+                    if(data.value == 'Other') {
+                         if(confirm('A tree may be planted, pruned, or removed ONLY if it is located between the sidewalk an curb, in the grass planting strip immediately adjacent to curb, or in the median.' )){
+                           SaveAndServiceNotNeeded();   
+                          }     
+                     }
+                 } 
+                 
+                 function e30() {
+                
+           if((j$("[id *='tiafb']").val()=='Yes')) {
+                j$("[id *='powst']").removeAttr("disabled");
+                j$("[id *='powst']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='powst']").prop('disabled','disabled') ;  
+                j$("[id *='powst']").css("background-color","#EDEDED");             
+           }
+       }
+       
+       function enable(){
+                
+                  
+                if((j$("[id $='dow']").val()=='Yes')) {
+              
+                j$("[id $='lof']").removeAttr("disabled");
+                j$("[id $='lof']").css("background-color","White");
+                j$("[id *='tfop']").removeAttr("disabled");
+                j$("[id *='tfop']").css("background-color","White");
+                 j$("[id *='todwsof']").removeAttr("disabled");
+                j$("[id *='todwsof']").css("background-color","White");
+                 j$("[id *='ttpic']").removeAttr("disabled");
+                j$("[id *='ttpic']").css("background-color","White");
+           } 
+           else {
+           
+                j$("[id *='lof']").prop('disabled','disabled') ;  
+                j$("[id *='lof']").css("background-color","#EDEDED");  
+              
+                j$("[id *='tfop']").prop('disabled','disabled') ;  
+                j$("[id *='tfop']").css("background-color","#EDEDED");  
+                j$("[id *='todwsof']").prop('disabled','disabled') ;  
+                j$("[id *='todwsof']").css("background-color","#EDEDED");  
+                j$("[id *='ttpic']").prop('disabled','disabled') ;  
+                j$("[id *='ttpic']").css("background-color","#EDEDED");             
+           }
+       }         
+        
+             </script>
+             
+             <!-- Input Fields specific to Street Trees service request type-->
+                    <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tree_Down__c.inlineHelpText}" >
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_Down__c.label}" /> 
+                        <apex:outputPanel >
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tree_Down__c}" styleClass="RemoveNone" id="dow" required="false" onchange="enable()"  />
+                         </div>
+                      </apex:outputPanel>  
+                      </apex:pageblocksectionitem> 
+                      
+                       <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Sidewalk_Repair__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Sidewalk_Repair__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Sidewalk_Repair__c}" styleClass="RemoveNone" required="false" onchange="Streetrees6(this)" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>                    
+                      
+                     <apex:inputfield value="{!Case.Loss_of_Life__c}" styleClass="RemoveNone" required="false" id="lof" onchange="Streetrees1()"/>                            
+                   
+                      
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tree_in_Alley_Frontyard_or_Backyard__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_in_Alley_Frontyard_or_Backyard__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tree_in_Alley_Frontyard_or_Backyard__c}" styleClass="RemoveNone" required="false" id="tiafb" onchange="Streetrees8();e30()" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                     
+                     
+                     <apex:inputfield value="{!Case.Tree_Trapping_People_in_Cars__c}" styleClass="RemoveNone" required="false" id="ttpic" onchange="Streetrees1()" /> 
+                     
+                     <apex:inputfield value="{!Case.Property_Owner_Street_Trees__c}" styleClass="RemoveNone" required="false" id="powst" onchange="Streetrees8()" />
+                     
+                      <apex:inputfield value="{!Case.Tree_Falling_on_People__c}" styleClass="RemoveNone" required="false" id="tfop" onchange="Streetrees1()"/> 
+                      
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Request_for_Tree_Maintenance__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Request_for_Tree_Maintenance__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Request_for_Tree_Maintenance__c}" styleClass="RemoveNone" required="false"  />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Request_for_Tree_Maintenance__c.inlineHelpText}" >
+                       <apex:outputLabel value="Tree on Downed Wire, Smoking or On Fire, or Wires on ground" /> 
+                         <apex:outputPanel >
+                     <apex:inputfield value="{!Case.Tree_on_Downed_Wire_Smoking_On_Fire__c}" styleClass="RemoveNone" required="false" id="todwsof" onchange="Streetrees1()"/> 
+                       </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                       <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tree_Inside_Park_or_at_Rec_Center__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_Inside_Park_or_at_Rec_Center__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tree_Inside_Park_or_at_Rec_Center__c}" styleClass="RemoveNone" required="false" onchange="Streetrees9(this)" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Blocked_Traffic__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Blocked_Traffic__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Blocked_Traffic__c}" styleClass="RemoveNone" required="false" id="btraff"  onchange="tree3(this)"/>
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tree_on_State_Owned_Highway__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_on_State_Owned_Highway__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tree_on_State_Owned_Highway__c}" styleClass="RemoveNone" required="false" id="tosoh" onchange="tree4(this)"/>
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tree_on_Power_Lines__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_on_Power_Lines__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tree_on_Power_Lines__c}" styleClass="RemoveNone" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tree_Location__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_Location__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tree_Location__c}" styleClass="RemoveNone" required="false" onchange="Streetrees11(this)" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Blocked_Sidewalk_or_Home_Access__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Blocked_Sidewalk_or_Home_Access__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Blocked_Sidewalk_or_Home_Access__c}" styleClass="RemoveNone" required="false" onchange="Streetrees5(this)" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.How_Many_Trees__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.How_Many_Trees__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.How_Many_Trees__c}" required="false"  />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                  
+            </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

@@ -1,0 +1,22 @@
+<apex:component Controller="FeedbackComponentController">
+	<apex:attribute name="config" type="string" required="false" description="The FB Custom Setting to use" default="Default2" assignTo="{!settingName}"/>
+<!-- 
+Copyright 2012, Xede Consulting Group, Inc.
+ -->
+	
+	<apex:includeScript value="/support/console/26.0/integration.js"/>
+     
+    <script>
+	    function openFeedback() {
+
+			currentPage = document.location.href;
+	    	if (sforce.console.isInConsole()) {
+		    	//http://stackoverflow.com/questions/6945429/javascript-how-to-remove-domain-from-location-href/6945457#6945457
+	    		currentPage = document.referrer + '#' + document.location.href.replace(/.*\/\/[^\/]*/, '');
+	    	}
+	    	
+	    	var targetUrl = "{!feedbackConfig.Post_Uri__c}?{!urlParameters}&PageURL=" + encodeURIComponent(currentPage) +"&core.apexpages.devmode.url=1";
+			window.open(targetUrl, '_blank', 'width=650, height=600, left=250');
+		}		
+    </script>
+</apex:component>

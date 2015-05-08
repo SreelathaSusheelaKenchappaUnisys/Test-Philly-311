@@ -1,0 +1,109 @@
+<apex:page showHeader="false"  >
+   
+   <!-- Philly's StyleSheet -->
+   <apex:stylesheet value="{!URLFOR($Resource.philacss, 'core.css')}" />
+   <apex:stylesheet value="{!URLFOR($Resource.philacss, 'min.css')}" />
+   <apex:stylesheet value="{!URLFOR($Resource.philacss, 'reset.css')}" />
+   <apex:stylesheet value="{!URLFOR($Resource.philacss, 'gridfixed.css')}" />
+   <apex:stylesheet value="{!URLFOR($Resource.philacss, 'typography.css')}" />
+   <apex:stylesheet value="{!URLFOR($Resource.philacss, 'navigation.css')}" /> 
+   <apex:stylesheet value="{!URLFOR($Resource.philacss, 'design.css')}" />  
+   
+   <table width="100%">
+       <tr>
+           <td>
+               <div class="footer">
+                   <div class="page">
+                       <div class="siteMapArea">
+                           <div class="localMap grid_4 alpha">
+    
+                               <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                   <tr>
+                                       <td valign="top">
+                                           <div WebPartID="00000000-0000-0000-0000-000000000000"
+                                                HasPers="true" id="WebPartWPQ1" width="100%"
+                                                class="ms-WPBody" OnlyForMePart="true" allowMinimize="false"
+                                                allowRemove="false" allowDelete="false" style="">
+    
+                                                   <!--agencyBottomNav-->
+                                                   <ul class="grid_4">
+                                                       <li class="sectionTitle">Phila.gov</li>
+                                                       <li><a href="/">Home</a></li>
+                                                       <li><a href="http://www.phila.gov/paymentpage/payment.html">Make a Payment</a></li>
+                                                       <li><a href="http://www.phila.gov/oig/">Report Fraud/Corruption</a></li>
+                                                       <li><a href="http://phillypolice.com/forms/submit-a-tip">Submit a Tip</a></li>
+                                                       <li><a href="http://potholes.phila.gov/">Report a Pothole</a></li>
+                                                   </ul>
+                                           </div>
+                                       </td>
+                                   </tr>
+                               </table>
+                           
+                           </div>
+                           
+                           <div class="domainMap grid_16 omega">
+                               <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                   <tr>
+                                       <td valign="top">
+                                           <div WebPartID="00000000-0000-0000-0000-000000000000"
+                                                HasPers="true" id="WebPartWPQ2" width="100%"
+                                                class="ms-WPBody" OnlyForMePart="true" allowMinimize="false"
+                                                allowRemove="false" allowDelete="false" style="">
+    
+                                                   <!--DomainBottomNav-->
+                                                   <ul class="grid_4 omega" xmlns:ddwrt="http://schemas.microsoft.com/WebParts/v2/DataView/runtime"
+                                                       xmlns:ddwrt2="urn:frontpage:internal">
+                                                           <li class="sectionTitle">Topics</li>
+                                                           <li><a href="http://www.phila.gov/topics/artsCulture">Arts &amp; Culture</a></li>
+                                                           <li><a href="http://www.phila.gov/topics/education">Education</a></li>
+                                                           <li><a href="http://www.phila.gov/topics/employment">Employment</a></li>
+                                                           <li><a href="http://www.phila.gov/topics/environment">Environment</a></li>
+                                                           <li><a href="http://www.phila.gov/topics/health">Health</a></li>                                                    <li><a href="http://www.phila.gov/topics/housing">Housing</a></li>
+                                                           <li><a href="http://www.phila.gov/topics/neighborhoods">Neighborhoods</a></li>
+                                                           <li><a href="http://www.phila.gov/topics/publicSafety">Public Safety</a></li>
+                                                           <li><a href="http://www.phila.gov/topics/recreation">Recreation</a></li>
+                                                           <li><a href="http://www.phila.gov/topics/transportationUtilities">Transportation &amp; Utilities</a></li>
+                                                           <li><a href="http://www.phila.gov/topics/urbanDevelopment">Urban Development</a></li>
+                                                   </ul>
+                                                   
+                                                   <ul class="grid_4 omega" xmlns:ddwrt="http://schemas.microsoft.com/WebParts/v2/DataView/runtime"
+                                                       xmlns:ddwrt2="urn:frontpage:internal">
+                                                           <li class="sectionTitle">People We Serve</li>
+                                                           <li><a href="http://www.phila.gov/business">Businesses</a></li>
+                                                           <li><a href="http://www.phila.gov/Residents">Residents</a></li>
+                                                           <li><a href="http://www.phila.gov/visitors">Visitors</a></li>
+                                                   </ul>
+                                                   <ul class="grid_4 omega" xmlns:ddwrt="http://schemas.microsoft.com/WebParts/v2/DataView/runtime"
+                                                       xmlns:ddwrt2="urn:frontpage:internal">
+                                                           <li class="sectionTitle">Government</li>
+                                                           <li><a href="http://www.phila.gov/mayor">Mayor's Office</a></li>
+                                                           <li><a href="http://www.phila.gov/cityCouncil">City Council</a></li>
+                                                           <li><a href="http://www.courts.phila.gov/">Courts</a></li>
+                                                           <li><a href="http://www.phila.gov/districtattorney/index.html">District Attorney</a></li>
+                                                           <li><a href="http://www.officeofphiladelphiasheriff.com/">Sheriff</a></li>
+                                                   </ul>
+                                                   <ul class="grid_4 omega" xmlns:ddwrt="http://schemas.microsoft.com/WebParts/v2/DataView/runtime"
+                                                       xmlns:ddwrt2="urn:frontpage:internal">
+                                                           <li class="sectionTitle">Contact</li>
+                                                           <li><a href="http://www.phila.gov/311">311</a></li>
+                                                           <li><a href="http://www.phila.gov/phoneDir/">Phone Directory</a></li>
+                                                           <li><a href="http://www.phila.gov/globalPhiladelphia/">Language Assistance</a></li>
+                                                   </ul>
+                                           </div>
+                                       </td>
+                                   </tr>
+                               </table>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </td>
+       </tr>
+   </table>
+   
+   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tr>
+           <td><apex:include pageName="brandingexample3" /></td>
+       </tr>
+   </table>
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Hydrant_Knocked_Down">
+    </flow:interview>
+</apex:page>

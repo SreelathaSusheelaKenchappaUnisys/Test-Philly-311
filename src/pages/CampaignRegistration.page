@@ -1,0 +1,63 @@
+<apex:page standardController="Lead" title="Contact Us"
+           extensions="myWeb2LeadExtension"
+            showHeader="false"
+           standardStylesheets="true">
+ <!-- <apex:composition template="{!$Site.Template}"> -->    
+  <center><h1><b>Philly311 Rising Event Response Form</b></h1></center> 
+  <apex:define name="body">
+   <apex:form >
+    <apex:messages id="error"
+                   styleClass="errorMsg"
+                   layout="table"
+                   style="margin-top:1em;"/> 
+      <apex:pageBlock title="{!lead.Campaigns__c}" id="pb" mode="edit">
+        <apex:pageBlockButtons location="" >
+           <apex:commandButton value="Submit"
+                               action="{!saveLead}"/>
+        </apex:pageBlockButtons>
+        <apex:pageBlockSection collapsible="false"
+                               columns="1" >
+         
+         
+         <apex:inputField value="{!Lead.FirstName}"/>
+         <apex:inputfield value="{!Lead.LastName}" required="true"/>
+        <!-- <apex:inputField value="{!Lead.Email}" required="true"/> -->
+         <apex:inputField value="{!Lead.Phone}"/>
+          <apex:inputField value="{!Lead.Company}" required="false"/>
+        <!-- <apex:inputField value="{!Lead.campaignName__c}" required="true" rendered="true">  
+        </apex:inputField>-->
+        
+        <apex:pageBlockSectionItem >
+            Campaign Name:<apex:selectList id="sel1" value="{!Lead.Campaign_Name__c}" size="1" >
+                                     <apex:selectOptions value="{!unselectedvalues}"/>            
+                                </apex:selectList>
+        </apex:pageBlockSectionItem>
+     <!-- <apex:pageBlockSectionItem >
+            Campaign Name: <apex:panelGrid columns="3" id="abcd">
+                                <apex:selectList id="sel1" value="{!leftselected}" size="5" multiselect="true">
+                                     <apex:selectOptions value="{!unselectedvalues}"/>            
+                                </apex:selectList>
+                                <apex:panelGroup >
+                                    <br/>
+                                    <apex:image value="{!$Resource.multiselected}">
+                                        <apex:actionSupport event="onclick" action="{!selectclick}" reRender="abcd"/>
+                                    </apex:image>
+                                    <br/><br/>
+                                    <apex:image value="{!$Resource.multiunselected}">
+                                        <apex:actionSupport event="onclick" action="{!unselectclick}" reRender="abcd"/>
+                                    </apex:image>
+                                </apex:panelGroup>    
+                                <apex:selectList id="sel2" value="{!rightselected}" multiselect="true" style="width:100px" size="5">
+                                    <apex:selectOptions value="{!SelectedValues}" />
+                                </apex:selectList>
+                            </apex:panelGrid>
+        </apex:pageBlockSectionItem>    -->
+         
+        <!-- <apex:inputField value="{!Lead.CampaignId}" required="true"/> -->
+         
+        </apex:pageBlockSection>
+     </apex:pageBlock>
+   </apex:form>
+  </apex:define> 
+ <!-- </apex:composition> -->
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page standardController="Case"  >
+    <flow:interview name="Traffic_Signal_Emergency" id="Traffic_Signal_Emergency">
+    </flow:interview>
+</apex:page>

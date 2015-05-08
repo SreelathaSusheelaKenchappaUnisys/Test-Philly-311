@@ -1,0 +1,13 @@
+<apex:page showHeader="false" standardStylesheets="false">
+
+<!-- 
+Copyright 2012, Xede Consulting Group, Inc.
+-->
+	<apex:stylesheet value="{!URLFOR($Resource.Feedback,'css/reset.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.Feedback,'css/style.css')}" />
+	<apex:stylesheet value="{!URLFOR($Resource.Feedback,'jqTransform/jqtransform.css')}" />
+	<apex:includeScript value="{!URLFOR($Resource.Feedback,'js/jquery.min.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.Feedback,'jqTransform/jquery.jqtransform.js')}" />
+
+    <apex:insert name="content" />
+</apex:page>

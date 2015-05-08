@@ -1,0 +1,260 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       function std1(data) {
+           if(data.value=='Yes') {
+               if(confirm('Make a hot transfer to 911.'))
+               SaveAndServiceNotNeededLI06();
+           }
+       }
+       function std2(data) {
+           if(data.value=='Yes') {
+               if(confirm('If a pothole is within 18” of trolley tracks or inside trolley tracks, then it is serviced by SEPTA. Call SEPTA at (215) 580-7800 or (215) 580-7853 (TDD/TYY).'))
+               j$("[id $='sreq']").val('Service Not Needed');
+               SaveAndServiceNotNeededLI06();
+           }
+       }
+             
+      function std3(data) {
+               if(data.value=='Yes') {
+                   if(confirm('If a hole is on an interstate highway (I-95, I-76, I-676), then it is filled by Pennsylvania Department of Transportation (PennDOT). Call PennDOT at 1-800-FIX-ROAD.'))
+                   j$("[id $='sreq']").val('Service Not Needed');
+                   SaveAndServiceNotNeededLI06();
+                  
+               }
+           }
+       function std4(data) {
+               if(data.value=='Yes') {
+                   if(confirm('If there is running water in the hole, then call the Water Department at 215-685-6300 (open 24 hours a day/7 days a week).'))
+                   j$("[id $='sreq']").val('Service Not Needed');
+                   SaveAndServiceNotNeededLI06();
+                  
+               }
+           }   
+        function std5(data) {
+               if(data.value !='Not Known') {
+                   if(confirm('If a utility company has recently worked at the site of the hole, then the constituent is responsible for contacting the utility company.')){
+                   j$("[id $='sreq']").val('Service Not Needed');
+                   SaveAndServiceNotNeededLI06();
+                  
+               }
+           }else if(data.value =='Not Known'){
+                  if(confirm('This is case goes to Streets - Other.')){
+                  j$('[id*=departmnt]').val('Streets Department');
+                  j$('[id*=caseRecordType]').val('Other (Streets)');
+                 j$('[id*=SubjectForCase]').val('Other (Streets)'); 
+                  j$('[id*=sreq]').val('Other (Streets)');                            
+                  crts();    
+                
+                  }
+              
+           }
+           }  
+           function std() {
+          
+          //Support ticket change - 05012636 
+          var value = j$('[id*=cisdoh]').val();
+          if(value == 'Depression')
+              j$('[id*=sreq]').val('Depression');
+          else if(value == 'Push-Up')  
+              j$('[id*=sreq]').val('Push-Up');   
+           
+           if(value =='Push-Up' || value =='Depression')   
+           {
+               j$("[id $='sha']").prop('disabled','disabled') ;
+               j$("[id $='sha']").css("background-color","#EDEDED");  
+           
+           }
+           else    {
+               j$("[id $='sha']").removeAttr("disabled");
+               j$("[id $='sha']").css("background-color","White");  
+           }    
+               
+          /* if(data.value =='Crack' || data.value =='Depression'){
+                  if(confirm('This is case goes to Streets - Other.')){
+                  j$('[id*=departmnt]').val('Streets Department');
+                  j$('[id*=caseRecordType]').val('Other (Streets)'); 
+                  j$('[id*=SubjectForCase]').val('Other (Streets)'); 
+                  j$('[id*=sreq]').val('Other (Streets)');                            
+                  crts();    
+                
+                  }
+           } */
+         }  
+           
+                  
+     /*  function ssr3(data) {
+               if(data.value=='Yes') {
+                   if(confirm('Stop signs that are not visible are not the Street Department’s responsibility. Refer to constituent to the responsible agency.'))
+                   SaveAndServiceNotNeededLI06();
+               }
+           }
+      function ssr4(data) {
+               if(data.value=='Yes') {
+                   
+                   j$("[id $='sreq']").val('Stop Sign Repair');
+               }
+           }
+
+       function stp(data) {
+           if(data.value=='No') {
+               if(confirm('Determine if this is a request for another type of service.'))
+               SaveAndServiceNotNeededLI06();
+           }
+       }*/
+       
+    function StreetDeft7(data)    {                
+                if(data.value == 'Rectangular or Square'){    
+                if(confirm('The system has changed the Service Request Type to Ditch Repair.')){
+                 
+                //j$('[id*=caseRecordType]').val('Maintenance Residential or Commercial'); 
+                j$('[id*=sreq]').val('Ditch Repair');
+                //j$('[id*=departmnt]').val('License & Inspections');                 
+                  //crts();      
+               }      
+            }     
+         }      
+          function StreetDeft8(data)    {                
+                if(data.value == 'Yes'){    
+                if(confirm('The system has changed the Service Request Type to Pothole.')){
+                 
+                //j$('[id*=caseRecordType]').val('Maintenance Residential or Commercial'); 
+                j$('[id*=sreq]').val('Pothole Repair');
+                //j$('[id*=departmnt]').val('License & Inspections');                 
+                  //crts();      
+               }      
+            }else if(data.value == 'No') {
+                    if(confirm('The system has changed the Service Request Type to Cave-In Repair.'))
+                        j$('[id*=sreq]').val('Cave-In Repair');
+            
+            }   
+         }    
+         
+        /* function StreetDeft9(data) {
+              if(data.value == 'Yes') {
+                 if( confirm('If the hole is on a private road, then fixing the hole is the responsibility of the property owner.'))
+                 SaveAndServiceNotNeededLI06();
+                      
+              }
+         } */  
+         
+         function e21() {
+    
+           if((j$("[id $='util']").val()=='Yes')) {
+                j$("[id *='utlc']").removeAttr("disabled");
+                j$("[id *='utlc']").css("background-color","White");
+                 
+           } 
+           else {
+                j$("[id *='utlc']").prop('disabled','disabled') ;  
+                j$("[id *='utlc']").css("background-color","#EDEDED");      
+                          
+           }
+       }  
+       
+       function e22() {
+    
+           if((j$("[id $='sha']").val()=='Irregular-Shaped')||(j$("[id $='sha']").val()=='Bowl-Shaped')) {
+                j$("[id *='pot']").removeAttr("disabled");
+                j$("[id *='pot']").css("background-color","White");
+                 
+           } 
+           else {
+                j$("[id *='pot']").prop('disabled','disabled') ;  
+                j$("[id *='pot']").css("background-color","#EDEDED");      
+                          
+           }
+       }               
+
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Crack_in_Street_Depression_or_a_Hole_i__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Crack_in_Street_Depression_or_a_Hole_i__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Crack_in_Street_Depression_or_a_Hole_i__c}" StyleClass="RemoveNone" id="cisdoh" required="false" onchange="std()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:inputfield value="{!Case.Utility_Company__c}" id="utlc" StyleClass="RemoveNone" required="false" onchange="std5(this)" />  
+                     
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Gas_Escaping_from_the_Hole__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Gas_Escaping_from_the_Hole__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Gas_Escaping_from_the_Hole__c}" StyleClass="RemoveNone" required="false" onchange="std1(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Parking_or_Driving_Lane__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Parking_or_Driving_Lane__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Parking_or_Driving_Lane__c}" StyleClass="RemoveNone" required="false"  />
+                         </div>
+                    </apex:outputPanel>  
+                     
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Running_Water__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Running_Water__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Running_Water__c}" StyleClass="RemoveNone" required="false" onchange="std4(this)"   />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Shape__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Shape__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Shape__c}" StyleClass="RemoveNone" id="sha" required="false" onchange="StreetDeft7(this);e22()" />
+                         </div>
+                    </apex:outputPanel>  
+                     
+                     </apex:pageblocksectionitem>
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.On_State_Highway__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.On_State_Highway__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.On_State_Highway__c}" StyleClass="RemoveNone" required="false" onchange="std3(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+           
+                     
+                      <apex:inputfield value="{!Case.Pothole__c}" StyleClass="RemoveNone" required="false" id="pot" onchange="StreetDeft8(this)" /> 
+                 
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Has_a_Utility_Company_Worked_at_Location__c.inlineHelpText}">
+                     <apex:outputLabel value="Has a Utility Company been recently working at the location" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Has_a_Utility_Company_Worked_at_Location__c}" id="util" StyleClass="RemoveNone" required="false" onchange="e21()"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                    
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

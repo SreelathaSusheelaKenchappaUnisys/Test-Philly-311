@@ -1,0 +1,33 @@
+<apex:component >
+	<apex:stylesheet value="{!URLFOR($Resource.GISAssets,'visualforceBootstrap/css/bootstrap.css')}" />
+	<style>
+		#force .modal {
+			width:250px;
+		}
+	</style>	
+	<div class="action-status" style="display:none" id="force"> 
+	    <div class="modal"  style="display:none:">
+	   
+	    	<div class="modal-body">
+	    		<img class="waiting-image" src="/img/loading.gif" title="Please wait..." />
+	    		<span class="status-description">Please wait...</span>
+	    	</div>
+	
+	    </div>
+	</div>
+	
+	<script>
+		function actionStatusOn(message) {
+			if (message)
+				$$('.status-description').html(message);
+			else
+				$$('.status-description').html('Please wait...');
+		
+			$$('.action-status').css('display','inline');
+        }
+         	
+        function actionStatusOff(){
+			$$('.action-status').css('display','none');
+        }
+	</script>
+</apex:component>

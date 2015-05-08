@@ -1,0 +1,259 @@
+<apex:page standardcontroller="Case" >
+        <apex:composition template="X311CaseEdit">
+                <apex:define name="typeSpecific">
+        
+                   <!--    Functions to display error message    -->
+                    <script type="text/javascript">
+                        onload= init();
+        
+                         function cstf5(data) {
+                            if(data.value == 'No')  {
+                            if(confirm('The system has changed the Case Record Type Building Dangerous.')){
+                             
+                             j$("[id $='caseRecordType']").val('Building Dangerous'); 
+                             j$('[id*=SubjectForCase]').val('Building Dangerous'); 
+                             rsChange();
+                            }     
+                         }
+                        } 
+                         function cstf1(data,crt,sta) {
+                            if(data.value == 'No'){
+                               if(confirm('The system has changed the Case Record Type Building Dangerous')){
+                               document.getElementById(crt).value = 'Building Dangerous';
+                               document.getElementById(sta).value = 'Closed'; 
+                               rsChange();
+                              }
+                            }
+                         }
+                         
+                         function cstfbc() {
+                             if((j$("[id $='vp']").val()== 'No') && (j$("[id $='vlp']").val()== 'No') && (j$("[id $='tps']").val()== 'No') && (j$("[id $='cddcm']").val()== 'No' ) && (j$("[id $='swbwp']").val()== 'No' ) && (j$("[id $='wpbahw']").val()== 'No' ) && (j$("[id $='pvd']").val()== 'No' ) && (j$("[id $='doc']").val()== 'Construction' ) ) {
+                                    if(confirm('The system has changed the Case Record Type Building Construction.')){
+                                   j$("[id $='caseRecordType']").val('Building Construction');
+                                   j$('[id*=SubjectForCase]').val('Building Construction'); 
+                                   rsChange();
+                             }
+                         }
+                     }
+                         function cstf2(data){
+                            if(data.value == 'Yes')  {
+                            if(confirm('The system has changed the Case Record Type Building Construction.')){
+                             j$("[id $='caseRecordType']").val('Building Construction');
+                             j$('[id*=SubjectForCase]').val('Building Construction');  
+                             rsChange();
+                             
+                             }
+                            }                            
+                                                                           
+                            else if(data.value == 'No')
+                                       j$("[id $='caseRecordType']").val('Construction Site Task Force');           
+                              
+                         }
+                          
+                          function cstf3(data,crt,sta){
+                            if(data.value == 'Yes')  {  
+                               
+                               if(confirm('for demolition that occurred more than a year ago, refer the report to Risk Management at 215-683-1713.'))
+                               SaveAndServiceNotNeededLI06();
+                            }
+                         }
+                          function cstf4(data) {
+                            if(data.value == 'Yes')  {  
+                                if(confirm('Hot transfer the customer to 911.'))
+                                SaveAndServiceNotNeededLI06();
+                           }  
+                          } 
+                          
+           /*  Commenting as per new requirements Case Number 05012710                
+            function address() {
+           if(j$("[id $='hansenAddress']").val() == '' || j$("[id $='hansenAddress']").val() == Null ) {
+             
+         if( confirm('A zoning violation case can be submitted only if the exact L&I address key is validated.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       }*/
+       
+        function e16(){
+        
+         if((j$("[id $='doc']").val()=='Demolition')||(j$("[id $='doc']").val()=='Both')) {
+                j$("[id *='ds']").removeAttr("disabled");
+                j$("[id *='ds']").css("background-color","White");
+                j$("[id *='pd']").removeAttr("disabled");
+                j$("[id *='pd']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='ds']").prop('disabled','disabled') ;  
+                j$("[id *='ds']").css("background-color","#EDEDED"); 
+                 j$("[id *='pd']").prop('disabled','disabled') ;  
+                j$("[id *='pd']").css("background-color","#EDEDED");             
+           }
+       }
+  
+                              
+                    </script>
+        
+                <!--    Service Request Information section    -->
+                <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" id="sri" columns="2">                
+                     
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Building_Collapsing__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Building_Collapsing__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Building_Collapsing__c}" StyleClass="RemoveNone" required="false" onchange="cstf4(this)"/>
+                                    </div>
+                                           
+                                 </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                         
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Permit_Visible_And_Or_Displayed__c.inlineHelpText}">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.Permit_Visible_And_Or_Displayed__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Permit_Visible_And_Or_Displayed__c}" StyleClass="RemoveNone" required="false" id="pvd" onchange="cstfbc()" />
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                             
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Building_Under_Construction_or_Demolitio__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Building_Under_Construction_or_Demolitio__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Building_Under_Construction_or_Demolitio__c}" StyleClass="RemoveNone" required="false" onchange="cstf5(this)" />
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                         
+                         <apex:pageBlockSectionItem helpText="What type of work is being done?">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.Type_of_Work_Being_Done__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Type_of_Work_Being_Done__c}" StyleClass="RemoveNone" required="false" />
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                             
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Vallid_Permit__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Vallid_Permit__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Vallid_Permit__c}" StyleClass="RemoveNone" required="false" id="vp" onchange="cstfbc()"/>
+                                    </div>
+                                 </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                         
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Contractor_Company_Name__c.inlineHelpText}">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.Contractor_Company_Name__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Contractor_Company_Name__c}" required="false" />
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                            
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Unlicensed_Contractors_Performing_Work__c.inlineHelpText}">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.Unlicensed_Contractors_Performing_Work__c.label}" /> 
+                            <apex:outputPanel >
+                                <div class='requiredInput'>
+                                    <div class='requiredBlock'></div>
+                                       <apex:inputfield value="{!Case.Unlicensed_Contractors_Performing_Work__c}" StyleClass="RemoveNone" required="false" id="vlp" onchange="cstfbc()" />
+                                 </div>
+                            </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                         
+                         
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Demolition_or_Construction__c.inlineHelpText}">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.Demolition_or_Construction__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Demolition_or_Construction__c}" StyleClass="RemoveNone" required="false" id="doc" onchange="cstfbc();e16()" />
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                           
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Threatening_Public_Safety__c.inlineHelpText}">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.Threatening_Public_Safety__c.label}" /> 
+                              <apex:outputPanel >
+                                 <div class='requiredInput'>
+                                    <div class='requiredBlock'></div>
+                                       <apex:inputfield value="{!Case.Threatening_Public_Safety__c}" StyleClass="RemoveNone" required="false" id="tps" onchange="cstfbc()" />
+                                 </div>
+                              </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                         
+                      <!--  <apex:inputfield value="{!Case.Demolition_Occurred_More_Than_Year_Ago__c}" StyleClass="RemoveNone" required="false" onchange="cstf3(this,'{!$Component.myForm.pgBlock.deptDetails.crt}','{!$Component.myForm.pgBlock.caseinfo.sta}')"/>  -->
+                         <apex:inputfield value="{!Case.Private_Demolition__c}"  StyleClass="RemoveNone" required="false" id="pd" onchange="cstf2(this)" />
+                         
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Construction_or_Demolition_Debris_Causin__c.inlineHelpText}">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.Construction_or_Demolition_Debris_Causin__c.label}" /> 
+                               <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Construction_or_Demolition_Debris_Causin__c}" StyleClass="RemoveNone" required="false" id="cddcm" onchange="cstfbc()" />
+                                    </div>
+                               </apex:outputPanel>  
+                         </apex:pageblocksectionitem>               
+                         
+                         <apex:inputfield value="{!Case.Demolition_State__c}" StyleClass="RemoveNone" id="ds" required="false"/>
+                    
+                            
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Sidewalk_Blocked_Without_Permission__c.inlineHelpText}">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.Sidewalk_Blocked_Without_Permission__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Sidewalk_Blocked_Without_Permission__c}" StyleClass="RemoveNone" required="false" id="swbwp" onchange="cstfbc()"/>
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                         
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict"/>
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem> 
+                         
+                        <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Work_Performed_Before_After_Hours_Withou__c.inlineHelpText}">
+                            <apex:outputLabel value="{!$ObjectType.Case.Fields.Work_Performed_Before_After_Hours_Withou__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Work_Performed_Before_After_Hours_Withou__c}" StyleClass="RemoveNone" required="false" id="wpbahw" onchange="cstfbc()" />
+                                    </div>
+                                </apex:outputPanel>  
+                        </apex:pageblocksectionitem>
+                        
+                        
+                          <!--commenting as per new requirements Case Number 05012710   
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                             <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>!-->
+                       <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"/>
+                       
+                            
+                        <!-- <apex:actionFunction name="cc" action="{!CloseCase}" /> -->
+                         <!-- <apex:actionFunction name="SaveAndServiceNotNeeded" action="{!SaveAndServiceNotNeededLI06}"/>     -->
+                       <!--  <apex:actionSupport event="onchange" rerender="pgInfo1" status="status"/>  -->
+                
+                 </apex:pageblocksection>     
+                
+                 </apex:define>
+        </apex:composition>
+</apex:page>

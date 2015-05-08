@@ -1,0 +1,467 @@
+<apex:page standardcontroller="Case" sidebar="true" extensions="X311CaseEditClrExt">
+    
+     <c:gisConnector recordType="{!Case.RecordTypeId}"/>
+<!--    <apex:pageMessages id="msg"/> -->
+    
+    <apex:includeScript value="/support/console/26.0/integration.js"/>   
+    <script type="text/javascript">
+        var j$=jQuery.noConflict();
+        
+      <!-- A javascript function used for preventing the user getting back to previous screen on the hit of backspace key -->
+        j$(function() {
+            //Set the current tabs title
+            sforce.console.setTabTitle('{!Case.CaseNumber}'=='' ? 'New Case' : '{!Case.CaseNumber}');
+            j$('[id*=powerBlock]').prop('disabled', 'disabled');
+                if(j$('[id*=plate]').val() != 'None')  {
+                    if(j$('[id*=plate]').val() != 'none')  {
+                        j$('[id*=lic]').prop('disabled', 'disabled');
+                    }  
+                }      
+            
+            
+            j$(document).keydown(function(e) {
+                var element = e.target.nodeName;
+                if (element != 'INPUT' && element != 'TEXTAREA') {
+                    if (e.keyCode === 8) {
+                        return false;
+                    }
+                }
+            });            
+            
+      <!-- A javascript function to close the tab when user cancels -->
+            j$("input[value=Cancel]").click(function(event) {
+                sforce.console.getEnclosingTabId(function(result) {
+                    var tabId = result.id;
+                    sforce.console.closeTab(tabId);
+                    event.preventDefault();
+                    event.stopPropagation();                    
+                });
+            });
+            setTimeout(X311CaseEdit.loadScript, 1000);
+        });
+
+      <!-- Functions for flip functionality on record type change -->
+          var PartnerMisc= function(){
+            var rsOnChange = function(el){
+                if (j$(el).val()!="") {
+                    rsChange(); 
+                }
+            };          
+            var srtOnChange = function(el){
+                if (j$(el).val()!="") {
+                    srtChange();    
+                }
+            };            
+      <!-- Function for implementing Save and Close button -->
+             var SaveAndServiceNotNeeded = function(el){              
+                if (j$(el).val()!="") {      
+                    SaveAndServiceNotNeeded();    
+                }
+            };
+        var SaveAndCaseCreatedinNovo=function() {             
+                SaveAndCaseCreatedinNovo(); 
+               } ;
+            
+             var addAcc=function() {             
+                addAcc(); 
+               }; 
+      
+      <!-- Function for auto population of zip code based on contact selected -->     
+           var contactOnChange=function() {
+                contactChange();
+           }
+           var contactOnComplete=function() {             
+            j$("input[id$=customerZip]").focus(); 
+           }
+            
+      <!-- Function for changing the script dynamically based on case record type selected -->     
+           var loadScript = function(el){
+                if ("{!ScriptName}"!="") {
+                    var patt1 = /\/apex\/[^\?]+/i;
+    
+                    for(var i=0; i<parent.frames.length; i++) {
+                        try {
+                            if (patt1.test(parent.frames[i].location.href) && parent.frames[i]!=window) {
+                                parent.frames[i].location.href=parent.frames[i].location.href.replace(patt1,"/apex/{!ScriptName}");
+                            }
+                        } catch(e) {
+                            console.log("e=", e);
+                        }
+                    }
+                }
+            };
+            
+            return {rsOnChange:rsOnChange, 
+                    srtOnChange:srtOnChange, 
+                    SaveAndServiceNotNeeded:SaveAndServiceNotNeeded,
+                    loadScript:loadScript,
+                    SaveAndCaseCreatedinNovo:SaveAndCaseCreatedinNovo,
+                    addAcc:addAcc, 
+                    contactOnChange:contactOnChange,
+                    contactOnComplete:contactOnComplete};
+        }();
+        
+        function rubbish1(data){
+        if((data.value == 'Other')){                 
+              if(confirm('Refuse containers should be set out on the sidewalk adjacent to the curb or adjacent to the driveway where there is driveway collection..'))
+               SaveAndServiceNotNeeded();
+           }
+        }
+         
+         function rubbish2(data)    {
+               if((data.value == 'No'))
+                 if(confirm('From October 1 through March 31, trash and recycling should be set out between 5:00 PM the night before collection day and 7:00 AM the day of collection. Set-out times from April 1 to September 30 will return to 7:00 PM the night before and by 7:00 AM the day of collection.'))
+                 SaveAndServiceNotNeeded();
+         }  
+                  
+         function rubbish3(data)    {
+            if((data.value == 'Yes')) 
+                 if(confirm('Single-family household is allowed a maximum of four (4) 32 gallon containers or eight (8) 30 – 32 gallon bags of trash each week. All other premises are allowed a maximum of six (6) 32 gallon containers or twelve (12) 30 - 32 gallon bags.'))  
+                 SaveAndServiceNotNeeded();
+         }
+                 
+         function rubbish4(data)    {                
+            if(data.value == 'Yes'){
+                if(confirm('The weight limit for a bag or can is 40 lbs. The total weight should not exceed 240 lbs.'))
+                SaveAndServiceNotNeeded();
+            }                                
+         } 
+         
+         function rubbish5(data)    {                
+            if(data.value == 'Yes'){
+                if(confirm('Rubbish cannot contain construction debris, house/apartment clean out, bulk items, bricks etc'))
+                 SaveAndServiceNotNeeded(); 
+            }                                
+         } 
+         
+         function rubbish6(data)    {                
+            if(data.value == 'No'){
+               if(confirm('All containers must have a tight fitting lid or be secured in such a way as to prevent refuse from being carried away by the elements. Set out may be in metal or other non-corrodible cans, no larger than 32 gallons, or in substantial, leak-proof bags, no smaller than 30 gallons and no larger than 32 gallons..')) 
+                SaveAndServiceNotNeeded(); 
+            }                                
+         } 
+         
+         function rubbish7(data)    {                
+            if(data.value == 'Yes'){
+               if(confirm('Create a Streets Other – Wastebasket Service Request in Novo.')){
+               SaveAndCaseCreatedinNovo();
+               }               
+            }                                
+         } 
+         
+         function rubbish8(data)    {                
+            if(data.value != 'None' && data.value !='') {        
+               if(confirm('Handling and disposing of hazardous waste materials requires a special set of regulations due to the potential damage they can cause to people, pets and the environment. Residents can bring their hazardous waste to Household Hazardous Waste Events.  All events are open from 9am to 3pm.  Refer to http://www.philadelphiastreets.com/events/household-hazardous-waste-events for a list of currently scheduled events')) 
+         SaveAndServiceNotNeeded();
+         }
+                                         
+         }  
+         
+         function rubbish9(data)    {                
+            if(data.value == 'Rubbish' || data.value == 'Both')
+               j$("[id $='sreq']").val('Rubbish Collection');
+            else if(data.value == 'Recycling')
+               j$("[id $='sreq']").val('Recyclables Collection');                             
+         }
+         
+         function rubbish10(data)    {
+            var d = new Date();
+            var weekday=new Array(7);
+            weekday[0]="SUN";
+            weekday[1]="MON";
+            weekday[2]="TUE";
+            weekday[3]="WED";
+            weekday[4]="THU";
+            weekday[5]="FRI";
+            weekday[6]="SAT";
+            var day = weekday[d.getDay()];
+           
+            if(data.value == day && d.getHours() >=19) {
+                if(confirm('Advise caller to wait until after 7:00pm to report missed pickup')) 
+                     SaveAndServiceNotNeeded();
+            }
+         }
+         
+        <!-- For contact look up functionality -->
+        
+        function openLookup(baseURL, width, modified, searchParam) {
+            var originalbaseURL = baseURL;
+            var originalwidth = width;
+            var originalmodified = modified;
+            var originalsearchParam = searchParam;
+            
+            var lookupType = baseURL.substr(baseURL.length-3, 3);
+            if (modified == '1') baseURL = baseURL + searchParam;
+            
+            var isCustomLookup = false;
+            
+            // Following "003" is the lookup type for Contact object
+            if (lookupType == "003") {
+                var urlArr = baseURL.split("&");
+                var txtId = '';
+                if (urlArr.length > 2) {
+                   urlArr = urlArr[1].split('=');
+                   txtId = urlArr[1];
+                }
+                
+               // Following is the url of Custom Lookup page.
+                if(('{!$Profile.Name}' == 'City Department Heads') || ('{!$Profile.Name}' == 'Partner User') ||('{!$Profile.Name}' == 'Department WOM (Field Worker) User')||('{!$Profile.Name}' == 'City Council')||('{!$Profile.Name}' == 'State Reps')||('{!$Profile.Name}' == 'Various Civic City Groups, Kensignton CDC, Northern Liberties CDC')||('{!$Profile.Name}' == 'City Department Heads'))
+                    baseURL = "/internal/CustomAccountLookup?txt=" + txtId;
+                    
+                else
+                    baseURL = "/liaisons/CustomAccountLookup?txt=" + txtId;
+                
+                // Following is the id of apex:form control "myForm". 
+                baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+                if (modified == '1') {
+                   baseURL = baseURL + "&lksearch=" + searchParam;
+                }
+                
+                 // Following is the ID of inputField that is the lookup to be customized as custom lookup
+                 if(txtId.indexOf('Account') > -1 ){
+                   isCustomLookup = true;
+                }
+            }
+            
+            
+            if(isCustomLookup == true){
+                openPopup(baseURL, "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=yes", true);
+            }
+            else {
+                if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+                    openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=yes", true);
+            } 
+        }
+        
+     <!-- End of contact look up functionality -->  
+        </script>
+        
+    <apex:sectionheader title="{!$ObjectType.Case.label} Edit" subtitle="{!IF(ISNULL(Case.casenumber), 'New Case',Case.casenumber)}"/>
+
+        <apex:form id="mainForm">
+        
+        <!-- Fields that are hidden and auto populated -->
+        <apex:inputHidden value="{!Case.Centerline__Latitude__s}" id="clLatitude"/>
+        <apex:inputHidden value="{!Case.Centerline__Longitude__s}" id="clLongitude"/>
+        <apex:inputHidden value="{!Case.Centerline_Match_Type__c}" id="clMatchType"/>
+        <apex:inputHidden value="{!Case.Centerline_2272x__c}" id="cl2272x"/>
+        <apex:inputHidden value="{!Case.Centerline_2272y__c}" id="cl2272y"/>
+        <apex:inputHidden value="{!Case.Feature_Data__c}" id="featureData"/>        
+        <apex:inputHidden value="{!Case.PhillyRising__c}" id="SA_PHILLYRISING"/>
+        <apex:inputHidden value="{!Case.RecordTypeId}" id="recordtype" />
+        <apex:inputHidden value="{!Case.Sanitation_District__c}" id="SA_STREETS_Sanitation_Districts"/>
+        <apex:inputHidden value="{!Case.ZipCode__c}" id="SA_STREETS_ZipCode"/>  
+
+        <apex:actionFunction name="rsChange" action="{!rsChange}"  />
+            <apex:actionFunction name="srtChange" action="{!srtChange}"  />
+            <apex:actionFunction name="addAcc" action="{!addAcc}"  /> 
+            <apex:actionFunction name="contactChange" action="{!contactChange}" rerender="caseInformation" oncomplete="PartnerMisc.contactOnComplete();" />
+            <apex:actionFunction name="saveAndClose" action="{!SaveAndClose}"  />
+            <apex:actionFunction name="SaveAndServiceNotNeeded" action="{!SaveAndServiceNotNeeded}"  />
+             <apex:actionFunction name="SaveAndCaseCreatedinNovo" action="{!SaveAndCaseCreatedinNovo}"  />
+            <apex:pageblock mode="edit" title="{!$ObjectType.Case.label} Edit">
+                <apex:pageblockbuttons >
+                    <apex:commandbutton value="Save" action="{!CustomSave}">
+                          <apex:actionSupport event="onclick"  rerender="msg"/>
+                     </apex:commandbutton>                         
+                     <apex:commandbutton value="Cancel" action="{!Cancel}"/>
+                </apex:pageblockbuttons>
+
+            <apex:outputpanel >
+                <apex:pageblocksection title="Department Details" showheader="true" columns="1">
+                    <apex:outputfield value="{!Case.Type}" />                    
+                    <apex:outputfield value="{!Case.Department__c}" />
+                    <apex:outputfield value="{!Case.Case_Record_Type__c}" id="caseRecordType" />
+                    <apex:selectList value="{!Case.Service_Request_Type__c}" id="sreq" size="1">
+                         <apex:selectOptions value="{!RubbishRecyclableServiceReq}"/> 
+                    </apex:selectList>                        
+                </apex:pageblocksection>
+
+               <apex:outputPanel id="caseInformation"> 
+
+                     <apex:pageblocksection title="Case Information" showheader="true" columns="2">
+                        <apex:outputfield value="{!Case.OwnerId}"/>                    
+                        <apex:outputfield value="{!Case.CaseNumber}"/>                   
+                        <apex:inputfield value="{!Case.ContactId}" required="false" id="Account" onchange="PartnerMisc.contactOnChange();"/>
+                        <apex:inputfield value="{!Case.Zip_code__c}" id="customerZip"/>                    
+                        <apex:inputfield value="{!Case.AccountId}" required="false" onchange="addAcc();"/> 
+                        <apex:inputfield value="{!Case.ParentId}" required="false" id="parentId" />
+                        <apex:inputfield value="{!Case.Status}" required="true" />
+                        <apex:selectList value="{!Case.Origin}" size="1"  required="true" >
+                         <apex:selectOptions value="{!Origin}"/> 
+                         </apex:selectList>
+                        <apex:inputfield value="{!Case.Reason}"  rendered="false"/>
+          
+                        <apex:pageblocksectionitem />
+                     </apex:pageblocksection>
+               </apex:outputPanel>
+                         
+               <apex:pageblocksection title="Service Request Location" showheader="true" collapsible="true" columns="2">
+                    <apex:pageblocksectionitem >   
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Street__c.label}" />
+                          <apex:outputPanel >
+                             <div class='requiredInput'>
+                                 <div class='requiredBlock'></div>
+                                    <apex:inputfield value="{!Case.Street__c}"  id="street"/>
+                             </div>
+                         </apex:outputPanel>
+                    </apex:pageblocksectionitem>     
+               </apex:pageblocksection>
+                    
+                <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2" rendered="true">
+                
+                        <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Type_of_Rubbish_Missed__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Type_of_Rubbish_Missed__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Type_of_Rubbish_Missed__c}" required="false" onchange="rubbish9(this)"/>
+                                    </div>
+                             </apex:outputPanel>  
+                          </apex:pageblocksectionitem>   
+                             
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Construction_Bulk_Items__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Construction_Bulk_Items__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Construction_Bulk_Items__c}" required="false" onchange="rubbish5(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem> 
+                             
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Single_Address_or_Whole_Block__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Single_Address_or_Whole_Block__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Single_Address_or_Whole_Block__c}" required="false"/>
+                                    </div>
+                              </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                             
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_Trash_in_a_Wastebasket__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_Trash_in_a_Wastebasket__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Is_Trash_in_a_Wastebasket__c}" required="false" onchange="rubbish7(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                             
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Set_Out_in_Time__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Set_Out_in_Time__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Set_Out_in_Time__c}" required="false" onchange="rubbish2(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                          </apex:pageblocksectionitem>   
+                                                    
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Are_Materials_Hazardous__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Are_Materials_Hazardous__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Are_Materials_Hazardous__c}" required="false" onchange="rubbish8(this)"/>
+                                     </div>
+                                </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                           
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Where_Was_Trash_Set_Out__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Where_Was_Trash_Set_Out__c.label}"  /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Where_Was_Trash_Set_Out__c}" required="false" onchange="rubbish1(this)"/>
+                                    </div>
+                              </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                                                       
+                           <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Proper_Recycling_Container__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Proper_Recycling_Container__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>  
+                                      <apex:inputfield value="{!Case.Proper_Recycling_Container__c}" required="false" onchange="rubbish6(this)"/>
+                                   </div>
+                                </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                           
+                             
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Not_More_than_Maximum_Number_of_Receptac__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Not_More_than_Maximum_Number_of_Receptac__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Not_More_than_Maximum_Number_of_Receptac__c}" required="false" onchange="rubbish3(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                             
+                          <apex:inputfield value="{!Case.Pickup_Day__c}" required="false" id="SA_STREETS_Rubbish" onchange="rubbish10(this)" />
+                             
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Not_More_than_Maximum_Weight__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Not_More_than_Maximum_Weight__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Not_More_than_Maximum_Weight__c}" required="false" onchange="rubbish4(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                               
+                          <apex:inputfield value="{!Case.Sanitation_District__c}" required="false" id="SA_STREETS_Sanitation_Districts" />
+                </apex:pageblocksection>
+                
+                <apex:pageblocksection title="Description Information" showheader="true" columns="2">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Case.Fields.Subject.label}" />
+                        <apex:outputPanel >
+                            
+                                <apex:inputfield value="{!Case.Subject}" style="height:15px ; width:300px" />
+                            
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                
+                    <apex:pageblocksectionitem />
+                    
+                    <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="Comments" />
+                    <!--    <apex:outputLabel value="{!$ObjectType.Case.Fields.Description.label}" /> !-->
+                        <apex:outputPanel >
+                             
+                                <apex:inputfield value="{!Case.Description}" style="height:50px ; width:400px" />
+                           
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                
+                   <apex:pageblocksectionitem />
+
+                   <!--- Changes for fixing Internal Comments fields Visibility in communities(Case #05005672) Start -->
+                      <apex:pageBlockSectionItem >
+                  <apex:outputLabel >Internal Comments</apex:outputLabel>                    
+                 <apex:inputTextArea id="caseInternalComments" value="{!Comment}" cols="75" rows="6" />
+                 </apex:pageBlockSectionItem> 
+                  <!--- Changes for fixing Internal Comments fields Visibility in communities(Case #05005672) End -->
+
+ 
+                </apex:pageblocksection>
+                
+             <!--   <apex:pageBlockSection id="pgBlockSectionAdditional" title="Additional Information" collapsible="false" columns="1" rendered="false">
+                     <apex:inputHidden value="{!Case.PhillyRising__c}" id="SA_PHILLYRISING"/>
+                     <apex:inputHidden value="{!Case.Police_District__c}" id="SA_POLICE_District"/>
+                     <apex:inputHidden value="{!Case.Center_City_District__c}" id="SA_PWD_CenterCityDistrict"/>
+                     <apex:inputHidden value="{!Case.Sanitation_District__c}" id="SA_STREETS_Sanitation_Districts"/>
+                     <apex:inputHidden value="{!Case.ZipCode__c}" id="SA_STREETS_ZipCode"/>  
+                     <apex:inputHidden value="{!Case.Pickup_Day__c}" id="SA_STREETS_Rubbish"/> 
+                </apex:pageBlockSection>   -->
+                
+                <apex:pageBlockSection id="pgBlockSectionOptional" title="Optional" collapsible="false" columns="1">
+                    <apex:inputCheckBox value="{!sendEmailNotification}" label="Send Email Notification" />
+                </apex:pageBlockSection>
+                
+                </apex:outputpanel>
+       </apex:pageblock>
+        </apex:form>   
+</apex:page>

@@ -1,0 +1,8 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+         
+        </apex:define>
+    </apex:composition>
+</apex:page>

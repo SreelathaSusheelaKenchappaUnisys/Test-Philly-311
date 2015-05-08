@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Dead_Animal_in_Street">
+    </flow:interview>
+</apex:page>

@@ -1,0 +1,53 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+      
+       function stp() {
+           if(j$("[id $='ResurfacingRequest']").val()=='No' && j$("[id $='ResurfacingDefect']").val() == 'No') {
+               if(confirm('Determine if this is a request for another type of service.')){
+               SaveAndServiceNotNeededLI06();
+           }
+       }
+       
+       }
+                         
+
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Resurfacing_Defect__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Resurfacing_Defect__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Resurfacing_Defect__c}" StyleClass="RemoveNone" required="false" id="ResurfacingDefect" onchange="stp()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Resurfacing_Request__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Resurfacing_Request__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Resurfacing_Request__c}" StyleClass="RemoveNone" required="false" id="ResurfacingRequest" onchange="stp()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                  
+                    
+           
+                                       
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

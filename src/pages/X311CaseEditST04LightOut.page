@@ -1,0 +1,167 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type
+     STREET LIGHT OUTAGE ST-04 -->
+
+<apex:page standardcontroller="Case" id="page">
+   <apex:composition template="X311CaseEdit">
+       <apex:define name="typeSpecific">
+            
+           <script type="text/javascript">
+
+               // Functions to display error messages
+               function StreetLight1(data)    {
+                   if(data.value == 'Yes'){
+                       if(confirm('Service Request has been changed to Traffic Signal Emergency Case.')){
+                          j$('[id*=caseRecordType]').val('Traffic Signal Emergency');
+                 j$('[id*=SubjectForCase]').val('Traffic Signal Emergency');
+                           crts();  
+                   }     
+               }
+             }  
+               function StreetLight3(data) {  
+                   if(data.value == 'Yes')    {
+                       if(confirm('Service Request has been changed to an Alley Light Outage.'))
+                           {
+                          j$('[id*=caseRecordType]').val('Alley Light Outage');
+                 j$('[id*=SubjectForCase]').val('Alley Light Outage');
+                           crts();  
+                   }     
+                   }                                 
+               } 
+               
+               function StreetLight5(data) { 
+                   if(data.value == 'Yes') {   
+                       if(confirm('Refer to BRT to obtain ownership and give information to caller.  Inform caller that the light is the owner’s responsibility'))
+                           SaveAndServiceNotNeeded(); 
+                   }
+               }
+               
+            /*   function StreetLight7(data) { 
+                   if(data.value == 'Yes') {
+                       if(confirm('Refer caller to Public Property.'))
+                           SaveAndServiceNotNeeded(); 
+                   }
+               } */
+               
+               function StreetLight2(data) {                
+                   if(data.value == 'Yes')    {   
+                       if(confirm('Inform the caller that the light is the responsibility of the property owner.')){
+                           SaveAndServiceNotNeeded();
+                       } 
+                   }
+               }
+                
+               function StreetLight4(data) { 
+                   if(data.value == 'Yes')    {
+                       if(confirm('Service Request has been changed to Parks Safety and Maintenance')){
+                           j$("[id $='caseRecordType']").val('Parks and Rec Safety and Maintenance');
+                          j$('[id*=SubjectForCase]').val('Parks and Rec Safety and Maintenance');
+                           crts();
+                       }                                    
+                   }     
+               }
+               
+               function StreetLight6(data) {        
+                   if(data.value == 'Other' || data.value == 'Request for New Lighting')    {
+                       alert('Service Request has been changed to Streets Light (Other)');
+                       j$("[id $='sreq']").val('Street Light(Other)');
+                   }
+                   else  if(data.value != null && data.value != '') {
+                       alert('Service Request has been changed to Streets Light Outage');
+                       j$("[id $='sreq']").val('Street Light Outage');
+                   } 
+                   j$("[id $='haz'] option[value='']").remove();
+                   var $y = j$("[id $='haz'] option[value='Yes']");
+                   var $n = j$("[id $='haz'] option[value='No']");
+                   if(data.value == 'Bulb Hanging' || data.value == 'Pole Down' || data.value == 'Wire Down' || data.value == 'Wires Sparking')    {
+                      j$("[id $='haz']").val('Yes');              
+                      $n.hide();
+                   }
+                   else {
+                      j$("[id $='haz']").val('No');              
+                      $y.hide();
+                   }
+               }
+               
+           </script>
+             
+           <!-- Input Fields specific to Street Light Outage service request type-->
+           <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+               <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_the_Light_a_Traffic_Signal__c.inlineHelpText}">
+                   <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_the_Light_a_Traffic_Signal__c.label}" /> 
+                   <apex:outputPanel >
+                       <div class='requiredInput'>
+                           <div class='requiredBlock'></div>
+                           <apex:inputfield value="{!Case.Is_the_Light_a_Traffic_Signal__c}" StyleClass="RemoveNone" required="false" onchange="StreetLight1(this)"/>
+                       </div>
+                   </apex:outputPanel>  
+               </apex:pageblocksectionitem>
+               
+               
+                     
+               <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Private_Property__c.inlineHelpText}">
+                   <apex:outputLabel value="{!$ObjectType.Case.Fields.Private_Property__c.label}"  /> 
+                   <apex:outputPanel >
+                       <div class='requiredInput'>
+                           <div class='requiredBlock'></div>
+                           <apex:inputfield value="{!Case.Private_Property__c}" StyleClass="RemoveNone" required="false" onchange="StreetLight2(this)"/>
+                       </div>
+                   </apex:outputPanel> 
+               </apex:pageblocksectionitem>
+                     
+               <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_Light_Illuminating_an_Alley__c.inlineHelpText}">
+                   <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_Light_Illuminating_an_Alley__c.label}" /> 
+                   <apex:outputPanel >
+                       <div class='requiredInput'>
+                           <div class='requiredBlock'></div>
+                           <apex:inputfield value="{!Case.Is_Light_Illuminating_an_Alley__c}" StyleClass="RemoveNone" required="false" onchange="StreetLight3(this)"/>
+                       </div>
+                   </apex:outputPanel>
+               </apex:pageblocksectionitem> 
+                  
+               <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_the_Light_in_a_Park__c.inlineHelpText}">
+                   <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_the_Light_in_a_Park__c.label}" /> 
+                   <apex:outputPanel >
+                       <div class='requiredInput'>
+                           <div class='requiredBlock'></div>
+                           <apex:inputfield value="{!Case.Is_the_Light_in_a_Park__c}" StyleClass="RemoveNone" required="false"  onchange="StreetLight4(this)"/> <!-- Streetlight4(this,'{!$Component.pgbk.pgsec.haz}') -->
+                       </div>
+                   </apex:outputPanel> 
+               </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_the_Light_Illuminating_a_Street__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_the_Light_Illuminating_a_Street__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                              <apex:inputfield value="{!Case.Is_the_Light_Illuminating_a_Street__c}" StyleClass="RemoveNone" required="false"  onchange="StreetLight5(this)"/>
+                             </div>
+                         </apex:outputPanel> 
+                     </apex:pageblocksectionitem>
+                  
+               <apex:pageBlockSectionItem helpText="The type of problem that is causing the street light outage.">
+                   <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type__c.label}" /> 
+                   <apex:outputPanel >
+                       <div class='requiredInput'>
+                           <div class='requiredBlock'></div>
+                           <apex:inputfield value="{!Case.Problem_Type__c}" StyleClass="RemoveNone" required="false"  onchange="StreetLight6(this)"/> 
+                       </div>
+                   </apex:outputPanel> 
+               </apex:pageblocksectionitem>   
+                    
+            <!--   <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_Light_on_Public_Property__c.inlineHelpText}">
+                   <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_Light_on_Public_Property__c.label}" /> 
+                   <apex:outputPanel >
+                       <div class='requiredInput'>
+                           <div class='requiredBlock'></div>
+                           <apex:inputfield value="{!Case.Is_Light_on_Public_Property__c}" StyleClass="RemoveNone" required="false"  onchange="StreetLight7(this)"/>
+                       </div>
+                   </apex:outputPanel> 
+               </apex:pageblocksectionitem> !-->
+               
+                  <apex:pageblocksectionitem />       
+               <apex:inputfield value="{!Case.Hazardous__c}" StyleClass="RemoveNone" required="false" id="haz"/>                       
+            
+           </apex:pageblocksection>
+       </apex:define>
+   </apex:composition>
+</apex:page>

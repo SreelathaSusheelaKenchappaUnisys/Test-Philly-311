@@ -1,0 +1,44 @@
+<apex:page StandardController="Feedback__c" extensions="FeedbackExtension" tabStyle="Feedback__c">
+
+<!--
+
+I'd love to have a page that provides the regular tab view with
+lists (first tab) and a quick link to Feedback's reports.  
+In the case below, the 2nd tab.
+
+visit /apex/feedbacktab
+ 
+-->
+
+	<apex:tabPanel switchType="client" selectedTab="Lists" id="tabPanel" >
+		
+		<apex:tab label="Lists" name="lists" id="listsTab">
+			<apex:enhancedList type="Feedback__c" height="700" rowsPerPage="25" customizable="true" />
+		</apex:tab>
+		
+		<apex:tab label="Week Report" name="weekReport" id="weekReportTab">
+			<apex:iframe src="/{!weeksByDateProductUser}?isdtp=mn" />
+		</apex:tab>
+		
+		<apex:tab label="Time" name="time" id="timeTab">
+			<apex:pageBlock mode="maindetail" id="time">            
+	            <apex:pageBlockTable value="{!feedbackWeeks}" var="each" >
+	                <apex:column width="80" headerValue="Week Ending"  value="{!each.Ending_Date__c}"/>
+					<apex:column width="70" headerValue="XeedBack"><apex:outputLink target="_blank" value="/{!each.Feedback__c}">{!each.feedback__r.name}</apex:outputLink></apex:column>
+					<apex:column headerValue="Summary"  value="{!each.feedback__r.Summary__c}"/>
+					<apex:column width="50" headerValue="Monday"  value="{!each.Monday_Hours__c}"/>
+					<apex:column width="50" headerValue="Tuesday"  value="{!each.Tuesday_Hours__c}"/>
+					<apex:column width="50" headerValue="Wednesday"  value="{!each.Wednesday_Hours__c}"/>
+					<apex:column width="50" headerValue="Thursday"  value="{!each.Thursday_Hours__c}"/>
+					<apex:column width="50" headerValue="Friday"  value="{!each.Friday_Hours__c}"/>
+					<apex:column width="50" headerValue="Saturday"  value="{!each.Saturday_Hours__c}"/>
+					<apex:column width="50" headerValue="Sunday"  value="{!each.Sunday_Hours__c}"/>
+					<apex:column width="50" headerValue="Total"  value="{!each.Total_Hours__c}"/>
+					<apex:column headerValue="(empty)" />
+	            </apex:pageBlockTable>
+        	</apex:pageBlock>
+		</apex:tab>		
+	
+	</apex:tabPanel>
+		
+</apex:page>

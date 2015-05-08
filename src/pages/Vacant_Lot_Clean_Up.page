@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Vacant_Lot_Clean_Up">
+    </flow:interview>
+</apex:page>

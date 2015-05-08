@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="NoHeat_Residential">
+    </flow:interview>
+</apex:page>

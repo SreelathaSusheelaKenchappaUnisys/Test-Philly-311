@@ -1,0 +1,95 @@
+<apex:page sidebar="false" title="Article List" tabStyle="Case"
+    Controller="VfSearchController">
+    <apex:includeScript value="/support/console/26.0/integration.js" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets, 'js/jquery-1.10.2.min.js')}" />
+    <apex:includeScript value="{!$Resource.Jquery_alert}" />
+    <apex:stylesheet value="{!$Resource.Alert_Css}" />
+    <style>
+td {
+    vertical-align: top;
+    text-align: left;
+}
+</style>
+    <apex:form >
+        <script type="text/javascript">
+         var j$ = jQuery.noConflict();
+         $(function() {
+             j$('[id*=theSearchstring]').val(j$('[id*=SubjectForCase]').val());
+             refreshSearchresultsArticlePage();
+         });
+        </script>
+
+        <apex:PageBlock title="Articles" id="articlesPageBlock">
+            <apex:pageBlockSection columns="1" collapsible="true"
+                Title="Filter Your Results">
+                <apex:dataTable value="{!dataCategoryGroupInfo}" var="dataCategory"
+                    id="dataCategory">
+                    <apex:column width="20%">
+                        <apex:outputLabel for="categoryType_{!dataCategory.name}">{!dataCategory.name}</apex:outputLabel>
+                        <br />
+                        <select id="categoryType_{!dataCategory.name}"
+                            name="categoryType_{!dataCategory.name}"
+                            onchange="refreshSearchResult()">
+                            <option value="NoFilter">No Filter</option>
+                            <option value="All">All</option>
+                            <knowledge:categoryList categoryVar="category"
+                                categoryGroup="{!dataCategory.name}" rootCategory="All"
+                                level="-1">
+                                <option value="{!category.name}"><apex:outputText escape="false" value="{!LPAD(' ',6*category.depth,'&nbsp;')}" />
+                                {!category.label}</option>
+                            </knowledge:categoryList>
+                        </select>
+                    </apex:column>
+                </apex:dataTable>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Search" columns="3">
+                <apex:inputText value="{!searchstring}" id="theSearchstring" />
+                <apex:commandButton value="Go" id="submitButton"
+                    reRender="theSearchResults" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="1" title="Knowledge Articles">
+
+                <apex:outputPanel title="Articles">
+                    <apex:panelGroup id="theSearchResults">
+                        <apex:panelGrid >
+                            <knowledge:articleList articleVar="article"
+                                pageNumber="{!currentPageNumber}" hasMoreVar="false"
+                                pageSize="10" id="kart" categories="{!CategoryKeyword}"
+                                keyword="{!searchstring}">
+                                <table>
+                                    <tr>
+                                        <td><apex:outputLink target="_blank"
+                                            style="color:#00BFFF"
+                                            value="{!URLFOR($Action.KnowledgeArticle.View,
+article.id,['popup' = 'true'])}">{!article.title}</apex:outputLink>
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>{!article.Summary}</td>
+                                    </tr>
+                                </table>
+                            </knowledge:articleList>
+                        </apex:panelGrid>
+                        <apex:panelGrid columns="2">
+                           <!-- <apex:commandLink action="{!previous}" value="Previous"
+                                style="{!IF(prevRequired =
+true,'display:block','display:none')}"
+                                reRender="theSearchResults" />
+                            <apex:commandLink action="{!next}" value="Next"
+                                style="{!IF(nextRequired =
+true,'display:block','display:none')}"
+                                reRender="theSearchResults" /> -->
+                        </apex:panelGrid>
+                    </apex:panelGroup>
+                    <apex:actionFunction reRender="theSearchResults"
+                        name="refreshSearchresultsArticlePage" />
+                    <apex:actionFunction reRender="theSearchResults"
+                        name="refreshSearchResult" />
+                </apex:outputPanel>
+            </apex:pageBlockSection>
+            </apex:pageBlock>
+    </apex:form>
+
+</apex:page>

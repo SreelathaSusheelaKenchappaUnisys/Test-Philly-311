@@ -1,0 +1,7 @@
+<apex:page >
+  <script>
+  var r ='{!$Site.BaseCustomUrl}';
+  alert(r);
+  </script>
+  <apex:outputLink target="_blank" value="{!$Site.BaseCustomUrl}">click me</apex:outputLink>
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Line_Striping">
+    </flow:interview>
+</apex:page>

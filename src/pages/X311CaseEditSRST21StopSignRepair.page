@@ -1,0 +1,111 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       function ssr1(data) {
+           if(data.value=='Street Name' || data.value=='One Way') {
+               if(confirm('The system has changed the Case Record Type to Traffic (Other).')){
+               j$("[id $='caseRecordType']").val('Traffic (Other)');
+             j$('[id*=SubjectForCase]').val('Traffic (Other)');
+               j$("[id $='sreq']").val('Traffic (Other)');
+              
+              crts();
+              // rsChange();
+           }
+       }
+      }       
+      function ssr2(data) {
+               if(data.value=='Yes') {
+                   if(confirm('The system has changed the Case Record Type to Traffic (Other).')){
+                   j$("[id $='caseRecordType']").val('Traffic (Other)');
+                   j$('[id*=SubjectForCase]').val('Traffic (Other)');
+                   j$("[id $='sreq']").val('Traffic (Other)');
+                   crts();
+               }
+           }
+        }   
+       function ssr3(data) {
+               if(data.value=='Yes') {
+                  if(confirm('Stop signs that are not visible are not the Street Department’s responsibility. Refer to constituent to the responsible agency.'))
+                   SaveAndServiceNotNeededLI06();
+               }
+           }
+       function ssr4(data) {
+               if(data.value=='Yes') {
+                   
+                   j$("[id $='sreq']").val('Stop Sign Repair');
+               }
+           }
+
+       function stp(data) {
+           if(data.value=='No') {
+               if(confirm('Determine if this is a request for another type of service.'))
+               SaveAndServiceNotNeededLI06();
+           }
+       }
+       function validationrule() {
+           if(j$("[id $='issue11']").val()=='Knocked Down'||j$("[id $='issue11']").val()=='Missing'||j$("[id $='notvsbl']").val()=='Yes') {
+               j$("[id $='hazz']").val('Yes');
+           }else {
+               j$("[id $='hazz']").val('No');
+           }
+           
+       }
+      
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Stop_Sign_Type__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Stop_Sign_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Stop_Sign_Type__c}" StyleClass="RemoveNone" required="false" onchange="ssr1(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Issue__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Issue__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Issue__c}" StyleClass="RemoveNone" required="false" id="issue11" onchange="validationrule()"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Request_for_New_Stop_Sign__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Request_for_New_Stop_Sign__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Request_for_New_Stop_Sign__c}"  StyleClass="RemoveNone" required="false" onchange="ssr2(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     <apex:inputfield value="{!Case.Hazardous__c}" StyleClass="RemoveNone" required="false" id="hazz" onchange="ssr4(this)" />
+                     
+                   <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Not_Visible__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Not_Visible__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Not_Visible__c}" StyleClass="RemoveNone" id="notvsbl" required="false" onchange="ssr3(this);validationrule()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                      
+                  
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

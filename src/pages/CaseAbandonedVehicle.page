@@ -1,0 +1,376 @@
+<apex:page renderAs="pdf" standardController="Case"
+    title="{!case.CaseNumber}" extensions="PdfTemplateController"
+    contentType="application/pdf">
+
+
+    <apex:outputPanel title="311 - Abandoned Vehicle Complaint">
+        <html>
+<table width="100%" border="1"
+    style="border-style: solid; border-width: 2px;" cellspacing="1">
+    <tr>
+        <td>
+            <table width="100%" border="0">
+                <tr>
+                    <td><apex:image value="{!$Resource.PDFImage}" width="75"
+                            height="75" /></td>
+                    <td><header style="font-family: Dialog; font-size: 16pt;">
+                            311-Abandoned Vehicle Complaint </header></td>
+                    <td>
+                        <table cellpadding="10px" border="0">
+                            <tr style="text-align: right;">
+                                <td><apex:outputLabel >City Of Philadelphia</apex:outputLabel>
+                                </td>
+
+                            </tr>
+                            <tr
+                                style="font-family: Dialog; font-size: 13pt; text-align: right;">
+                                <td><apex:outputLabel >Police Department</apex:outputLabel>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </td>
+                    <td><apex:image value="{!$Resource.PDFImage}" width="75"
+                            height="75" /></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<div style="font-family: Dialog; font-size: 10pt;">
+    <table width="100%" border="1" cellpadding="13px">
+
+        <tr style="font-family: Courier; font-size: 9pt; text-align: left;">
+
+            <td width="25%"><apex:outputLabel >REPORT DATE </apex:outputLabel>
+            </td>
+            <td width="15%"><apex:outputLabel >DIST.</apex:outputLabel></td>
+            <td width="25%"><apex:outputLabel >DC#:</apex:outputLabel></td>
+            <td><apex:outputLabel >OFFICER/BADGE:</apex:outputLabel></td>
+            <td><apex:outputLabel >VEHICLE#:</apex:outputLabel></td>
+
+        </tr>
+
+        <tr style="font-family: Dialog; font-size: 11pt;">
+            <td>{!date}</td>
+            <td><apex:outputField value="{!case.Police_District__c}" /></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr style="font-family: Courier; font-size: 9pt; text-align: left;">
+            <td colspan="2"><apex:outputLabel >LOCATION:(EXACT LOCATION)</apex:outputLabel>
+            </td>
+            <td colspan="3"><apex:outputLabel >Reason For Abandoned Vehicle Removal Request:</apex:outputLabel>
+            </td>
+        </tr>
+        <tr style="font-family: Dialog; font-size: 11pt;">
+            <td colspan="2"><apex:outputField value="{!case.Street__c}" /></td>
+            <td colspan="3"></td>
+        </tr>
+    </table>
+    <table border="1" width="100%" cellpadding="15px">
+        <tr style="font-family: Courier; font-size: 9pt; text-align: left;">
+            <td><apex:outputLabel >YEAR:</apex:outputLabel></td>
+            <td><apex:outputLabel >MAKE:</apex:outputLabel></td>
+            <td><apex:outputLabel >MODEL:</apex:outputLabel></td>
+            <td><apex:outputLabel >COLOR:</apex:outputLabel></td>
+            <td width="25%"><apex:outputLabel >TYPE:</apex:outputLabel></td>
+            <!-- <td >
+          <apex:outputLabel >MILEAGE:</apex:outputLabel>
+          </td> 
+          <td >
+          <apex:outputLabel >Time DC# GENERATED:</apex:outputLabel>
+          </td> -->
+        </tr>
+        <tr style="font-family: Dialog; font-size: 11pt;">
+            <td><apex:outputField value="{!case.Year__c}" /></td>
+            <td><apex:outputField value="{!case.Make__c}" /></td>
+            <td><apex:outputField value="{!case.Model__c}" /></td>
+            <td><apex:outputField value="{!case.Color__c}" /></td>
+            <td><apex:outputField value="{!case.Body_Style__c}" /></td>
+            <!--    <td >
+          
+          </td> 
+          <td >
+          
+          </td> -->
+        </tr>
+    </table>
+    <table width="100%" border="1" cellpadding="12px">
+        <tr style="font-family: Courier; font-size: 9pt; text-align: left;">
+            <td width="15%"><apex:outputLabel > TAG YEAR:</apex:outputLabel></td>
+            <td width="15%"><apex:outputLabel > TAG#:</apex:outputLabel></td>
+            <td width="20%"><apex:outputLabel >STATE:</apex:outputLabel></td>
+            <td width="25%"><apex:outputLabel >STATE/EMISSION INSP.EXP.DATE:</apex:outputLabel>
+            </td>
+            <td width="25%"><apex:outputLabel >TITLE#:</apex:outputLabel></td>
+        </tr>
+        <tr style="font-family: Dialog; font-size: 11pt;">
+            <td></td>
+            <td><apex:outputField value="{!case.License_Plate__c}" /></td>
+            <td><apex:outputField value="{!case.License_Plate_State__c}" />
+            </td>
+            <td><apex:outputField value="{!case.Inspection_Sticker_Expiration_Date__c}" /></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td style="font-family: Courier; font-size: 9pt; text-align: left;"
+                colspan="2">VEHICLE IDENTIFICATION NUMBER:</td>
+            <td style="font-family: Dialog; font-size: 11pt;" colspan="3"><apex:outputField value="{!case.Vehicle_Identification_Number_VIN__c}" /></td>
+        </tr>
+    </table>
+    <table border="1" width="100%">
+
+        <tr>
+
+            <td width="60%" valign="top"
+                style="font-family: Dialog; font-size: 11pt; text-align: left;"><apex:outputLabel >REMARKS:</apex:outputLabel>
+
+                <table>
+                    <tr>
+                        <td>
+                            <div
+                                style="font-family: Courier; font-size: 9pt; text-align: left;">
+                                {!case.Description}</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+
+                            <div
+                                style="font-family: Courier; font-size: 9pt; text-align: left;">
+                                <apex:outputPanel rendered="{!case.Front_Bumper__c != null}">
+                                    <apex:outputLabel value="Front Bumper:" />
+                                    <apex:outputField value="{!Case.Front_Bumper__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Missing_or_Damaged_Right_Front_Door__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Missing_or_Damaged_Right_Front_Door__c !=null}" />
+                                </apex:outputPanel>
+                                <br />
+                                <!--  -->
+                                <apex:outputPanel rendered="{!case.Missing_or_Damaged_Right_Front_Door__c!= null}">
+                                    <apex:outputLabel value="Right Front Door:" />
+                                    <apex:outputField value="{!Case.Missing_or_Damaged_Right_Front_Door__c}" />
+                                    <apex:outputLabel value=";" rendered="{!case.Hood__c == null}" />
+                                    <apex:outputLabel value=";" rendered="{!Case.Hood__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Hood__c != null}">
+                                    <apex:outputLabel value="Hood:" />
+                                    <apex:outputField value="{!Case.Hood__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Missing_or_Damaged_Left_Rear_Door__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Missing_or_Damaged_Left_Rear_Door__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Missing_or_Damaged_Left_Rear_Door__c != null}">
+                                    <apex:outputLabel value="Left Rear Door:" />
+                                    <apex:outputField value="{!Case.Missing_or_Damaged_Left_Rear_Door__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Motor_Engine__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Motor_Engine__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Motor_Engine__c != null}">
+                                    <apex:outputLabel value="Motor Engine:" />
+                                    <apex:outputField value="{!Case.Motor_Engine__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Right_Rear_Door__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Right_Rear_Door__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Right_Rear_Door__c != null}">
+                                    <apex:outputLabel value="Right Rear Door:" />
+                                    <apex:outputField value="{!Case.Right_Rear_Door__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Interior_Components__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Interior_Components__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Interior_Components__c != null}">
+                                    <apex:outputLabel value="Interior Components:" />
+                                    <apex:outputField value="{!Case.Interior_Components__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Transmission__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Transmission__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Transmission__c != null}">
+                                    <apex:outputLabel value="Transmission:" />
+                                    <apex:outputField value="{!Case.Transmission__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Damaged_Radio__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Damaged_Radio__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Damaged_Radio__c != null}">
+                                    <apex:outputLabel value="Damaged Radio:" />
+                                    <apex:outputField value="{!Case.Damaged_Radio__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Left_Rear_Quarter_Panel__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Left_Rear_Quarter_Panel__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Left_Rear_Quarter_Panel__c != null}">
+                                    <apex:outputLabel value="Left Rear Quarter Panel:" />
+                                    <apex:outputField value="{!Case.Left_Rear_Quarter_Panel__c}" />
+                                    <apex:outputLabel value=";" rendered="{!case.Tires__c == null}" />
+                                    <apex:outputLabel value=";" rendered="{!Case.Tires__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Tires__c != null}">
+                                    <apex:outputLabel value="Tires:" />
+                                    <apex:outputField value="{!Case.Tires__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Right_Rear_Quarter_Panel__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Right_Rear_Quarter_Panel__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Right_Rear_Quarter_Panel__c != null}">
+                                    <apex:outputLabel value="Right Rear Quarter Panel:" />
+                                    <apex:outputField value="{!Case.Right_Rear_Quarter_Panel__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Missing_or_Damaged_Window_Glass__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Missing_or_Damaged_Window_Glass__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Missing_or_Damaged_Window_Glass__c != null}">
+                                    <apex:outputLabel value="Window Glass :" />
+                                    <apex:outputField value="{!Case.Missing_or_Damaged_Window_Glass__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Rear_Bumper__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Rear_Bumper__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Rear_Bumper__c != null}">
+                                    <apex:outputLabel value="Rear Bumper:" />
+                                    <apex:outputField value="{!Case.Rear_Bumper__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Missing_or_Damaged_Left_Front_Fender__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Missing_or_Damaged_Left_Front_Fender__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Missing_or_Damaged_Left_Front_Fender__c != null}">
+                                    <apex:outputLabel value="Left Front Fender:" />
+                                    <apex:outputField value="{!Case.Missing_or_Damaged_Left_Front_Fender__c }" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Trunk_Lid__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Trunk_Lid__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Trunk_Lid__c != null}">
+                                    <apex:outputLabel value="Trunk Lid:" />
+                                    <apex:outputField value="{!Case.Trunk_Lid__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Missing_or_Damaged_Right_Front_Fender__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Missing_or_Damaged_Right_Front_Fender__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Missing_or_Damaged_Right_Front_Fender__c != null}">
+                                    <apex:outputLabel value="Right Front Fender:" />
+                                    <apex:outputField value="{!Case.Missing_or_Damaged_Right_Front_Fender__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Other_Missing_or_Damaged_Parts__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Other_Missing_or_Damaged_Parts__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Other_Missing_or_Damaged_Parts__c != null}">
+                                    <apex:outputLabel value="Other Missing Or Damaged Parts:" />
+                                    <apex:outputField value="{!Case.Other_Missing_or_Damaged_Parts__c}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!case.Other_Missing_or_Damaged_Parts__c == null}" />
+                                    <apex:outputLabel value=";"
+                                        rendered="{!Case.Other_Missing_or_Damaged_Parts__c !=null}" />
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!case.Left_Front_Door__c != null}">
+                                    <apex:outputLabel value="Left Front Door:" />
+                                    <apex:outputField value="{!Case.Left_Front_Door__c}" /> <apex:outputLabel value=";"/>
+                                        </apex:outputPanel>
+                            </div>
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td align="bottom"><apex:outputLabel >TICKET# {!case.caseNumber} </apex:outputLabel>
+                        </td>
+                    </tr>
+                </table></td>
+
+            <td>
+                <table cellspacing="10px">
+                    <tr>
+                        <td>Date Investigated:&nbsp;&nbsp; _____________</td>
+                    </tr>
+                    <tr>
+                        <td>No show:&nbsp;&nbsp;&nbsp;Yes ______ No ______</td>
+
+                    </tr>
+                    <tr>
+                        <td width="100%">10 day Check: Yes ______ No ______</td>
+
+                    </tr>
+                    <tr>
+                        <td>Date Recheck:&nbsp;&nbsp; _____________</td>
+                    </tr>
+                    <tr>
+                        <td>Towed:&nbsp;&nbsp;&nbsp;Yes ______ No ______</td>
+                    </tr>
+                    <tr>
+                        <td>Name of
+                            Salvor:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_____________</td>
+
+                    </tr>
+                    <tr>
+                        <td>Remarks:</td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+
+
+    </table>
+    <table border="1" width="100%">
+        <tr>
+            <td><apex:outputLabel >Police District:Neighborhood Services Unit</apex:outputLabel>
+            </td>
+            <td><apex:outputLabel >Address:</apex:outputLabel></td>
+            <td><apex:outputLabel >Telephone Number:</apex:outputLabel></td>
+            <td><apex:outputLabel >Available Time:</apex:outputLabel></td>
+
+        </tr>
+        <tr style="color: blue; font-family: Dialog; font-size: 12pt;">
+            <td><apex:outputLabel >Abandoned Vehicle Section</apex:outputLabel>
+            </td>
+            <td><apex:outputLabel >4000 N.American Street</apex:outputLabel>
+            </td>
+            <td><apex:outputLabel >215-685-9500</apex:outputLabel></td>
+            <td><apex:outputLabel >Mon-Fri,8am-4pm </apex:outputLabel></td>
+
+        </tr>
+        <tr>
+            <td colspan="4" height="20px" />
+        </tr>
+    </table>
+    <div style="font-family: Dialog; font-size: 11pt;">
+        <table width="100%">
+            <tr>
+                <td><footer>Note: Form must be completed and returned
+                        to Mary Bibbo on the same day assigned with a disposition </footer></td>
+            </tr>
+        </table>
+
+        <table border="1">
+            <tr>
+                <td valign="top"><apex:outputLabel >DATE : {!DateForCaseCreation} </apex:outputLabel></td>
+
+            </tr>
+
+        </table>
+    </div>
+</div>
+        </html>
+    </apex:outputPanel>
+
+</apex:page>

@@ -1,0 +1,60 @@
+<apex:page controller="XedeReportTabularController" >
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-1.10.2.min.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-ui.min.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/handlebars.js')}" />
+	<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/handlebars.helpers.js')}" />
+	
+	<script id="reportTemplate" type="text/x-handlebars-template">
+		<table>
+				<tr>
+					<th>Report Type</th>
+					<th>Report Name</th>
+					<th>Description</th>
+				</tr>
+			{{#each this}}
+				<tr>
+					<td>{{ReportType}}</td>
+					<td><a href="{!URLFOR($Page.CSVMap)}?report={{ReportUniqueName}}">{{{ReportName}}}</a></td>
+					<td>{{Description}}</td>
+				</tr>
+			{{/each}}
+		</table>
+	</script>
+	
+	<script>
+		var templateSource = $("#reportTemplate").html();
+		var template = Handlebars.compile(templateSource);
+		
+		XedeReportTabularController.TabularReport('XedeReportTypes',
+			function(result, event) {
+				if (event.status == false) {
+					alert(event.message);
+				} else {
+					var filterList = [];
+					var reportType = getParameterByName('typex');
+
+					if (reportType == null || reportType.trim() == '')
+						filterList = result;
+					else {
+						for (var i = 0; i < result.length; i++) {
+							if (result[i].ReportType.toUpperCase() === reportType.toUpperCase())
+								filterList.push(result[i]);
+						}
+					}
+								
+					document.getElementById('reportDiv').innerHTML = template(filterList);
+				}
+			},{escape:true, buffer:false}
+		);
+		
+		function getParameterByName(name) {
+		    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+		    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+		        results = regex.exec(location.search);
+		    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+		}
+	</script>
+	
+	<div id='reportDiv' />
+	
+</apex:page>

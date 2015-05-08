@@ -1,0 +1,122 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       function resi() {
+           if( j$("[id $='rent']").val() == 'Yes')  { 
+                       
+                if(confirm('The system has changed the Case Record Type to Maintenance Residential.')){               
+                j$("[id $='caseRecordType']").val('Maintenance Residential or Commercial');
+                       rsChange(); 
+               }  
+               
+             }
+            }
+          function Heat(data) {
+           if(data.value=="No" ) {
+             
+          if(confirm('A Heat Emergency must be declared by the Health Department at the time the caller is reporting in order for L&I to inspect for air conditioning.'))
+               
+               SaveAndServiceNotNeeded();
+               
+           }
+       }
+       
+       function Nursing(data) {
+           if(data.value=="No" ) {
+             
+          if(confirm('If the property is not a nursing home, personal care home, or hospital, the issue is between the customer and the landlord.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       }
+      /*  Commenting as per new requirements Case Number 05012710   
+         function address() {
+           if(j$("[id $='hansenAddress']").val() == '' || j$("[id $='hansenAddress']").val() == Null ) {
+             
+          if(confirm('A zoning violation case can be submitted only if the exact L&I address key is validated.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       } */
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Heat_Emergency__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Heat_Emergency__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Heat_Emergency__c}" StyleClass="RemoveNone" required="false" onchange="Heat(this)"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Residential_Windows_Inoperable__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Residential_Windows_Inoperable__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Residential_Windows_Inoperable__c}" StyleClass="RemoveNone" required="false" id="rent" onchange="resi()"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Nursing_Personal_Care_Home_Hospital__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Nursing_Personal_Care_Home_Hospital__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Nursing_Personal_Care_Home_Hospital__c}" StyleClass="RemoveNone" required="false"  onchange="Nursing(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.How_Many_Days_Without_Air_Conditioning__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.How_Many_Days_Without_Air_Conditioning__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.How_Many_Days_Without_Air_Conditioning__c}" required="false"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                
+                   <apex:inputfield value="{!Case.Health_Care_Facility_Name__c}" required="false" id="hospitalName"/>
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                    <apex:inputfield value="{!Case.Name_if_Not_Verified__c}" required="false" />
+                 <!--commenting as per new requirements Case Number 05012710   
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                             <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>!-->
+                       <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"/>
+                     
+                  
+                  
+               
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

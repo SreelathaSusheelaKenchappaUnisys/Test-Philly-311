@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Building_Dangerous">
+    </flow:interview>
+</apex:page>

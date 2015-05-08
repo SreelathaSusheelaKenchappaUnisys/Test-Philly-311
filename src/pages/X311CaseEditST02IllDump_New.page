@@ -1,0 +1,182 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+         
+       
+             
+            <script type="text/javascript">
+    
+        
+    onload= init();
+
+           
+        function Illegal1(data)    {
+        if(data.value == 'Yes'){
+        var url = "http://www.philadelphiastreets.com/events/household-hazardous-waste-events" ;
+        var message2 = 'for a list of currently scheduled events'; 
+          if(confirm('Handling and disposing of hazardous waste materials requires a special set of regulations due to the potential damage they can cause to people, pets and the environment. Residents can bring their hazardous waste to Household Hazardous Waste Events.  All events are open from 9am to 3pm.  Refer to http://www.philadelphiastreets.com/events/household-hazardous-waste-events for a list of currently scheduled events'))
+               SaveAndServiceNotNeeded();
+          }
+      } 
+    
+        
+      
+      function Illegal2(data)    {
+        if(data.value == 'Yes')  {  
+           if(confirm('This case must be reported to the Commercial & Industrial Fire Unit of L&I 215-685-3712.'))
+               SaveAndServiceNotNeeded();
+       }
+      }
+      
+      function Illegal3(data,srt,crt,sta)    {
+        if(data.value == 'No')   { 
+            if(confirm('Advise the constituent that the property owners are responsible for the disposing of the materials.'))
+                 SaveAndServiceNotNeeded();
+          }
+      }
+      
+      function Illegal4(data)    {
+        if(data.value == 'Yes'){              
+                  
+              j$('[id*=caseRecordType]').val('Vacant Lot Clean-Up');
+              j$('[id*=sreq]').val('Vacant Lot Clean-Up');
+              j$('[id*=departmnt]').val('Community Life Improvement Program');
+              
+              crts();
+       }
+      }
+      
+      function Illegal5(data)    {
+        if(data.value == 'Yes'){
+          j$('[id*=departmnt]').val('Streets Department');
+          j$('[id*=caseRecordType]').val('Sanitation / Dumpster Violation'); 
+          j$('[id*=sreq]').val('Sanitation Violation');
+          rsChange();
+          
+             
+         //crts();
+       }
+      }
+        </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Trash_Include_Household_Hazardous_Waste__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Trash_Include_Household_Hazardous_Waste__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Trash_Include_Household_Hazardous_Waste__c}" required="false" id="house" onchange="Illegal1(this)"/>
+                         </div>
+                        <!-- Commenting the changes related to JS alert window Starts - Brindha/Ushman
+                         <div id='dialog-modal' title='Basic modal dialog'>
+                              <p>Adding the modal overlay screen makes the dialog look more prominent because it dims out the page content.</p>
+                         </div>
+                         /* Commenting the changes related to JS alert window Starts - Brindha/Ushman                           
+                        -->
+                 
+                     </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Condition_of_Materials__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Condition_of_Materials__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Condition_of_Materials__c}" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Trash_Include_Commercial_Hazardous_Waste__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Trash_Include_Commercial_Hazardous_Waste__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Trash_Include_Commercial_Hazardous_Waste__c}" required="false" onchange="Illegal2(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+            
+                    <apex:inputfield value="{!Case.How_May_Bags_of_Trash_If_Bagged__c}" required="false"/>
+                    
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_Trash_on_Street_or_Sidewalk__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_Trash_on_Street_or_Sidewalk__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Is_Trash_on_Street_or_Sidewalk__c}" required="false" onchange="Illegal3(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                    
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Type_of_Materials__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Type_of_Materials__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Type_of_Materials__c}" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_Trash_on_Vacant_Lot__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_Trash_on_Vacant_Lot__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Is_Trash_on_Vacant_Lot__c}" required="false" onchange="Illegal4(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+               
+                 
+                    <apex:inputfield value="{!Case.Description_of_Vehicle_Involved_in_Dumpi__c}" required="false"/>
+                    
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_there_active_construction_at_the_site__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_there_active_construction_at_the_site__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Is_there_active_construction_at_the_site__c}" required="false" onchange="Illegal5(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+              <!--        <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Police_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Police_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Police_District__c}" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                  
+                   <apex:pageblocksectionitem />
+                    
+                   <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Sanitation_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Sanitation_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Sanitation_District__c}" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> -->
+                  <apex:inputfield value="{!Case.Police_District__c}" required="false" id="SA_POLICE_District" />
+                   <apex:pageblocksectionitem />
+                    <apex:inputfield value="{!Case.Sanitation_District__c}" required="false" id="SA_STREETS_Sanitation_Districts"/>
+            
+                    <!--    <apex:actionSupport event="onchange" rerender="pgInfo1"
+                                                    status="status"/> -->
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

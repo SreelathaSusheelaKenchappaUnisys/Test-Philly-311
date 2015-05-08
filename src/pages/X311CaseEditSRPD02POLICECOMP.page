@@ -1,0 +1,211 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+      
+          
+       
+       function police1(data) {
+           if(data.value== 'Compliment') {
+               if(confirm('If the report is a compliment, advise the customer to send a letter to the Police Commissioner at 750 Race Street, Philadelphia, PA 19106.'))
+               SaveAndServiceNotNeeded();
+           }
+       
+       }
+       function police2(data) {
+           if(data.value== 'Physical Abuse' || data.value== 'Verbal Abuse' || data.value== 'Both') {
+               if(confirm('If the report is about police misconduct—physical or verbal abuse or both—the customer is responsible for filing a complaint with the Police Advisory Commission (PAC) at 990 Spring Garden St, 7th Floor, Suite 705, Philadelphia, PA 19123 or 215-685-0891.'))
+               SaveAndServiceNotNeeded();
+           }
+       
+       }
+       function police3(data) {
+           if(data.value== 'No') {
+               if(confirm('If the complaint is about a law enforcement agency other than the City of Philadelphia Police Dept., direct the caller to contact the agency involved to report the complaint.'))
+               SaveAndServiceNotNeeded();
+           }
+       
+       }
+       function police4(data) {
+           if(data.value== 'Yes') {
+              if(confirm('If the complaint involves the Police Officer breaking the law, the customer is responsible for filing a complaint with the Police Advisory Commission (PAC) at 990 Spring Garden St, 7th Floor, Suite 705, Philadelphia, PA 19123 or 215-685-0891.'))
+               SaveAndServiceNotNeeded();
+           }
+       
+       }
+       function police5(data) {
+           if(data.value== 'Yes') {
+               if(confirm('The system has changed the Case Record Type to Complaint Against Fire or EMS.')){
+               j$('[id*=departmnt]').val('Fire Department');
+               j$('[id*=caseRecordType]').val('Complaint Against Fire or EMS'); 
+               j$('[id*=SubjectForCase]').val('Complaint Against Fire or EMS'); 
+                j$('[id*=sreq]').val('Complaint Against Fire or EMS'); 
+               
+               crts();
+             }  
+           }
+       
+       }
+       function police6(data) {
+           if(data.value== 'Yes') {
+               if(confirm('The system has changed the Case Record Type to Complaint (Streets).')){
+               j$('[id*=departmnt]').val('Streets Department');
+               j$('[id*=caseRecordType]').val('Complaint (Streets)');
+              j$('[id*=SubjectForCase]').val('Complaint (Streets)');
+               j$('[id*=sreq]').val('Complaint (Streets)');
+               crts();
+               }
+           }
+       
+       }
+       function police7(data) {
+           if(data.value== 'Yes') {
+               if(confirm('The system has changed the Case Record Type to Abandoned Vehicle.')){
+               j$('[id*=departmnt]').val('Police Department');
+               j$('[id*=caseRecordType]').val('Abandoned Vehicle');
+              j$('[id*=SubjectForCase]').val('Abandoned Vehicle');
+               j$('[id*=sreq]').val('Abandoned Vehicle');             
+               crts(); 
+              }
+               
+           }
+       
+       }
+        function dependency3() {
+            
+            if(j$("[id $='cfuc']").val() == 'Yes') {
+                 j$("[id $='pcn']").removeAttr("disabled");
+                 j$("[id $='pcdt']").removeAttr("disabled");
+                 
+                 
+            }else if(j$("[id $='cfuc']").val() == 'No' || j$("[id $='cfuc']").val() == '' ) {
+                 j$("[id $='pcn']").attr("disabled","disabled"); 
+                 j$("[id $='pcdt']").attr("disabled","disabled"); 
+            
+            }
+        }
+      
+        
+      
+       
+                         
+
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Complaint_or_Compliment__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Complaint_or_Compliment__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield styleClass="RemoveNone" value="{!Case.Complaint_or_Compliment__c}" required="false" onchange="police1(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Incident_Date_and_Time__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Incident_Date_and_Time__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Incident_Date_and_Time__c}" id="uu" required="false"  styleClass="RemoveNone"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>      
+                 
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Physical_or_Verbal_Abuse__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Physical_or_Verbal_Abuse__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Physical_or_Verbal_Abuse__c}" id="uu" required="false" styleClass="RemoveNone"  onchange="police2(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>  
+                      <apex:inputfield value="{!Case.Police_Officer_or_Dispatcher_Name__c}" required="false"   id="mdp" />
+                     
+                     
+                       
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.City_of_Philadelphia_Police__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.City_of_Philadelphia_Police__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.City_of_Philadelphia_Police__c}" id="uu"  styleClass="RemoveNone" required="false" onchange="police3(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                     
+                      <apex:inputfield value="{!Case.Vehicle_Number__c}" id="uu" required="false" />
+                      
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Officer_Breaking_Law__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Officer_Breaking_Law__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Officer_Breaking_Law__c}" id="uu" styleClass="RemoveNone" required="false" onchange="police4(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Follow_Up_Contact__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Follow_Up_Contact__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Follow_Up_Contact__c}" styleClass="RemoveNone" id="cfuc" required="false" onchange="dependency3()"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>   
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Fire_Dept_or_EMS_Complaint__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Fire_Dept_or_EMS_Complaint__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Fire_Dept_or_EMS_Complaint__c}" styleClass="RemoveNone" id="uu" required="false" onchange="police5(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                      <apex:inputfield value="{!Case.Previous_Case_Number__c}"  required="false" id="pcn"/>
+                     
+                    
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Streets_Dept_Complaint__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Streets_Dept_Complaint__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Streets_Dept_Complaint__c}" id="uu" styleClass="RemoveNone" required="false" onchange="police6(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                     <apex:inputfield value="{!Case.Previous_Contact_Date_and_Time__c}"  required="false" id="pcdt"/>
+                     
+                            
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Abandoned_Vehicle_Complaint__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Abandoned_Vehicle_Complaint__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Abandoned_Vehicle_Complaint__c}" styleClass="RemoveNone" id="uu" required="false" onchange="police7(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>        
+                       
+                        
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

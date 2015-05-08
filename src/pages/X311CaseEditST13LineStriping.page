@@ -1,0 +1,28 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type
+     DEAD ANIMAL IN STREET ST-10 -->
+
+<apex:page standardcontroller="Case" id="page">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+           
+             
+             <!-- Input Fields specific to Street Light Outage service request type-->
+                    <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Pavement_Marking_Type__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Pavement_Marking_Type__c.label}" /> 
+                        <apex:outputPanel >                    
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Pavement_Marking_Type__c}" StyleClass="RemoveNone" required="false" />
+                         </div>
+                      </apex:outputPanel>  
+                      </apex:pageblocksectionitem>
+                      
+                      <apex:pageblocksectionitem />                    
+                     
+                    
+                  
+            </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

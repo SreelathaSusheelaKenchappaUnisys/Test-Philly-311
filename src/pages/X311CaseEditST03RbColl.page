@@ -1,0 +1,228 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type
+     RUBBISH COLLECTION ST-03  -->
+    
+
+<apex:page standardcontroller="Case">
+        <apex:composition template="X311CaseEdit">
+                <apex:define name="typeSpecific">
+                
+                <!-- Functions to display error messages -->
+                        <script type="text/javascript">
+                            onload= init();
+        function rubbish1(data){
+        if((data.value == 'Other')){                 
+              if(confirm('Refuse containers should be set out on the sidewalk adjacent to the curb or adjacent to the driveway where there is driveway collection..'))
+               SaveAndServiceNotNeeded();
+           }
+        }
+         
+         function rubbish2(data)    {
+               if((data.value == 'No'))
+                 if(confirm('From October 1 through March 31, trash and recycling should be set out between 5:00 PM the night before collection day and 7:00 AM the day of collection. Set-out times from April 1 to September 30 will return to 7:00 PM the night before and by 7:00 AM the day of collection.'))
+                 SaveAndServiceNotNeeded();
+         }  
+                  
+         function rubbish3(data)    {
+            if((data.value == 'Yes')) 
+                 if(confirm('Single-family household is allowed a maximum of four (4) 32 gallon containers or eight (8) 30 – 32 gallon bags of trash each week. All other premises are allowed a maximum of six (6) 32 gallon containers or twelve (12) 30 - 32 gallon bags.'))  
+                 SaveAndServiceNotNeeded();
+         }
+                 
+         function rubbish4(data)    {                
+            if(data.value == 'Yes'){
+                if(confirm('The weight limit for a bag or can is 40 lbs. The total weight should not exceed 240 lbs.'))
+                SaveAndServiceNotNeeded();
+            }                                
+         } 
+         
+         function rubbish5(data)    {                
+            if(data.value == 'Yes'){
+                if(confirm('Rubbish cannot contain construction debris, house/apartment clean out, bulk items, bricks etc'))
+                 SaveAndServiceNotNeeded(); 
+            }                                
+         } 
+         
+         function rubbish6(data)    {                
+            if(data.value == 'No'){
+               if(confirm('All containers must have a tight fitting lid or be secured in such a way as to prevent refuse from being carried away by the elements. Set out may be in metal or other non-corrodible cans, no larger than 32 gallons, or in substantial, leak-proof bags, no smaller than 30 gallons and no larger than 32 gallons..')) 
+                SaveAndServiceNotNeeded(); 
+            }                                
+         } 
+         
+         function rubbish7(data)    {                
+            if(data.value == 'Yes'){    
+                if(confirm('System changed record type to Other (Streets)')){    
+                j$('[id*=caseRecordType]').val('Other (Streets)');
+                 j$('[id*=SubjectForCase]').val('Other (Streets)');
+                       rsChange(); 
+               }               
+            }                                
+          }
+         
+         function rubbish8(data)    {                
+            if(data.value != 'None' && data.value !='') {        
+               if(confirm('Handling and disposing of hazardous waste materials requires a special set of regulations due to the potential damage they can cause to people, pets and the environment. Residents can bring their hazardous waste to Household Hazardous Waste Events.  All events are open from 9am to 3pm.  Refer to http://www.philadelphiastreets.com/events/household-hazardous-waste-events for a list of currently scheduled events')) 
+         SaveAndServiceNotNeeded();
+         }
+                                         
+         } 
+          function rubbish9(data)    {                
+            if(data.value == 'Rubbish' || data.value == 'Both')
+               j$("[id $='sreq']").val('Rubbish Collection');
+            else if(data.value == 'Recycling')
+               j$("[id $='sreq']").val('Recyclables Collection');                             
+         }
+         
+         function rubbish10()    {
+        
+            var data = j$("[id $='SA_STREETS_Rubbish']").val();  
+            var san = j$("[id $='SA_STREETS_Sanitation_Districts']").val();  
+            var d = new Date();
+            var weekday=new Array(7);
+            weekday[0]="SUN";
+            weekday[1]="MON";
+            weekday[2]="TUE";
+            weekday[3]="WED";
+            weekday[4]="THU";
+            weekday[5]="FRI";
+            weekday[6]="SAT";
+            var day = weekday[d.getDay()];
+           //alert(day +' '+ d.getHours());
+          
+            if(data == day && d.getHours() < 19 && san != null && san !='') {
+           
+                if(confirm('Advise caller to wait until after 7:00pm to report missed pickup')) {
+                    SaveAndServiceNotNeeded();
+                }     
+                    
+            
+}
+    
+         }
+        // j$("[id *='SA_STREETS_Sanitation_Districts']").unbind( "Change",rubbish10(data)); 
+         
+          function e20() {
+    
+           if((j$("[id $='tyr']").val() =='Recycling') || (j$("[id $='tyr']").val()=='Both')){
+          
+                j$("[id *='prc']").removeAttr("disabled");
+                j$("[id *='prc']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='prc']").prop('disabled','disabled') ;  
+                j$("[id *='prc']").css("background-color","#EDEDED");             
+           }
+       }
+                                         
+                        </script>
+        
+                <!-- Service Request Information section -->
+                <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                        <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Type_of_Rubbish_Missed__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Type_of_Rubbish_Missed__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Type_of_Rubbish_Missed__c}" StyleClass="RemoveNone" id="tyr" required="false" onchange="rubbish9(this);e20()"/>
+                                    </div>
+                             </apex:outputPanel>  
+                          </apex:pageblocksectionitem>   
+                             
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Construction_Bulk_Items__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Construction_Bulk_Items__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Construction_Bulk_Items__c}" StyleClass="RemoveNone" required="false" onchange="rubbish5(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem> 
+                         
+                             
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Single_Address_or_Whole_Block__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Single_Address_or_Whole_Block__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Single_Address_or_Whole_Block__c}" StyleClass="RemoveNone" required="false"/>
+                                    </div>
+                              </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                         
+                             
+                         <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_Trash_in_a_Wastebasket__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_Trash_in_a_Wastebasket__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Is_Trash_in_a_Wastebasket__c}" StyleClass="RemoveNone" required="false" onchange="rubbish7(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                         
+                         <apex:pageBlockSectionItem helpText="From October 1 through March 31, trash and recycling should be set out between 5:00 PM the night before collection day and 7:00 AM the day of collection. Set-out times from April 1 to September 30 will return to 7:00 PM the night before and by 7:00 AM the day of collection.">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Set_Out_in_Time__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Set_Out_in_Time__c}" StyleClass="RemoveNone" required="false" onchange="rubbish2(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                          </apex:pageblocksectionitem> 
+                         
+                             <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Are_Materials_Hazardous__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Are_Materials_Hazardous__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Are_Materials_Hazardous__c}" StyleClass="RemoveNone" required="false" onchange="rubbish8(this)"/>
+                                     </div>
+                                </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                          
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Where_Was_Trash_Set_Out__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Where_Was_Trash_Set_Out__c.label}"  /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Where_Was_Trash_Set_Out__c}" StyleClass="RemoveNone" required="false" onchange="rubbish1(this)"/>
+                                    </div>
+                              </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                           
+                          <apex:pageBlockSectionItem helpText="All containers must have a tight fitting lid or be secured in such a way as to prevent refuse from being carried away by the elements. Set out may be in metal or other non-corrodible cans, no larger than 32 gallons, or in substantial, leak-proof bags, no smaller than 30 gallons and no larger than 32 gallons.">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Proper_Recycling_Container__c.label}" /> 
+                                <apex:outputPanel >                              
+                          <apex:inputfield value="{!Case.Proper_Recycling_Container__c}" id="prc" StyleClass="RemoveNone" required="false" onchange="rubbish6(this)"/>
+                          </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                             
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Not_More_than_Maximum_Number_of_Receptac__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Not_More_than_Maximum_Number_of_Receptac__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Not_More_than_Maximum_Number_of_Receptac__c}" StyleClass="RemoveNone" required="false" onchange="rubbish3(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                             
+                          <apex:inputfield value="{!Case.Pickup_Day__c}" required="false" id="SA_STREETS_Rubbish" onchange="rubbish10()" />
+                             
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Not_More_than_Maximum_Weight__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Not_More_than_Maximum_Weight__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Not_More_than_Maximum_Weight__c}" StyleClass="RemoveNone" required="false" onchange="rubbish4(this)"/>
+                                    </div>
+                                </apex:outputPanel>  
+                          </apex:pageblocksectionitem>
+                               
+                          <apex:inputfield value="{!Case.Sanitation_District__c}" required="false"  id="SA_STREETS_Sanitation_Districts" onchange="rubbish10()" />
+                        
+                </apex:pageblocksection>
+                </apex:define>
+        </apex:composition>
+</apex:page>

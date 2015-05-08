@@ -1,0 +1,215 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type  Parks and Rec Safety and Maintenance-->
+
+<apex:page standardcontroller="Case" id="page">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+             <!-- Functions to display error messages --> 
+            <script type="text/javascript">
+               // onload= init();
+           function ParksRec(data) {
+           if(data.value=='Mechanical Maintenance' ) {
+               j$("[id $='sreq']").val('Mechanical Maintenance');
+           } else if (data.value == 'Janitorial Maintenance') {
+           
+                 j$("[id $='sreq']").val('Janitorial Maintenance');
+           }
+           else if (data.value == 'Grounds') {
+           
+                 j$("[id $='sreq']").val('Grounds Maintenance');
+           }else if (data.value == 'Trees') {
+           
+                 j$("[id $='sreq']").val('Tree Maintenance');
+           }else if (data.value == 'Programs') {
+           
+                 j$("[id $='sreq']").val('Programs');
+           }else if (data.value == 'Emergency') {
+           
+                 j$("[id $='sreq']").val('Emergencies');
+           }
+       }    
+               
+                function ParksRec1() {
+                               if(j$("[id $='eprec']").val() == 'No'){
+                               if(confirm("Immediately transfer caller to 911.")){
+                               j$("[id $='pcat']").val('Emergency');
+                              Emergency();
+                             }  
+               }
+           }    
+               
+       function ParksRec2(data) {
+           if(data.value=="Not Parks Related" ) {
+             
+          if(confirm('If the problem is not in a park, recreation center, or auxiliary site, submit an L&I Maintenance Residential or Commercial.')){
+                             j$('[id*=caseRecordType]').val('Maintenance Residential or Commercial');
+                              j$('[id*=SubjectForCase]').val('Maintenance Residential or Commercial');
+                             j$('[id*=sreq]').val('');
+                             j$('[id*=departmnt]').val('License & Inspections');
+                             crts();                    
+               }                     
+           }
+       }         
+            
+            function ParksRec3(data) {
+           if(data.value=="Yes" ) {
+             
+          if(confirm('If the tree is between the sidewalk and the curb, submit a Street Trees service request.')){
+                      
+                       j$('[id*=caseRecordType]').val('Street Trees');
+                       j$('[id*=SubjectForCase]').val('Street Trees');
+                       j$('[id*=sreq]').val('Street Trees');
+                       crts();                     
+               }                     
+           }
+       }  
+       
+       function e6() {
+    
+           if((j$("[id $='emer']").val()=='Yes')) {
+                j$("[id *='eprec']").removeAttr("disabled");
+                j$("[id *='eprec']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='eprec']").prop('disabled','disabled') ;  
+                j$("[id *='eprec']").css("background-color","#EDEDED");             
+           }
+       }
+       
+        function e7() {
+    
+           if((j$("[id $='emer']").val()=='Yes')) {
+                j$("[id *='eprec']").removeAttr("disabled");
+                j$("[id *='eprec']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='eprec']").prop('disabled','disabled') ;  
+                j$("[id *='eprec']").css("background-color","#EDEDED");             
+           }
+       }
+       
+       function e8() {
+    
+           if((j$("[id $='pcat']").val()=='Trees')) {
+                j$("[id *='treeb']").removeAttr("disabled");
+                j$("[id *='treeb']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='treeb']").prop('disabled','disabled') ;  
+                j$("[id *='treeb']").css("background-color","#EDEDED");             
+           }
+       }
+                         
+               </script>
+                
+                
+                
+   <!-- Input Fields specific to Street Trees service request type-->
+                    <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+                      
+                      
+                      
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Emergency_Parks__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Emergency_Parks__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div> 
+                               <apex:inputfield value="{!Case.Emergency_Parks__c}"  StyleClass="RemoveNone" id="emer" required="false" onchange="e7()"  />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                      <apex:pageBlockSectionItem helpText="Is the tree between the sidewalk and the curb?" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_Between_Sidewalk_and_Curb__c.label}" /> 
+                         <apex:outputPanel >
+                      <apex:inputfield value="{!Case.Tree_Between_Sidewalk_and_Curb__c}" StyleClass="RemoveNone" required="false" onchange="ParksRec3(this)"  id="treeb"/> 
+                      </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                     
+                     
+                               <apex:inputfield value="{!Case.Reported_to_911__c}" StyleClass="RemoveNone" required="false" id="eprec" onchange="ParksRec1()"/>
+                               
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Location_Name__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Location_Name__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Location_Name__c}" required="false"  />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>  
+                     
+                      
+                       <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Problem_Category__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Category__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Problem_Category__c}" StyleClass="RemoveNone" required="false" id="pcat" onchange="ParksRec1(),ParksRec(this);e8()"/>
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>  
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Specific_Problem_Location__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Specific_Problem_Location__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Specific_Problem_Location__c}" required="false"  />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Problem__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Problem__c}" required="false" id="bbe" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                       <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Rec_Center_Leader_Notified__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Rec_Center_Leader_Notified__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Rec_Center_Leader_Notified__c}" StyleClass="RemoveNone" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem>
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="Does the problem present an unsafe condition that could cause personal injuries or damages such as:  Broken Pipe/Running Water, Electrical Hazard/Power Outage, Sink Hole, Open Unattended Building, Vandalized Building That Must be Secured, Vehicle in Waterway, Major Damage by Vehicle Accident, Major Play Equipment damage/Vandalism, Abandoned Vehicle in Park or Rec Center, Unauthorized Swimming in Pool,  Any Damage that May Cause Physical Harm, Any Report of Injury" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Unsafe_Condition__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Unsafe_Condition__c}" StyleClass="RemoveNone" required="false"  />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                   <apex:inputfield value="{!Case.Date_and_Time__c}" required="false" />
+                                       
+                     
+                       <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Location_Type__c.inlineHelpText}" >
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Location_Type__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Location_Type__c}" StyleClass="RemoveNone" required="false" onchange="ParksRec2(this)"/>
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                      <apex:pageblocksectionitem />   
+                     
+                      
+                  
+            </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

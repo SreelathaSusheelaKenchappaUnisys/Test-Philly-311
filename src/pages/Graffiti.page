@@ -1,0 +1,4 @@
+<apex:page standardController="Case"  >
+    <flow:interview name="Graffiti1" id="Graffiti">
+    </flow:interview>
+</apex:page>

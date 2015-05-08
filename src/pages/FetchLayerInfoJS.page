@@ -1,0 +1,206 @@
+<apex:page contentType="application/javascript" showHeader="false" sidebar="false" standardStyleSheets="false">
+
+    function fetchLayerInfo(aGisPoint, layerCallBack) {
+        console.log('aGisPoint:',aGisPoint);
+        
+        // thanks to https://github.com/caolan/async#parallel
+        
+        actionStatusOn('Querying layers');
+        
+        var layerTimestamp = (new Date()).getTime();
+        
+        async.parallelLimit({
+        
+            // address info - 4200 monument rd
+            address: function(aCallback) { 
+                esriQueryAddress( 'PhilaGov/Addresses/MapServer/0', aGisPoint.gisData.taxAddress, aCallback);
+            },
+            
+            // building permit : 1628 MANTON ST
+            buildingPermit: function(aCallback) { 
+                esriQueryAddressKey('PhilaGov/Construction/MapServer/18', aGisPoint.gisData.addressKey, aCallback);
+            },
+            
+            // business license
+            // family daycare : 1515 BARRINGER ST
+            // dumpster private : 1547 spring garden
+            // dumpster inactive : 600 JAMESTOWN
+            businessLicense: function(aCallback) { 
+                esriQueryAddressKey('PhilaGov/Business/MapServer/8', aGisPoint.gisData.addressKey, aCallback);
+            },
+            
+            // food license : 2154 BRIDGE ST
+            foodLicense: function(aCallback) { 
+                esriQueryAddressKey('PhilaGov/Business/MapServer/6', aGisPoint.gisData.addressKey, aCallback);
+            },
+            
+            // health centers - 1412 Fairmount
+            healthCenter: function(aCallback) { 
+                esriQueryAddress( 'PhilaGov/Health_Centers/MapServer/0', aGisPoint.gisData.standardizedAddress, aCallback);
+            },
+            
+            // hospitals - 4200 monument rd
+            hospital: function(aCallback) { 
+                esriQueryAddress( 'PhilaGov/Hospitals/MapServer/0', aGisPoint.gisData.standardizedAddress, aCallback);
+            },
+            
+            // L and I district
+            district: function(aCallback) { 
+                esriQueryPoint('PhilaGov/ServiceAreas/MapServer/19', aGisPoint.x, aGisPoint.y, aCallback);
+            },
+            
+            //rental licenses 12412 Academy Rd
+            rentalLicense: function(aCallback) { 
+                esriQueryAddressKey( 'PhilaGov/RentalLicense/MapServer/2', aGisPoint.gisData.addressKey, aCallback);
+            },
+            
+            //rental violations 4936   ROSEHILL
+            rentalViolation: function(aCallback) { 
+                esriQueryAddressKey( 'PhilaGov/RentalLicense/MapServer/0', aGisPoint.gisData.addressKey, aCallback);
+            },
+            
+            //vacancy 1515 barringer
+            vacancy: function(aCallback) { 
+                esriQueryAddressKey( 'PhilaGov/Vacancy/MapServer/2', aGisPoint.gisData.addressKey, aCallback);
+            },
+            
+            //violations 5626 WARRINGTON
+            violationProperty: function(aCallback) {
+                esriQueryAddressKeyAnd( 'PhilaGov/Violations/MapServer/0', aGisPoint.gisData.addressKey, "and VIOLATION_STATUS != 'NOT COMPLIED'", aCallback);
+            },
+            
+            //zoning permit : 1650 MARKET
+            zoningPermit: function(aCallback) { 
+                esriQueryAddressKey( 'PhilaGov/Construction/MapServer/12', aGisPoint.gisData.addressKey, aCallback);
+            }
+        },
+        
+        3, // parallelLimit to 3-outstanding requests at a time
+         
+        function(err, results) {
+            window.console && console.log(err);
+            window.console && console.log('elapsed millisecods    : ', (new Date()).getTime() - layerTimestamp);
+            window.console && console.log('fetchLayerInfo RESULTS :',results);
+            
+            var layerInfo = {};
+            
+            for (each in results) {
+                if (each == 'businessLicense')
+                    continue;
+                    
+                if (results[each] && results[each].features && results[each].features.length)
+                    layerInfo[each] = results[each].features[0].attributes;
+            }
+            
+            if (results.businessLicense && results.businessLicense.features) {
+
+                for (i = 0; i &lt; results.businessLicense.features.length; i++) {
+                    var attributes = results.businessLicense.features[i].attributes;
+                    
+                    switch (attributes.TYPE) {
+                        case '3397':
+                            layerInfo.familyDaycare = attributes;
+                            break;
+                        
+                        case '3230':
+                            layerInfo.dumpsterPrivate = attributes;
+                            break;
+                            
+                        default:
+                            break;
+                    }
+                }
+            }
+            
+            if (results.buildingPermit && results.buildingPermit.features) {
+
+                for (i = 0; i &lt; results.buildingPermit.features.length; i++) {
+                    var attributes = results.buildingPermit.features[i].attributes;
+                    
+                    switch (attributes.APPLICATION_TYPE) {
+                        case 'BP_DEMO':
+                            layerInfo.demoPermit = attributes;
+                            break;
+                            
+                        default:
+                            break;
+                    }
+                }
+            }
+            
+            if (layerCallBack)
+                layerCallBack(layerInfo);
+        });
+        
+    }
+    
+    function esriQueryAddress(layer, aStandardizedAddress, aCallback) {
+        esriRestQuery(
+            layer, 
+            'where=UPPER(ADDRESS)%3D\'' + encodeURIComponent(aStandardizedAddress) + '\'', 
+            aCallback
+        );
+    }
+    
+    function esriQueryAddressKey(layer, anAddressKey, aCallback) {
+        esriQueryAddressKeyAnd(layer, anAddressKey, 'and 1=1', aCallback)
+    }
+    
+    function esriQueryAddressKeyAnd(layer, anAddressKey, andClause, aCallback) {
+        var aQuery = new esri.tasks.Query();
+        aQuery.where = "ADDRKEY=" + anAddressKey + ' ' + andClause;
+        //esriLayerQuery(layer, aQuery, aCallback);
+        esriRestQuery(layer, 'where=ADDRKEY%3D' + anAddressKey, aCallback);
+    }
+    
+    function esriQueryPoint(layer, anX, aY, aCallback) {
+        esriRestQuery(
+            layer, 
+            'geometry={0}%2C{1}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects'.format(anX, aY),
+            aCallback
+        );
+    }
+    
+    function esriLayerQuery(layer, query, aCallback) {
+        // https://developers.arcgis.com/javascript/jssamples/fl_paging.html
+        var url = '{!$Setup.GIS__c.ESRIServices__c}/' + layer;
+        window.console && console.log('esriLayerQuery url', url);
+        
+        var aLayer = new esri.layers.FeatureLayer(url, { outFields:["*"] });
+        aLayer.queryFeatures(query, 
+            function(featureSet) {
+                window.console && console.log('featureSet : ', featureSet);
+                window.console && console.log('split      : ', (new Date()).getTime() - splitStamp);
+                aCallback(null, featureSet);
+            },
+            function(error) {
+                window.console && console.log('FAILED   : ', url);
+                window.console && console.log('split    : ', (new Date()).getTime() - splitStamp);
+                aCallback(null, error);
+            }
+        );
+    }
+    
+    function esriRestQuery(layer, where, aCallback) {
+        var splitStamp = (new Date()).getTime();
+        
+        var url = '{!$Setup.GIS__c.ESRIServices__c}/{0}/query?{1}&outFields=*&returnGeometry=true&f=json'.format(layer, where);
+        window.console && console.log('esriRestQuery url', url);
+        
+        var aClient = new XedeHttpClient();
+        aClient.get(url, 
+            function(result) {
+                window.console && console.log('finished : ', url);
+                window.console && console.log('split    : ', (new Date()).getTime() - splitStamp);
+                aCallback(null, JSON.parse(result));
+            },
+            function(result) {
+                window.console && console.log('FAILED   : ', url);
+                window.console && console.log('result', result);
+                window.console && console.log('split    : ', (new Date()).getTime() - splitStamp);
+                aCallback(null, JSON.parse(result));
+            }
+        );
+    }
+
+</apex:page>

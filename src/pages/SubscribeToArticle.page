@@ -1,0 +1,31 @@
+<apex:page standardController="SubscribeArticle__c" extensions="SubscribeToArticeController"  >
+    <apex:pageMessages />
+    <apex:form >
+          
+          <apex:pageBlock >
+          <apex:pageBlockSection title="Welcome To Knowledge Article Subscription Form" >
+         
+          <apex:pageBlockSectionItem >
+              <apex:outputLabel styleClass="requiredInput" >Please Enter your Email*</apex:outputLabel>
+              <apex:inputText value="{!SubscribeArticle__c.email__c}"  /> 
+          </apex:pageBlockSectionItem>
+          <apex:pageBlockSectionItem >
+                          <apex:outputLabel >First Name</apex:outputLabel>
+                          <apex:inputText value="{!SubscribeArticle__c.FirstName__c}" /> 
+          </apex:pageBlockSectionItem>
+          <apex:pageBlockSectionItem >                
+                          <apex:outputLabel >Last Name*</apex:outputLabel>
+                          <apex:inputText value="{!SubscribeArticle__c.LastName__c}"  /> 
+          </apex:pageBlockSectionItem>
+          <apex:pageBlockSectionItem >                
+                          <apex:outputLabel >Contact Number</apex:outputLabel>
+                          <apex:inputText value="{!SubscribeArticle__c.ContactNumber__c}"  /> 
+          </apex:pageBlockSectionItem>
+          </apex:pageBlockSection>
+          </apex:pageBlock>
+         
+              <apex:commandButton value="Subscribe" action="{!Subscribe}"/>       
+          
+    </apex:form>
+    
+</apex:page>

@@ -1,0 +1,142 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+      
+       function comp1(data) {
+           if(data.value=='Yes') {
+               alert('Try to locate previous case based on Case Number, Contact Name, or Service Request Location amend the previous case.  If the case has been closed but not resolved, change status to Redress.');
+               
+           }
+       }
+       function comp2(data) {
+           if(data.value=='Yes') {
+               if(confirm('Proceed with previous case.  This case will be closed.'))
+               SaveAndServiceNotNeededLI06();
+           }
+       }
+       function comp3(data) {
+           if(data.value=='Noise') {
+               if(confirm('Advise constituent to contact the Air Management Services at 215-685-7580.'))
+               SaveAndServiceNotNeededLI06();
+           }
+           else if(data.value=='Missed') {
+               if(confirm('The system has changed the Case Record Type to Rubbish Collection.')){
+               j$("[id $='caseRecordType']").val('Rubbish/Recyclable Material Collection'); 
+               j$('[id*=SubjectForCase]').val('Rubbish/Recyclable Material Collection');                         
+                 j$('[id*=sreq]').val('');
+                 j$('[id*=departmnt]').val('Streets Department');  
+                       crts();
+              } 
+            }
+            else if(data.value=='Other') {
+               if(confirm('The system has changed the Case Record Type to Streets - Other.')){
+               j$('[id*=departmnt]').val('Streets Department');  
+               j$("[id $='caseRecordType']").val('Other (Streets)');   
+                j$('[id*=SubjectForCase]').val('Other (Streets)');            
+               j$('[id*=sreq]').val('Other (Streets)');
+              
+               crts();
+               }               
+           }
+       }
+      
+      
+       function comp4(data) {
+           if(data.value=='Yes') {
+               if(confirm('For a property loss claim, contact the Claims Unit in the Office of Risk Management (215) 683-1700--NOT the Law Department.'))
+               SaveAndServiceNotNeededLI06();
+           }
+       }
+      
+      function e12() {
+    
+           if((j$("[id $='pre']").val()=='Yes')) {
+                j$("[id *='uu']").removeAttr("disabled");
+                j$("[id *='uu']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='uu']").prop('disabled','disabled') ;  
+                j$("[id *='uu']").css("background-color","#EDEDED");             
+           }
+       } 
+       
+       function e13() {
+    
+           if((j$("[id $='tfc']").val()=='Complaint')) {
+                j$("[id *='rub1']").removeAttr("disabled");
+                j$("[id *='rub1']").css("background-color","White");
+                j$("[id *='propr']").removeAttr("disabled");
+                j$("[id *='propr']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='rub']").prop('disabled','disabled') ;  
+                j$("[id *='rub']").css("background-color","#EDEDED"); 
+                j$("[id *='propr']").prop('disabled','disabled') ;  
+                j$("[id *='propr']").css("background-color","#EDEDED");             
+           }
+       } 
+      
+       
+                         
+
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Previous_Case__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Previous_Case__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Previous_Case__c}" StyleClass="RemoveNone" required="false" id="pre" onchange="comp1(this);e12()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Rubbish_Issue__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Rubbish_Issue__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Rubbish_Issue__c}" id="rub1" StyleClass="RemoveNone" required="false" onchange="comp3(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                    
+                     
+                     
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Previous_Case_found__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Previous_Case_found__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Previous_Case_found__c}" StyleClass="RemoveNone" id="uu" required="false" onchange="comp2(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     <apex:inputfield value="{!Case.Property_Loss_Claim__c}" id="propr" StyleClass="RemoveNone" required="false" onchange="comp4(this)"/>
+                         
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Type_of_Feedback_Comments__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Type_of_Feedback_Comments__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Type_of_Feedback_Comments__c}" StyleClass="RemoveNone" onchange="e13()" required="false" id="tfc"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                     
+                   </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

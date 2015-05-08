@@ -1,0 +1,58 @@
+<apex:page standardController="FAQ1__kav" extensions="X311TemplateControllerSample" title="FAQ">
+<apex:includeScript value="/support/console/22.0/integration.js"/>
+<script>
+sforce.console.setTabTitle("FAQ");
+</script>
+<apex:form >
+<apex:pagemessages />
+    <apex:pageBlock >
+        <apex:pageBlockButtons >
+            <apex:commandButton action="{!logCase}" value="Log Information Request" onclick="return confirm('This will insert a new case. Are you sure?');" rendered="{!ISBLANK(srcUpUrl)}"/>
+        </apex:pageBlockButtons>
+        <apex:tabPanel switchType="client" selectedTab="tabArticle" id="theTabPanel">
+            <apex:tab label="Standard Information" name="name1" id="tabArticle" >
+              <apex:pageBlockSection title="Article" showHeader="false" columns="1">
+                    <apex:outputField label="Title" value="{!FAQ1__kav.title}"/>
+                    <apex:outputField value="{!FAQ1__kav.Summary}"/>
+                     </apex:pageBlockSection>
+                    </apex:tab>
+            <apex:tab label="Article Information" name="name2" id="tabArticle1" >
+            <apex:pageBlockSection title="Article" showHeader="false" columns="1">
+                    <apex:outputField value="{!FAQ1__kav.Department__c}" rendered="{!FAQ1__kav.Department__c != null}"/>
+                    <apex:outputField value="{!FAQ1__kav.Special_Info_311__c}" rendered="{!FAQ1__kav.Special_Info_311__c != null}"/>
+                    <apex:outputField value="{!FAQ1__kav.Special_Info_Public__c}"/>
+                    <apex:outputField value="{!FAQ1__kav.Public_Info__c}"/>
+                    <apex:outputField value="{!FAQ1__kav.Agent_Info__c}"/>
+                    <apex:outputField value="{!FAQ1__kav.Supervisor_Info__c}"/>
+                    <apex:outputField value="{!FAQ1__kav.City_Employees_Info__c}"/>
+                
+                    </apex:pageBlockSection>
+                    </apex:tab>
+             <apex:tab label="Additional Information" name="name3" id="tabArticle2" >   
+               <apex:pageBlockSection title="Article" showHeader="false" columns="1">  
+                    <apex:outputField value="{!FAQ1__kav.Keywords__c}"/>
+                    
+              <apex:outputField value="{!FAQ1__kav.Related_Articles1__c}"/>
+                    <apex:outputField value="{!FAQ1__kav.Attachments__c}"/>
+                    <apex:outputField value="{!FAQ1__kav.Modified_Date_Time__c}"/>
+                   <apex:outputField value="{!FAQ1__kav.Available_Date__c}"/> 
+                   
+                   <apex:outputField value="{!FAQ1__kav.Author_Name__c}"/> 
+                    <apex:outputField value="{!FAQ1__kav.Novo_ID__c}"/>                   
+                    <apex:outputField value="{!FAQ1__kav.OIT_High_Level_Hierarchy__c}"/>
+              </apex:pageBlockSection>
+            </apex:tab>
+            </apex:tabPanel>        
+    </apex:pageBlock>
+    <apex:outputPanel rendered="{!NOT(ISBLANK(srcUpUrl))}">
+    <script>
+    if(typeof(srcUp)=='function') {
+        //sforce.console.openPrimaryTab(null, '{!srcUpUrl}', true);   
+        srcUp('{!srcUpUrl}?isdtp=vw');
+    } else {
+        parent.location.href='{!srcUpUrl}';
+    }
+    </script>
+    </apex:outputPanel>
+</apex:form>
+</apex:page>

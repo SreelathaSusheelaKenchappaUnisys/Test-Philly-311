@@ -1,0 +1,119 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">        
+       
+                function manhole1(data) {
+                   if(data.value == 'PWD') {
+                       if(confirm('If the owner of the manhole cover is known, the customers is responsible for contacting the owner of the manhole cover directly and provide the contact details or transfer call to Philadelphia Water Department at 215-685-6300.')){
+                       SaveAndServiceNotNeededLI06();
+                   }
+                } 
+               
+                   else if(data.value == 'PGW')     {
+                       if(confirm('If the owner of the manhole cover is known, the customers is responsible for contacting the owner of the manhole cover directly and provide the contact details or transfer call to Philadelphia Gas Works at 215-235-1000.')){
+                       SaveAndServiceNotNeeded();
+                       }
+                   }    
+                   else if(data.value == 'PECO')     {
+                       if(confirm('If the owner of the manhole cover is known, the customers is responsible for contacting the owner of the manhole cover directly and provide the contact details or transfer call to PECO at 800-494-4000.')){
+                       SaveAndServiceNotNeeded();
+                    }              
+               }
+                   else if(data.value == 'SEPTA')     {
+                     if(confirm('If the owner of the manhole cover is known, the customers is responsible for contacting the owner of the manhole cover directly and provide the contact details or transfer call to SEPTA at 215-580-7800.')){
+                       SaveAndServiceNotNeeded();
+                   }
+                }   
+                   else if(data.value == 'VERIZON')     {
+                       if(confirm('If the owner of the manhole cover is known, the customers is responsible for contacting the owner of the manhole cover directly and provide the contact details or transfer call to 800-837-4966.')){
+                       
+                       SaveAndServiceNotNeeded();
+                   }
+               } 
+             }      
+              
+               function manhole2(data) {
+                   if(data.value == 'Missing Lid') {
+                       j$("[id $='sreq']").val('Manhole Cover Missing');
+                       rsChange();
+                   }
+                   else if(data.value == 'Area Around the Manhole' || data.value == 'Loose Manhole' || data.value == 'Other Issue') {
+                       j$("[id $='sreq']").val('Manhole Other Problem');
+                       rsChange();
+                   }
+               } 
+               
+               function e28(){
+        
+         if((j$("[id $='uu']").val()=='Yes')) {
+                j$("[id *='pom']").removeAttr("disabled");
+                j$("[id *='pom']").css("background-color","White");
+                j$("[id *='hmcob']").removeAttr("disabled");
+                j$("[id *='hmcob']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='pom']").prop('disabled','disabled') ;  
+                j$("[id *='pom']").css("background-color","#EDEDED"); 
+                 j$("[id *='hmcob']").prop('disabled','disabled') ;  
+                j$("[id *='hmcob']").css("background-color","#EDEDED");             
+           }
+       }          
+                   
+            </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="Is the manhole cover on a sidewalk or which position?">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Position__c.label}" /> 
+                       <apex:outputPanel >
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Position__c}" StyleClass="RemoveNone" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                 </apex:pageblocksectionitem>
+                   <apex:inputfield value="{!Case.Has_Manhole_Cover_Owner_Been_Contacted__c}" StyleClass="RemoveNone" id="hmcob" required="false" />
+                 
+                 <apex:pageBlockSectionItem helpText="Is the owner of the manhole cover known?">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Manhole_Cover_Owner_Known__c.label}" /> 
+                     <apex:outputPanel >
+                          <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Manhole_Cover_Owner_Known__c}" StyleClass="RemoveNone" id="uu" required="false" onchange="e28()" />
+                          </div>
+                     </apex:outputPanel>  
+                 </apex:pageblocksectionitem> 
+                 
+                 <apex:pageBlockSectionItem helpText="Description of the problem with the manhole cover.">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type__c.label}"/> 
+                     <apex:outputPanel >
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Problem_Type__c}" StyleClass="RemoveNone" required="false" onchange="manhole2(this)" />
+                         </div>
+                     </apex:outputPanel>  
+                 </apex:pageblocksectionitem>    
+                 
+                 <apex:pageBlockSectionItem helpText="Common owners are Philadelphia Water Department (PWD), Philadelphia Gas Works (PGW), Verizon, PECO, SEPTA, and Public Property.">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Property_Owner_Manhole__c.label}" /> 
+                     <apex:outputPanel >
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Property_Owner_Manhole__c}" id="pom" StyleClass="RemoveNone" required="false" onchange="manhole1(this)" />
+                         </div>
+                     </apex:outputPanel>  
+                 </apex:pageblocksectionitem> 
+                     
+               
+                 
+                 
+                     
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

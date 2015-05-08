@@ -1,0 +1,142 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type
+     Traffic Signal Emergency ST-25  -->
+    
+
+<apex:page standardcontroller="Case">
+        <apex:composition template="X311CaseEdit">
+                <apex:define name="typeSpecific">
+                
+                <!-- Functions to display error messages -->
+                   <script type="text/javascript">
+                        function TrafSig1(data){
+                            if(data.value == 'Yes') {
+                                 if(confirm('To request new installation of a traffic signal, a written request must be sent to: Chief Traffic Engineer, Streets Department, Room 980, Municipal Services Building, 1401 J.F.K. Boulevard Philadelphia, PA 19102.  The system has changed this request to Service Not Needed.' ))
+                                     SaveAndServiceNotNeeded();   
+                             }
+                         }
+                            
+                        function TrafSig8() { 
+                            if(j$("[id $='DTCIRP']").val() != 'Yes')  { 
+                            j$('[id*=TOI]').val('');
+                                j$('[id*=TOI]').attr("disabled","disabled");
+                            } else {
+                                 j$('[id*=TOI]').removeAttr("disabled");                    
+                            }
+                        
+                        } 
+                    
+                        function TrafSig2() {                        
+                             
+                             if((j$("[id $='rtmtso']").val() == 'Yes') || (j$("[id $='bbtbof']").val()== 'Yes')) {
+                                   if(j$("[id $='sreq']").val() != 'Traffic (Other)')    {
+                                       if(confirm('Service Request has been changed to Traffic Other')) 
+                                       j$("[id $='sreq']").val('Traffic (Other)');  
+                                   }    
+                             }
+                             else if(j$("[id $='sigtype']").val() == 'Other Signal') {
+                                   if(j$("[id $='sreq']").val() != 'Traffic (Other)')    {
+                                       if(confirm('Service Request has been changed to Traffic Other')) 
+                                       j$("[id $='sreq']").val('Traffic (Other)');  
+                                   }   
+                             }                      
+                             else if(j$("[id $='sigtype']").val() != '' && j$("[id $='sigtype']").val() != 'Traffic Signal' && j$("[id $='probtype']").val() != '' && j$("[id $='probtype']").val() != 'Knocked Down')    {
+                                 if(j$("[id $='sreq']").val() != 'Traffic (Other)')    {
+                                       if(confirm('Service Request has been changed to Traffic Other'))  
+                                       j$("[id $='sreq']").val('Traffic (Other)');  
+                                   }   
+                             } 
+                             else  {
+                                 j$("[id $='sreq']").val('Traffic Signal Emergency');
+                             }    
+                        }           
+          
+                                                      
+                        </script>
+        
+                <!-- Service Request Information section -->
+                <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                        <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Request_for_New_Traffic_Signal__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Request_for_New_Traffic_Signal__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Request_for_New_Traffic_Signal__c}" StyleClass="RemoveNone" required="false" onchange="TrafSig1(this)"/>
+                                    </div>
+                             </apex:outputPanel>  
+                          </apex:pageblocksectionitem>   
+                          
+                           <apex:inputfield value="{!Case.Time_of_the_Incident__c}" required="false" id="TOI"/>
+                           <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Request_to_Modify_Traffic_Signal_Operati__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Request_to_Modify_Traffic_Signal_Operati__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Request_to_Modify_Traffic_Signal_Operati__c}" StyleClass="RemoveNone" required="false"  id="rtmtso" onchange="TrafSig2()"/>
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem> 
+                         
+                           
+                           
+                            <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Blocked_by_Tree_Branches_or_Foliage__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Blocked_by_Tree_Branches_or_Foliage__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Blocked_by_Tree_Branches_or_Foliage__c}" StyleClass="RemoveNone" required="false" id="bbtbof" onchange="TrafSig2()"/>
+                                    </div>
+                              </apex:outputPanel>  
+                         </apex:pageblocksectionitem>
+                          
+                             
+                         
+                         
+                          <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Signal_Type__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Signal_Type__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Signal_Type__c}" StyleClass="RemoveNone" required="false" id="sigtype" onchange="TrafSig2()"/>
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem> 
+                         
+                         
+                         
+                         <apex:pageBlockSectionItem helpText="The type of problem affecting the traffic signal.">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Problem_Type__c}" StyleClass="RemoveNone" required="false"  id="probtype" onchange="TrafSig2()" />
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem> 
+                         
+                         
+                         <apex:inputfield value="{!Case.Direction__c}" StyleClass="RemoveNone" required="false"/>
+                             
+                        
+                             <apex:inputfield value="{!Case.Signal_Bulb_Out__c}"  required="false"/> 
+                         
+                             
+                          <apex:inputfield value="{!Case.Did_the_caller_indicate_recurring_proble__c}" StyleClass="RemoveNone" required="false" id="DTCIRP" onchange="TrafSig8()"/>
+                            <!--<apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Emergency__c.inlineHelpText}">
+                             <apex:outputLabel value="{!$ObjectType.Case.Fields.Emergency__c.label}" /> 
+                                <apex:outputPanel >
+                                    <div class='requiredInput'>
+                                        <div class='requiredBlock'></div>
+                                           <apex:inputfield value="{!Case.Emergency__c}" required="false"/>
+                                    </div>
+                                </apex:outputPanel>  
+                         </apex:pageblocksectionitem>  -->
+                         
+                       
+                         
+                         
+                          
+                </apex:pageblocksection>
+                </apex:define>
+        </apex:composition>
+</apex:page>

@@ -1,0 +1,157 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+            
+                function violationFire() { 
+                        if(j$("[id $='firefight']").val() != 'Yes')  { 
+                            j$('[id*=names]').attr("disabled","disabled");
+                        } else {
+                             j$('[id*=names]').removeAttr("disabled");                    
+                        }                    
+                }
+                
+                function violationFire1() { 
+                        if(j$("[id $='idNKnown']").val() != 'Yes')  { 
+                            j$('[id*=idNumber]').attr("disabled","disabled");
+                        } else {
+                            j$('[id*=idNumber]').removeAttr("disabled"); 
+                        }
+                    
+                }
+                
+                function violationFire2() { 
+                        if(j$("[id $='Wknown']").val() == 'Yes')  { 
+                            j$('[id*=WCInfo]').removeAttr("disabled");
+                        } else {
+                             j$('[id*=WCInfo]').attr("disabled","disabled");                    
+                        }
+                    
+                }
+                
+                function violationFire3() {
+                    if(j$("[id $='sReqLocKnown']").val() == 'No')
+                        j$('[id*=inLocKnown]').removeAttr("disabled");
+                    else
+                        j$('[id*=inLocKnown]').attr("disabled","disabled");  
+                
+                }
+                
+                
+        </script> 
+        
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Complaint_or_Compliment__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Complaint_or_Compliment__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Complaint_or_Compliment__c}" StyleClass="RemoveNone" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Ambulance_Color__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Ambulance_Color__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Ambulance_Color__c}" StyleClass="RemoveNone" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Incident_Date_and_Time__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Incident_Date_and_Time__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Incident_Date_and_Time__c}" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Ambulance_Emblem__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Ambulance_Emblem__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Ambulance_Emblem__c}" StyleClass="RemoveNone" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+               
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Incident_Location__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Incident_Location__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Incident_Location__c}" required="false" id="inLocKnown" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.EMS_Medical_Call__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.EMS_Medical_Call__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.EMS_Medical_Call__c}" StyleClass="RemoveNone" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                    
+                     
+                     
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Firefighters_or_Paramedics_Known__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Firefighters_or_Paramedics_Known__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Firefighters_or_Paramedics_Known__c}" StyleClass="RemoveNone" required="false" id="firefight" onchange="violationFire()"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Witnesses_Known__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Witnesses_Known__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Witnesses_Known__c}" required="false" id="Wknown" StyleClass="RemoveNone" onchange="violationFire2()"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                      
+            
+                    <apex:inputfield value="{!Case.Firefighter_Paramedic_Names__c}" id="names" required="false"/>
+                     <apex:inputfield value="{!Case.Witness_Contact_Information__c}" required="false" id="WCInfo"/>
+                    
+                    
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.ID_Numbers_Known__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.ID_Numbers_Known__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.ID_Numbers_Known__c}" StyleClass="RemoveNone" required="false" id="idNKnown" onchange="violationFire1()"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                    
+                    <apex:inputfield value="{!Case.Patient_Name__c}" required="false"/>
+                     <apex:inputfield value="{!Case.ID_Numbers__c}" required="false" id="idNumber"/>
+                    
+           
+                
+                <apex:pageblocksectionitem />
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

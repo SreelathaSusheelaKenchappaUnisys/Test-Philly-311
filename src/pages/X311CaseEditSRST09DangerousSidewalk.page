@@ -1,0 +1,55 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       
+       function Dang1(data) {
+           if(data.value=='Yes' ) {
+               
+            j$("[id $='sreq']").val('ADA Curb Ramp');
+             
+             
+
+           }else
+           j$("[id $='sreq']").val('Dangerous Sidewalk');
+       }
+         
+      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Sidewalk_Curb_Problem__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Sidewalk_Curb_Problem__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Sidewalk_Curb_Problem__c}" StyleClass="RemoveNone" required="false"  />
+                         </div>
+                    </apex:outputPanel>  
+                    </apex:pageblocksectionitem>
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Intersection_Ramp_for_Crossing_Street__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Intersection_Ramp_for_Crossing_Street__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Intersection_Ramp_for_Crossing_Street__c}" StyleClass="RemoveNone" required="false"  onchange="Dang1(this)" /> 
+                         </div>
+                    </apex:outputPanel>  
+                    </apex:pageblocksectionitem>
+                     
+                    
+                     
+                     
+                      
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

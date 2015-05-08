@@ -1,0 +1,20 @@
+<apex:page showHeader="false" sidebar="false">
+
+
+		<!-- 
+		
+			This Page is intended for demonstration purposes. Do Not Deploy to Production! 
+		
+		-->
+		
+		<input id="address" type="text" value="10 s broad st"/>
+	    <button id="locate" onclick="addPoint()">locate</button>
+		<c:gisMap />
+
+		<script>
+			function addPoint() {
+			 	aGisApi.mapAddress(document.getElementById('address').value);
+			 }
+		</script>
+
+</apex:page>

@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Newsstand_Outdoor_Cafe">
+    </flow:interview>
+</apex:page>

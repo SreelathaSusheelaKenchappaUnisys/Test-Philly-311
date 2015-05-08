@@ -1,0 +1,304 @@
+<apex:component controller="SearchController" >
+    <style>
+        .dataTables_wrapper {
+            margin-bottom: 50px;
+        }
+        
+        .pbSubheader {
+             background-color :#D6D6D6;
+        }
+        
+        table.dataTable tr.odd td.sorting_1 {
+            background-color:#E1ECF2;
+        }
+        
+        table.dataTable tr.even td.sorting_1 {
+            background-color:#F5F4F4;
+        }
+    
+    </style>
+    
+    
+        
+    <script id="accountTemplate" type="text/x-handlebars-template">
+        {{#if resultMap.Account}}   
+            <div id="force">
+                <table class="dataTables_wrapper table" id="accountsTable">
+                    <thead> 
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each resultMap.Account}}
+                            <tr>
+                                <td><a class="event-link" onclick="openCase('{{Id}}', '{{Name}}');return false;">{{Name}}</a></td>
+                            </tr>
+                        {{/each}}               
+                    </tbody>
+                </table>
+            </div>
+        {{/if}}
+    </script>
+    
+    <script id="contactTemplate" type="text/x-handlebars-template">
+        {{#if resultMap.Contact}}   
+            <div id="force">
+                <table class="dataTables_wrapper table" id="contactsTable">
+                    <thead> 
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each resultMap.Contact}}
+                            <tr>
+                                <td><a class="event-link" onclick="openCase('{{Id}}', '{{Name}}');return false;">{{Name}}</a></td>
+                                <td><a href="mailto:{{Email}}" target="_top">{{Email}}</a></td>
+                                <td>{{Phone}}</td>
+                            </tr>
+                        {{/each}}               
+                    </tbody>
+                </table>
+            </div>
+        {{/if}}
+    </script>
+            
+    <script id="caseTemplate" type="text/x-handlebars-template">
+        {{#if resultMap.Case}}  
+            <div id="force">
+                <table class="dataTables_wrapper table" id="caseTable">
+                    <thead> 
+                        <tr>
+                            <th>Case Number</th>
+                            <th>Novo Ticket Numer</th>
+                            <th>Status</th>
+                            <th>Subject</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each resultMap.Case}}
+                            <tr>
+                                <td><a class="event-link" onclick="openCase('{{Id}}', '{{CaseNumber}}');return false;">{{CaseNumber}}</a></td>
+                                <td><a class="event-link" onclick="openCase('{{Id}}', '{{CaseNumber}}');return false;">{{Ticket__c}}</a></td>
+                                <td>{{Status}}</td>
+                                <td>{{{Subject}}}</td>
+                                <td>{{LastModifiedDate.asYMD}}</td>
+                            </tr>
+                        {{/each}}               
+                    </tbody>
+                </table>
+            </div>
+        {{/if}}
+    </script>
+    
+     <script id="caseTypeTemplate" type="text/x-handlebars-template">
+        {{#if resultMap.X311RequestType__c}}
+            <div id="force">
+                <table class="dataTables_wrapper table" id="typeTable">
+                    <thead> 
+                        <tr>
+                            <th>Case Link</th>
+                            <th>Case Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each resultMap.X311RequestType__c}}
+                            <tr>
+                                <td><a class="event-link" onclick="openCaseType('{{Case_RecordTypeId__c}}', '{{Name}}');return false;">Create Case</a></td>
+                                <td>{{Name}}</td>
+                                <td>{{Description__c}}</td>
+                            </tr>
+                        {{/each}}               
+                    </tbody>
+                </table>
+            </div>
+        {{/if}}
+    </script>
+    
+    <script id="articleTemplate" type="text/x-handlebars-template">
+        {{#if resultMap.KnowledgeArticleVersion}}
+            <div id="force">
+                <table class="dataTables_wrapper table" id="articleTable">
+                    <thead> 
+                        <tr>
+                            <th>Number</th>
+                            <th>Title</th>
+                            <th>Summary</th>
+                            <th>Type</th>
+                            <th>Publish Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each resultMap.KnowledgeArticleVersion}}
+                            <tr>
+                                <td><a class="event-link" onclick="openArticle('{{KnowledgeArticleId}}', '{{Title}}')">{{ArticleNumber}}</a></td>
+                                <td>{{Title}}</td>
+                                <td>{{Summary}}</td>
+                                <td>{{ArticleType}}</td>
+                                <td>{{LastPublishedDate.asYMD}}</td>
+                            </tr>
+                        {{/each}}               
+                    </tbody>
+                </table>
+            <div>
+        {{/if}}
+    </script>
+    
+    <script id="directoryTemplate" type="text/x-handlebars-template">
+        {{#if resultMap.Directory__c}}
+            <div id="force">
+                <table class="dataTables_wrapper table" id="directoryTable">
+                    
+                    <thead> 
+                        <tr>
+                            <th>Name</th>
+                           
+                            <th>Department</th>
+                            
+                            <th>Title</th>
+                            <th>Number</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each resultMap.Directory__c}}
+                            <tr>
+                                <td>{{Name}}</td>
+                              
+                                <td>{{Department__c}}</td>
+                                <td>{{Title__c}}</td>
+                                <td>{{Phone__c}}</td>
+                            </tr>
+                        {{/each}}               
+                    </tbody>
+                </table>
+            </div>
+        {{/if}}
+    </script>
+    
+    <script>
+    
+        Handlebars.registerHelper('htmlDecode', function(anObject, options) {
+             return Encoder.htmlDecode(anObject);
+        });
+        
+        
+        var accountTemplate = Handlebars.compile($$("#accountTemplate").html());
+        var contactTemplate = Handlebars.compile($$("#contactTemplate").html());
+        var caseTemplate = Handlebars.compile($$("#caseTemplate").html());
+        var caseTypeTemplate = Handlebars.compile($$("#caseTypeTemplate").html());
+        var articleTemplate = Handlebars.compile($$("#articleTemplate").html());
+        var directoryTemplate = Handlebars.compile($$("#directoryTemplate").html());
+        
+        $$('#searchButtonDefault').click(function(){
+            
+            searchEntry = $$('#searchFieldDefault').val();
+            if (searchEntry.length<2) {
+                alert('Search term must be longer than one character!');
+                
+            } else {
+                $$('#waitingImageDefault').css('display','inline');
+                salesforceSearch(searchEntry);
+                $$('#searchFieldAdvanced').val(searchEntry);     
+            }   
+        });
+        
+        $$("#searchFieldDefault").keypress(function(event){
+            if (event.keyCode == 13){
+                event.preventDefault();
+                $$("#searchButtonDefault").click();
+            }
+        });
+         
+        var salesforceSearch = function(searchEntry) {
+            searchActionStatusOn();
+            SearchController.Search(searchEntry, function(result,event) {
+
+                if (event.status == false) {
+                    alert(Encoder.htmlDecode(result.message[0]));
+                    searchActionStatusOff('advanced');
+                } else {
+                    if (event.status){                          
+                        searchResult = result.searchResult; 
+                        
+                        window.console && console.log(result);
+                        window.console && console.log(searchResult.resultMap.Account);
+                        
+                        //document.getElementById('accountResponse').innerHTML = accountTemplate(searchResult);
+                        document.getElementById('contactResponse').innerHTML = contactTemplate(searchResult);
+                        document.getElementById('caseResponse').innerHTML = caseTemplate(searchResult);
+                        document.getElementById('caseTypeResponse').innerHTML = caseTypeTemplate(searchResult);
+                        document.getElementById('articleResponse').innerHTML = articleTemplate(searchResult);
+                        document.getElementById('directoryResponse').innerHTML = directoryTemplate(searchResult);
+                        
+                        prepTable();
+                    } else if (event.type === 'exception') {
+                        var host = window.location.host;
+                        var protocol =  window.location.protocol
+                        if (event.message.indexOf("Logged in?") != -1) {
+                            window.top.location.href = protocol +"//" + host ;
+                            
+                        } else {
+                            alert("Exception: "+ Encoder.htmlDecode(event.message));
+                        }
+                    } else {
+                        alert("Exception: "+ Encoder.htmlDecode(event.message)); 
+                    }
+                } 
+                 
+                searchActionStatusOff('advanced');
+                
+            },{escape:true, buffer:false});   
+        }
+        
+        function openCase(aCaseId, aCaseNumber) { 
+            sforce.console.openPrimaryTab(
+                null, 
+                '/' + aCaseId, 
+                true, 
+                aCaseNumber
+            );
+        }
+        
+         function openArticle(anArticleId, aTitle) { 
+          
+            sforce.console.openPrimaryTab(
+            
+                null, 
+               
+                '/apex/X311TemplateFAQSample?id='+anArticleId+'&srKp=ka0&srPos=0', 
+               
+                true, 
+              aTitle 
+            );
+        }
+        
+        function prepTable() {
+            $$('#accountsTable, #contactsTable, #caseTable, #typeTable, #articleTable, #directoryTable').dataTable({
+                "bAutoWidth": false,
+                "bPaginate": false,
+                "bSort": true,
+                                
+                "oLanguage": {"sEmptyTable": "No results found! Try a new query.", "sSearch": "Filter records:" },
+                "asStripClasses":[],
+                "bFilter": false
+            });
+        }
+        
+         function openCaseType(recordTypeId, requestType) { 
+            sforce.console.openPrimaryTab(
+                null, 
+                '/500/e?isdtp%3Dvw&ekp=500&ent=Case&RecordType='+recordTypeId + '&x311rt=' + recordTypeId + '&cas14=' + requestType +'&isdtp=vw&isWsVw=true', 
+                true, 
+                requestType
+            );
+        }
+        
+    
+        
+    </script>
+</apex:component>

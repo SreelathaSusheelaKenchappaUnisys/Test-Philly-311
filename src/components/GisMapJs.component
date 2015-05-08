@@ -1,0 +1,102 @@
+<apex:component >
+	<script type="text/javascript">
+		// Handlebars Helpers
+		Handlebars.registerHelper('stringify', function(anObject, options) {
+			return JSON.stringify(anObject);
+		});
+		
+		Handlebars.registerHelper('htmlDecode', function(anObject, options) {
+			return Encoder.htmlDecode(anObject);
+		});
+		
+		// somebody document GisPoint
+
+		var GisPoint = function(x, y, aLabel, aDescription, anIconURL, aUniqueId, aCallback) {
+			var s = this;
+			s.x = x;
+			s.y = y;
+			s.label = aLabel;
+			s.description = aDescription;
+			s.iconUrl = anIconURL ? anIconURL : null;
+			s.uniqueId = aUniqueId ? aUniqueId : null;
+			s.pageCallback = aCallback;
+			s.gisData = null;
+			s.parentId = null;
+			s.attributes = null;
+			s.featureData = null;
+			s.x2272 = null;
+			s.y2272 = null;
+		
+			this.setFeatureData = function(anObject) {
+				this.featureData = anObject;
+			}
+		
+			this.asEsriPoint = function(aGisApi) {
+				return new aGisApi.EsriPoint(this.x, this.y, new SpatialReference({ wkid: 4326 }) );
+			}
+			
+			this.forEach = function(aBlock) {
+				[ this ].forEach(aBlock);
+			}
+			
+			this.isGisPoint = function() { return true; }
+			
+			this.callback = function() { 
+				this.pageCallback(this);
+			}
+			
+			this.setAttributes = function(aServiceAreasObject) {
+				this.attributes = aServiceAreasObject;
+			}
+			
+			this.setGisData = function(aGisAddressResponse) {
+				this.gisData = aGisAddressResponse.addresses[0];
+			}
+			
+			this.setPageCallback = function(aFunction) {
+				this.pageCallback = aFunction;
+			}
+			
+			this.setParentId = function(anIdString) {
+				this.parentId = anIdString;
+			}
+			
+			this.setParentLabel = function(aLabelString) {
+				this.label = aLabelString;
+			}
+		} 
+		
+		// someone needs to document GisApi
+		
+		var GisApi = function() {
+			var s = this;
+			
+			s.extentCallback = null;
+			
+			this.drawGisPointArray = function(anArray) {
+				this.locateXY(anArray, function() {});
+			}
+			
+			this.setExtent = function(anObject){
+				if (this.extentCallback) {
+					this.extentCallback(anObject);
+				}
+			}
+		
+			this.drawDataArray = function(anArray) {
+				var aPointArray = [];
+				
+				anArray.forEach(function(each, array, index) {
+					aPointArray.push(new GisPoint(each.x, each.y, each.label, each.description, null, each.uniqueId));
+				});
+				
+				this.drawGisPointArray(aPointArray)
+			}
+			
+			this.onViewportChange = function(aFunction)
+			{
+				this.extentCallback = aFunction;
+			}
+		}
+	</script>
+</apex:component>

@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Street_Trees">
+    </flow:interview>
+</apex:page>

@@ -1,0 +1,419 @@
+<apex:page standardController="Case" extensions="X311CaseEditClrExt">
+   <c:gisConnector recordType="{!Case.RecordTypeId}"/>
+    <apex:pageMessages id="msg"/> 
+ <apex:includeScript value="/support/console/26.0/integration.js"/> 
+     <script type="text/javascript">
+        var j$=jQuery.noConflict();
+        
+      <!-- A javascript function used for preventing the user getting back to previous screen on the hit of backspace key -->
+        j$(function() {
+            //Set the current tabs title
+            sforce.console.setTabTitle('{!Case.CaseNumber}'=='' ? 'New Case' : '{!Case.CaseNumber}');
+            j$('[id*=powerBlock]').prop('disabled', 'disabled');
+           
+            // Change to License Plate State field validation - Starts -->           
+            if(j$('[id*=plate]').val() == '')  {
+                       j$('[id*=lic]').val('None');}     
+            // Change to License Plate State field validation - Ends -->    
+            
+            j$(document).keydown(function(e) {
+                var element = e.target.nodeName;
+                if (element != 'INPUT' && element != 'TEXTAREA') {
+                    if (e.keyCode === 8) {
+                        return false;
+                    }
+                }
+            });            
+            
+      <!-- A javascript function to close the tab when user cancels -->
+            j$("input[value=Cancel]").click(function(event) {
+                sforce.console.getEnclosingTabId(function(result) {
+                    var tabId = result.id;
+                    sforce.console.closeTab(tabId);
+                    event.preventDefault();
+                    event.stopPropagation();                    
+                });
+            });
+            setTimeout(X311CaseEdit.loadScript, 1000);
+        });
+
+      <!-- Functions for flip functionality on record type change -->
+          var PartnerMisc= function(){
+            var rsOnChange = function(el){
+                if (j$(el).val()!="") {
+                    rsChange(); 
+                }
+            };          
+            var srtOnChange = function(el){
+                if (j$(el).val()!="") {
+                    srtChange();    
+                }
+            };            
+      <!-- Function for implementing Save and Close button -->
+             var SaveAndServiceNotNeeded = function(el){              
+                if (j$(el).val()!="") {      
+                    SaveAndServiceNotNeeded();    
+                }
+            };
+            
+             var SaveAndCaseCreatedinNovo=function() {             
+                SaveAndCaseCreatedinNovo(); 
+               };
+               
+               var SaveAndServiceNotNeeded1=function() {      
+               SaveAndServiceNotNeeded1();
+               };
+            
+             var addAcc=function() {             
+                addAcc(); 
+               }; 
+      
+      <!-- Function for auto population of zip code based on contact selected -->     
+           var contactOnChange=function() {
+                contactChange();
+           }
+           var contactOnComplete=function() {             
+            j$("input[id$=customerZip]").focus(); 
+           }
+            
+      <!-- Function for changing the script dynamically based on case record type selected -->     
+           var loadScript = function(el){
+                if ("{!ScriptName}"!="") {
+                    var patt1 = /\/apex\/[^\?]+/i;
+    
+                    for(var i=0; i<parent.frames.length; i++) {
+                        try {
+                            if (patt1.test(parent.frames[i].location.href) && parent.frames[i]!=window) {
+                                parent.frames[i].location.href=parent.frames[i].location.href.replace(patt1,"/apex/{!ScriptName}");
+                            }
+                        } catch(e) {
+                            console.log("e=", e);
+                        }
+                    }
+                }
+            };
+            
+            return {rsOnChange:rsOnChange, 
+                    srtOnChange:srtOnChange, 
+                    SaveAndServiceNotNeeded:SaveAndServiceNotNeeded,
+                    SaveAndCaseCreatedinNovo:SaveAndCaseCreatedinNovo,
+                    loadScript:loadScript,
+                    addAcc:addAcc, 
+                    contactOnChange:contactOnChange,
+                    contactOnComplete:contactOnComplete};
+        }();
+        function abandon(data) {
+            if(data.value == 'Yes') {
+                 if(confirm('This could be a stolen vehicle.  Transfer caller to 911.')){
+                 SaveAndServiceNotNeeded1();    
+                 }
+            }
+        }
+     <!-- Functions to License Plate State field validation - Starts -->   
+        function abandon2(data,lic) {                         
+            if(data.value == 'None' || data.value == '') 
+                    document.getElementById(lic).value = 'None';
+            else
+                    document.getElementById(lic).value = 'PA';
+            }
+     <!-- Functions to License Plate State field validation - Ends -->   
+          
+      <!-- Functions to Color field validation -->                               
+        function abandon3(data) {                         
+            if(data.value == 'None')
+                if(confirm('The Color of the Vehicle must be provided in order to create a valid Case.')) 
+                     SaveAndServiceNotNeeded();   
+        }             
+                            
+     <!-- Functions to Make field validation -->                               
+        function abandon4(data) {                         
+            if(data.value == 'None')
+                if(confirm('The Make of the Vehicle must be provided in order to create a valid Case.')) 
+                     SaveAndServiceNotNeeded();   
+        }  
+       <!-- Functions to Make field validation Ends-->   
+        
+      <!-- For contact look up functionality -->
+        
+        function openLookup(baseURL, width, modified, searchParam) {
+            var originalbaseURL = baseURL;
+            var originalwidth = width;
+            var originalmodified = modified;
+            var originalsearchParam = searchParam;
+            
+            var lookupType = baseURL.substr(baseURL.length-3, 3);
+            if (modified == '1') baseURL = baseURL + searchParam;
+            
+            var isCustomLookup = false;
+            
+            // Following "003" is the lookup type for Contact object
+            if (lookupType == "003") {
+                var urlArr = baseURL.split("&");
+                var txtId = '';
+                if (urlArr.length > 2) {
+                   urlArr = urlArr[1].split('=');
+                   txtId = urlArr[1];
+                }
+                
+                // Following is the url of Custom Lookup page.
+                if(('{!$Profile.Name}' == 'City Department Heads') || ('{!$Profile.Name}' == 'Partner User') ||('{!$Profile.Name}' == 'Department WOM (Field Worker) User')||('{!$Profile.Name}' == 'City Council')||('{!$Profile.Name}' == 'State Reps')||('{!$Profile.Name}' == 'Various Civic City Groups, Kensignton CDC, Northern Liberties CDC')||('{!$Profile.Name}' == 'City Department Heads'))
+                    baseURL = "/internal/CustomAccountLookup?txt=" + txtId;
+                    
+                else
+                    baseURL = "/liaisons/CustomAccountLookup?txt=" + txtId;
+                
+                // Following is the id of apex:form control "myForm". 
+                baseURL = baseURL + "&frm=" + escapeUTF("{!$Component.myForm}");
+                if (modified == '1') {
+                   baseURL = baseURL + "&lksearch=" + searchParam;
+                }
+                
+                 // Following is the ID of inputField that is the lookup to be customized as custom lookup
+                 if(txtId.indexOf('Account') > -1 ){
+                   isCustomLookup = true;
+                }
+            }
+            
+            
+            if(isCustomLookup == true){
+                openPopup(baseURL, "lookup", 350, 480, "width="+width+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+            }
+            else {
+                if (modified == '1') originalbaseURL = originalbaseURL + originalsearchParam;
+                    openPopup(originalbaseURL, "lookup", 350, 480, "width="+originalwidth+",height=480,toolbar=no,status=no,directories=no,menubar=no,resizable=yes,scrollable=no", true);
+            } 
+        }
+        
+     <!-- End of contact look up functionality -->  
+
+
+        </script>
+    <apex:sectionheader title="{!$ObjectType.Case.label} Edit" subtitle="{!IF(ISNULL(Case.casenumber), 'New Case',Case.casenumber)}"/>
+
+        <apex:form id="mainForm">
+        
+        <!-- Fields that are hidden and auto populated -->
+        <apex:inputHidden value="{!Case.Centerline__Latitude__s}" id="clLatitude"/>
+        <apex:inputHidden value="{!Case.Centerline__Longitude__s}" id="clLongitude"/>
+        <apex:inputHidden value="{!Case.Centerline_Match_Type__c}" id="clMatchType"/>
+        <apex:inputHidden value="{!Case.Centerline_2272x__c}" id="cl2272x"/>
+        <apex:inputHidden value="{!Case.Centerline_2272y__c}" id="cl2272y"/>
+        <apex:inputHidden value="{!Case.Feature_Data__c}" id="featureData"/>        
+        <apex:inputHidden value="{!Case.PhillyRising__c}" id="SA_PHILLYRISING"/>
+        <apex:inputHidden value="{!Case.RecordTypeId}" id="recordtype" />
+        <apex:inputHidden value="{!Case.Sanitation_District__c}" id="SA_STREETS_Sanitation_Districts"/>
+        <apex:inputHidden value="{!Case.ZipCode__c}" id="SA_STREETS_ZipCode"/>  
+
+        <apex:actionFunction name="rsChange" action="{!rsChange}"  />
+            <apex:actionFunction name="srtChange" action="{!srtChange}"  />
+            <apex:actionFunction name="addAcc" action="{!addAcc}"  /> 
+            <apex:actionFunction name="contactChange" action="{!contactChange}" rerender="caseInformation" oncomplete="PartnerMisc.contactOnComplete();" />
+            <apex:actionFunction name="saveAndClose" action="{!SaveAndClose}"  />
+            <apex:actionFunction name="SaveAndServiceNotNeeded" action="{!SaveAndServiceNotNeeded}"  />
+            <apex:actionFunction name="SaveAndCaseCreatedinNovo" action="{!SaveAndCaseCreatedinNovo}"  />
+            <apex:actionFunction name="SaveAndServiceNotNeeded1" action="{!SaveAndServiceNotNeeded1}" />
+        
+            <apex:pageblock mode="edit" title="{!$ObjectType.Case.label} Edit">
+                <apex:pageblockbuttons >
+                    <apex:commandbutton value="Save" action="{!CustomSave}">
+                          <apex:actionSupport event="onclick"  rerender="msg"/>
+                     </apex:commandbutton>                         
+                     <apex:commandbutton value="Cancel" action="{!Cancel}"/>
+                </apex:pageblockbuttons>
+
+            <apex:outputpanel >
+                <apex:pageblocksection title="Department Details" showheader="true" columns="1">
+                    <apex:outputfield value="{!Case.Type}" />                    
+                    <apex:outputfield value="{!Case.Department__c}" />
+                    <apex:outputfield value="{!Case.Case_Record_Type__c}" id="caseRecordType" />
+                    <apex:selectList value="{!Case.Service_Request_Type__c}" size="1">
+                         <apex:selectOptions value="{!AbandonedServiceReq}"/> 
+                    </apex:selectList>                      
+                </apex:pageblocksection>
+
+               <apex:outputPanel id="caseInformation"> 
+
+                     <apex:pageblocksection title="Case Information" showheader="true" columns="2">
+                        <apex:outputfield value="{!Case.OwnerId}"/>                    
+                        <apex:outputfield value="{!Case.CaseNumber}"/>                   
+                        <apex:inputfield value="{!Case.ContactId}" required="false" id="Account" onchange="PartnerMisc.contactOnChange();"/>
+                        <apex:inputfield value="{!Case.Zip_code__c}" id="customerZip"/>                    
+                        <apex:inputfield value="{!Case.AccountId}" required="false" onchange="addAcc();"/> 
+                        <apex:inputfield value="{!Case.ParentId}" required="false" id="parentId" />
+                        <apex:inputfield value="{!Case.Status}" required="true" />
+                        <apex:selectList value="{!Case.Origin}" size="1"  required="true" >
+                         <apex:selectOptions value="{!Origin}"/> 
+                    </apex:selectList>  
+                         
+                        <apex:inputfield value="{!Case.Reason}"  rendered="false"/>
+                        <apex:pageblocksectionitem />
+                     </apex:pageblocksection>
+               </apex:outputPanel>
+                         
+               <apex:pageblocksection title="Service Request Location" showheader="true" collapsible="true" columns="2">
+                    <apex:pageblocksectionitem >   
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Street__c.label}" />
+                          <apex:outputPanel >
+                             <div class='requiredInput'>
+                                 <div class='requiredBlock'></div>
+                                    <apex:inputfield value="{!Case.Street__c}"  id="street"/>
+                             </div>
+                         </apex:outputPanel>
+                    </apex:pageblocksectionitem>  
+               </apex:pageblocksection>
+               
+                <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2" id="pgsec">
+
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_there_a_busted_steering_column__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_there_a_busted_steering_column__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Is_there_a_busted_steering_column__c}" required="false" onchange="abandon(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.General_Condition__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.General_Condition__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.General_Condition__c}" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Color__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Color__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Color__c}" required="false" onchange="abandon3(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     <apex:inputfield value="{!Case.Interior_Fire_Exterior_Fire_Shell__c}" required="false"/>
+                     
+                       <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Make__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Make__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Make__c}" required="false" onchange="abandon4(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                           <apex:inputfield value="{!Case.Abandoned_How_Long__c}" required="false"/>
+                             <apex:inputfield value="{!Case.Model__c}" required="false"/>
+                           
+                           <apex:inputfield value="{!Case.Inspection_Sticker_Expiration_Date__c}" required="false"/>
+                             <apex:inputfield value="{!Case.Year__c}" required="false"/>
+                           
+                             <apex:inputfield value="{!Case.Inspection_Sticker_State__c}" required="false"/>
+                             
+                              <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Body_Style__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Body_Style__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Body_Style__c }" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                             
+                               <apex:inputfield value="{!Case.Vehicle_Identification_Number_VIN__c}" required="false"/> 
+                                <apex:inputfield value="{!Case.License_Plate__c}" required="false" id="plate" onchange="abandon2(this,'{!$Component.pgsec.lic}')"/>
+                               
+                     <apex:inputfield value="{!Case.Police_District__c}" required="false" id="SA_POLICE_District" />          
+                    <!-- <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Police_District__c.inlineHelpText}" >
+                        <apex:outputLabel value="{!$ObjectType.Case.Fields.Police_District__c.label}" /> 
+                            <apex:outputPanel >
+                                <div class='requiredInput'>
+                                    <div class='requiredBlock'></div>
+                                       <apex:inputfield value="{!Case.Police_District__c}" required="false" id="SA_POLICE_District" />
+                                </div>
+                        </apex:outputPanel>  
+                     </apex:pageblocksectionitem> -->
+                     
+                     <apex:inputfield value="{!Case.License_Plate_State__c}" required="false" id="lic"/>
+                      
+                 <apex:pageblocksectionitem />
+                </apex:pageblocksection>
+                
+                <apex:pageblocksection title="Missing or Damaged Parts"  showheader="true" columns="2">
+                    
+                    <apex:inputfield value="{!Case.Front_Bumper__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Missing_or_Damaged_Right_Front_Door__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Hood__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Missing_or_Damaged_Left_Rear_Door__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Motor_Engine__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Right_Rear_Door__c}" required="false"/> 
+                    <apex:inputfield value="{!Case.Interior_Components__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Transmission__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Damaged_Radio__c}" required="false"/>          
+                    <apex:inputfield value="{!Case.Left_Rear_Quarter_Panel__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Tires__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Right_Rear_Quarter_Panel__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Missing_or_Damaged_Window_Glass__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Rear_Bumper__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Missing_or_Damaged_Left_Front_Fender__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Trunk_Lid__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Missing_or_Damaged_Right_Front_Fender__c}" required="false"/>
+                    <apex:inputfield value="{!Case.Other_Missing_or_Damaged_Parts__c}" required="false"/> 
+                    <apex:inputfield value="{!Case.Left_Front_Door__c}" required="false"/>                 
+                     
+                    <apex:pageblocksectionitem />
+                    
+                
+            </apex:pageblocksection>
+            <apex:pageblocksection title="Description Information" showheader="true" columns="2">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="{!$ObjectType.Case.Fields.Subject.label}" />
+                        <apex:outputPanel >
+                            
+                                <apex:inputfield value="{!Case.Subject}" style="height:15px ; width:300px" />
+                            
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                
+                    <apex:pageblocksectionitem />
+                    
+                    <apex:pageBlockSectionItem >
+                      <apex:outputLabel value="Comments" />
+                    <!--    <apex:outputLabel value="{!$ObjectType.Case.Fields.Description.label}" /> !-->
+                        <apex:outputPanel >
+                          
+                                <apex:inputfield value="{!Case.Description}" style="height:50px ; width:400px"  />
+                         
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>                
+                 <apex:pageblocksectionitem />
+
+                 <!--- Changes for fixing Internal Comments fields Visibility in communities(Case #05005672) Start -->
+                      <apex:pageBlockSectionItem >
+                  <apex:outputLabel >Internal Comments</apex:outputLabel>                    
+                 <apex:inputTextArea id="caseInternalComments" value="{!Comment}" cols="75" rows="6" />
+                 </apex:pageBlockSectionItem> 
+                  <!--- Changes for fixing Internal Comments fields Visibility in communities(Case #05005672) End -->
+
+                 </apex:pageblocksection>
+                    
+
+    
+                              <!--  <apex:pageBlockSection id="pgBlockSectionAdditional" title="Additional Information" collapsible="false" columns="1" rendered="false">
+                     <apex:inputHidden value="{!Case.PhillyRising__c}" id="SA_PHILLYRISING"/>
+                     <apex:inputHidden value="{!Case.Police_District__c}" id="SA_POLICE_District"/>
+                     <apex:inputHidden value="{!Case.Center_City_District__c}" id="SA_PWD_CenterCityDistrict"/>
+                     <apex:inputHidden value="{!Case.Sanitation_District__c}" id="SA_STREETS_Sanitation_Districts"/>
+                     <apex:inputHidden value="{!Case.ZipCode__c}" id="SA_STREETS_ZipCode"/>  
+                     <apex:inputHidden value="{!Case.Pickup_Day__c}" id="SA_STREETS_Rubbish"/>
+                </apex:pageBlockSection>   -->
+                                
+                <apex:pageBlockSection id="pgBlockSectionOptional" title="Optional" collapsible="false" columns="1">
+                    <apex:inputCheckBox value="{!sendEmailNotification}" label="Send Email Notification" />
+                </apex:pageBlockSection>            
+        
+      </apex:outputpanel>
+       </apex:pageblock>
+        </apex:form> 
+</apex:page>

@@ -1,0 +1,527 @@
+<apex:component controller="XedeRemote" extensions="GISController" >
+    <apex:attribute name="layers" type="string" required="false" description="feature layers" />
+
+    <link rel="stylesheet" href="//js.arcgis.com/3.9/js/esri/css/esri.css" />
+    <script src="//js.arcgis.com/3.9/" type="text/javascript" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-1.10.2.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-ui.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/handlebars.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/handlebars.helpers.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/encoder.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/prototype.js')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.XedeDefaultAssets,'css/reset.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.GISAssets,'css/checknet.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.GISAssets,'visualforceBootstrap/css/bootstrap.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.GISAssets,'js/async.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/XedeHttpClient.js')}" />	
+    <!-- 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min.js" />
+     -->
+       
+    <style>
+        html, body,#map {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #force .alert {
+            padding: 0;
+        }
+        .feedback {
+            float:right;
+        }
+
+        #map {
+            width:78%;
+            border-right:1px solid #c9c9c9;
+            float: left;
+        }
+        
+        .sidePanel{
+            width:21%;
+            float:left;
+        
+        }
+
+        #container {
+            width:100%;
+            height: 98%;
+        }
+        
+        #featureLayers {
+            border-bottom:1px solid #c9c9c9;
+            height: 300px;
+        }
+        
+        #relatedItems,#featureLayers {
+            padding-top:20px;
+        }
+        
+        #relatedItems {
+            height:500px;
+            overflow:auto;
+        
+        }
+        .action-status-wrapper {
+            margin-left: 38%;
+            margin-right: auto;
+            position: absolute;
+            top: 50%;
+            width: 110px;
+        }
+        
+        .infotable {
+            width: 96%;
+            margin: 6px;
+        }
+
+        .infotableproperty {
+            min-width: 120px;
+            max-width: 160px;
+            padding-right: 12px;
+            padding-top: 6px;
+            text-transform: capitalize;
+        }
+      
+    </style>
+
+    <div id="container" class="claro">
+        <div id="map">
+            <c:ActionStatus />  
+        </div>
+
+        <div id="force" class="sidePanel">
+            
+            <div id="featureLayers">
+                
+            </div>
+            <div id="relatedItems"></div>
+        </div>
+    </div>  
+
+    <script id="layerTemplate" type="text/x-handlebars-template">
+        {{#each this}}
+            <label class="checkbox">
+                <input type="checkbox" value="{{@key}}"/>
+                    {{@key}}
+            </label>
+        {{/each}}
+    </script>
+
+    <script id="relatedTemplate" type="text/x-handlebars-template">
+         <ul class="unstyled">
+            {{#each this}}
+            <li class="alert alert-info">
+                <a target="_blank" href="{!$Site.BaseUrl}/{{uniqueId}}">{{label}}</a> -- {{htmlDecode description}} 
+                <br />
+
+                <br />
+                <div style="text-align:center">
+                    <button class="btn btn-mini btn-primary" onclick="aGisApi.centerAndZoom({{x}},{{y}})">Map</button>
+                 {{#is label "!==" "New Case"}}
+                    <button class="btn btn-mini btn-primary" onclick="setParentId('{{uniqueId}}','{{label}}');">Relate</button>
+                 {{/is}}
+                </div>
+            </li>
+            {{/each}}
+         </ul>
+    </script>
+    
+    <c:FetchLayerInfoJS />
+    <c:GisMapJs />
+    
+    <script type="text/javascript">
+    	var $$=$.noConflict();
+        
+        var aGisApi = new GisApi();     
+        var aGisPoint = null;
+        var map, points, currentId, prevGraphic;
+
+        window.console && console.log('Before noConflict() and require[], {}');
+
+        require([
+            "esri/map",
+            "esri/geometry/Point",
+            "esri/geometry/Extent",
+            "esri/SpatialReference",
+            "esri/layers/ArcGISTiledMapServiceLayer",
+            "esri/graphic",
+            "esri/InfoTemplate",
+            "esri/symbols/SimpleMarkerSymbol",
+            "esri/symbols/Font",
+            "esri/symbols/TextSymbol",
+            "dojo/_base/Color",
+            "dojo/number",
+            "dojo/dom", 
+            "esri/tasks/GeometryService",
+            "esri/layers/FeatureLayer",
+            "dijit/ProgressBar",
+            "dojox/encoding/base64",
+            "dojo/domReady!"  // won't return until the dom is ready - custom is to make it the last and not assign it
+        ], function (
+            Map, 
+            Point,
+            Extent,
+            SpatialReference,
+            ArcGISTiledMapServiceLayer, 
+            Graphic,
+            InfoTemplate,
+            SimpleMarkerSymbol, 
+            Font,
+            TextSymbol,
+            Color,
+            number,
+            dom,
+            GeometryService,
+            FeatureLayer,
+            //Query,
+            ProgressBar,
+            Base64
+        ) {
+           
+			window.console && console.log('Inside require[], {}', aGisApi);
+			
+            map = new esri.Map("map", {sliderOrientation : "horizontal" });
+            var baseLayer= new ArcGISTiledMapServiceLayer("{!$Setup.GIS__c.BaseMaps__c}", {
+              "opacity" : 0.5,
+            });
+            
+            map.addLayer(baseLayer);
+            map.on("zoom-end", function(evt){
+                setExtent(map.extent);
+                window.console && console.log('map extent:',map.extent);
+            });
+            
+            map.on("pan-end", function(evt){
+                setExtent(map.extent);
+            });
+            
+            
+            map.on("update-start",function(evt){
+                actionStatusOn();
+            });
+            map.on("update-end",function(evt){
+                actionStatusOff();
+            });
+
+            //-- change infowindow size
+            map.infoWindow.resize(500,125);
+            
+            var layerMap ={};
+            
+            function addLayerURL(aStringOrStringArray) {
+                actionStatusOn('Fetching GIS Layers');
+                
+                var aList = [].concat(aStringOrStringArray);
+                var layerSource = $$("#layerTemplate").html();
+                var layerTemplate = Handlebars.compile(layerSource);
+                
+                var aClient = new XedeHttpClient();
+                
+                async.eachSeries(aList, function(each, aCallback) {
+                    var aUrl = each;
+                    
+                    if (each.length == 2) // the named urls are arrays with two parts -- brittle, but it works for now
+                        aUrl = each[1];
+                    
+                    if (aUrl.indexOf('?') >= 0)
+                        aUrl += '&f=json';
+                    else
+                        aUrl += '?f=json';
+                        
+                    var response = aClient.get(aUrl, function(response) {
+                        var layerObject = JSON.parse(response);
+                        
+                        window.console && console.log(aUrl, layerObject);
+                        
+                        if (layerObject.tileInfo) {
+                            layerMap[each.length == 2 ? each[0] : layerObject.serviceDescription] = new ArcGISTiledMapServiceLayer(aUrl, {
+                                "opacity" : 0.5,
+                            });
+                        }
+                        else if (layerObject.fields) {
+                            layerMap[each.length == 2 ? each[0] : layerObject.name] = new FeatureLayer(aUrl, {
+                                mode: FeatureLayer.MODE_ONDEMAND,
+                                "opacity" : 0.5,
+                                outFields: '*',
+                                infoTemplate: new InfoTemplate(layerObject.name, formatFeatureHTML)
+                            });
+                        }
+                        aCallback(null);
+                    });
+                }, function(err) {
+                    actionStatusOff();
+                    
+                    window.console && console.log('layerMap: ', layerMap);  // fb-02820
+                    
+                    document.getElementById('featureLayers').innerHTML = layerTemplate(layerMap);
+                    
+                    $$('input[type=checkbox]').on('click', function() {
+                        var $$this = $$(this);
+                        
+                        var selectedLayer = $$this.val()
+                        
+                        if ($$this.is(':checked')) {
+                            map.addLayer(layerMap[selectedLayer]);
+                        } else {
+                            map.removeLayer(layerMap[selectedLayer]);
+                        }
+                    });
+                });
+            }
+            
+            // building the info template content is more problematic than we'd 
+            // normally encounter, because we have to include an onclick button to send
+            // an object, now base64 encoded, to the parent
+            function formatFeatureHTML(aGraphic) {
+                var tableHTML ='<table class="infotable">';
+                
+                for (var eachField in aGraphic.attributes)
+                    tableHTML += '<tr><td class="infotableproperty">{0}:</td><td>{1}</td></tr>'.format(eachField.replace(/_/g, ' '), aGraphic.attributes[eachField]);
+                
+                tableHTML += "</table> ";
+
+                // I got tired of trying to escape quotes and double quotes etc
+                // so I decided to just base64 encode the little pecker.
+                var aString = JSON.stringify(aGraphic.attributes);
+
+                var byteArray = [];
+                for (var i = 0; i < aString.length; i++)
+                    byteArray.push(aString.charCodeAt(i));
+                
+                var base64data = Base64.encode(byteArray);
+                
+                return "<button onclick=\"setFeatureData('" + base64data + "');\">Set Feature Data</button>" + tableHTML;
+            }
+            
+            function mapAddress() {
+                window.console && console.log('mapAddress()');
+
+                setTimeout(function(){
+                    map.graphics.remove(prevGraphic);
+                },700);
+                actionStatusOn();
+                if (arguments.length < 2 || arguments.length > 3)
+                    return;
+                    
+                var anAddress = arguments[0];
+                var pageCallback = arguments.length == 2 ? arguments[1] : arguments[2]; 
+                var aGeocodeType = arguments.length == 2 ? 'CenterlineOnly' : arguments[1];
+                
+                aClient = new XedeHttpClient();
+                var safeAddress = encodeURIComponent(anAddress.replace('&', 'and'));
+                
+                var responseList = [];
+                async.series([
+        
+                    // first we'll get the standardized address
+                    function(aCallback) { 
+                        actionStatusOn('Geocoding address');
+
+                        GISController.Address(safeAddress, '4326',
+                            function(result, event) {
+                                if (event.status == false) {
+                                    aCallback(event.message);
+                                } else {
+                                    window.console && console.log('standardized address', result);
+                                    if (result.successful == 'false') {
+                                        aCallback('Address can not be located');
+                                    }
+                                    else {
+                                        responseList.push(result.jmap);
+                                        aCallback(null, 'address');
+                                    }
+                                }
+                            },{escape:true, buffer:false}
+                        );
+                    },
+                    
+                    // now get the service areas information
+                    function(aCallback) { 
+                        if (responseList.length !== 1) {
+                            aCallback(null, 'address ERROR');
+                            return;
+                        }
+                        
+                        if (responseList[0].addresses === null) {
+                            aCallback(null, 'missing addresses');
+                            return;
+                        }
+                        
+                        var aList = responseList[0].addresses[0].links.filter(function(each) { return each.rel == 'parcels'});
+                        
+                        actionStatusOn('Getting service areas');
+                        GISController.HttpGet(
+                            '{0}?format=json'.format(aList[0].href.replace('/parcels', '/service-areas')), 
+                            function(result, event) {
+                                if (event.status == false) {
+                                    window.console && console.log(event);
+                                    alert(event.message);
+                                    aCallback(event);
+                                } else {
+                                    window.console && console.log(result);
+                                    responseList.push(result.jmap);             
+                                    aCallback(null, 'service-areas');
+                                }
+                            },{escape:true, buffer:false}
+                        );
+                    }
+                    
+                ],
+                
+                function(err, results){
+                    window.console && console.log(err);
+                    window.console && console.log(results);
+                    window.console && console.log(responseList);
+                
+                    if (results[0] == "address") {
+                        aGisPoint = new GisPoint(
+                            responseList[0].addresses[0].xCoord, 
+                            responseList[0].addresses[0].yCoord,
+                            label = 'New Case',
+                            description = responseList[0].addresses[0].standardizedAddress,
+                            null,
+                            null,
+                            pageCallback
+                        );
+                        
+                        aGisPoint.setGisData(responseList[0]);
+                        
+                        // don't callback until after we project to 2272 -- we'll get 
+                        // new 2272 coordinates inside the GisPoint
+                        fetchLayerInfo(aGisPoint, function(result) {
+                            LocateXY(aGisPoint, function() { 
+                                aGisPoint.layerInfo = result;
+                                aGisPoint.callback();
+                                actionStatusOff();
+                            });
+                        });
+                    }
+                    else {
+                        alert(err);
+                        actionStatusOff();
+                    }
+                    
+                    if (results[1] == "service-areas") {
+                        var aMap = {};
+
+                        responseList[1].serviceAreaValues.forEach(function(each, index, list) {
+                            aMap[each.serviceAreaId] = each.value;
+                        });
+                        
+                        aGisPoint.setAttributes(aMap);
+                    }
+                    
+                    aGisPoint.callback();
+                });
+            }
+            
+            function centerAPoint(aGisPointX,aGisPointY){
+                var anEsriPoint = new esri.geometry.Point(aGisPointX, aGisPointY, new SpatialReference({ wkid: 4326 }));
+                 projectTo(map.spatialReference.wkid, anEsriPoint, function(result) {
+                    anEsriPoint = result[0];
+                    map.centerAndZoom(anEsriPoint, 8);
+                    aCallback();
+                });
+            }
+            
+            function LocateXY(aGisPointOrArray, aCallback) {
+                
+                aGisPointOrArray.forEach(function (eachGisPoint, index, array) {
+                    var anEsriPoint = new esri.geometry.Point(eachGisPoint.x, eachGisPoint.y, new SpatialReference({ wkid: 4326 }));
+
+                    actionStatusOn('Projecting');
+                    projectTo(map.spatialReference.wkid, anEsriPoint, function(pointList) {
+                        actionStatusOff();
+                        anEsriPoint = pointList[0];
+                        eachGisPoint.x2272 = anEsriPoint.x;
+                        eachGisPoint.y2272 = anEsriPoint.y;
+    
+                        var symbol = new SimpleMarkerSymbol();
+                        var infoTemplate = new InfoTemplate(
+                            eachGisPoint.description, 
+                            "Case Number: ${caseNumber}<br />Description: ${description}<br /><br />"
+                        );
+                        
+                        if (aGisPointOrArray instanceof GisPoint) {
+                            symbol.setStyle(SimpleMarkerSymbol.STYLE_DIAMOND);
+                            symbol.setSize("32");
+                            symbol.setColor(new Color("yellow"));
+                        } else {
+                            symbol.setStyle(SimpleMarkerSymbol.STYLE_SQUARE);
+                            symbol.setColor(new Color("blue")); 
+                        }
+                        var attributes = { 
+                            caseNumber: eachGisPoint.label, 
+                            description: eachGisPoint.description,  
+                            id: eachGisPoint.uniqueId           
+                        };   
+                                            
+                        var graphic = new Graphic(anEsriPoint, symbol, attributes, infoTemplate);
+                        
+                        if (aGisPointOrArray instanceof GisPoint) {
+                            graphic.id="highlight";
+                            prevGraphic = graphic;
+                        }
+                        
+                        map.graphics.add(graphic);
+                        
+                        // only zoom if we're mapping a single point
+                        if (aGisPointOrArray instanceof GisPoint) {
+                            map.centerAndZoom(anEsriPoint, 8);
+                        }
+                        
+                        aCallback();
+                    });
+                });
+                
+                var relatedSource = $$("#relatedTemplate").html();
+                var relatedTemplate = Handlebars.compile(relatedSource);
+                
+                var listArray = [];
+                
+                aGisPointOrArray.forEach(function(each, index, list) {
+                    if (each instanceof GisPoint)
+                        listArray.push(each);
+                });
+                
+                if (listArray.length > 0)
+                    document.getElementById('relatedItems').innerHTML = relatedTemplate(listArray);
+                window.console && console.log(listArray);
+            }
+
+            function projectTo(srId, aPoint, callback) {
+                gsvc = new GeometryService("{!$Setup.GIS__c.ESRIServices__c}/Geometry/GeometryServer");
+                gsvc.project([aPoint], new SpatialReference(srId), callback);
+            }
+            
+            aGisApi.locateXY = LocateXY;
+            aGisApi.mapAddress = mapAddress;
+            aGisApi.EsriPoint = esri.geometry.Point;
+            aGisApi.addLayer = addLayerURL;
+            aGisApi.centerAndZoom = centerAPoint;
+            
+            window.parent.setGisApi(aGisApi);
+        });
+        
+        function setParentId(id,label){
+            aGisPoint.setParentId(id);
+            aGisPoint.setParentLabel(label);
+            aGisPoint.callback();
+        }
+        
+        function setFeatureData(value) {
+            aGisPoint.setFeatureData(value);
+            aGisPoint.callback();
+        }
+        
+        function setExtent(value) {
+            aGisApi.setExtent(value);
+        }
+        
+        
+    </script>
+</apex:component>

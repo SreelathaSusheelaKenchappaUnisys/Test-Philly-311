@@ -1,0 +1,256 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       
+       
+       
+       function mrc1(data) {
+           if(data.value=='Residential' ) {
+               j$("[id $='sreq']").val('Maintenance Residential');
+           } else if (data.value == 'Commercial') {
+           
+                 j$("[id $='sreq']").val('Maintenance Commercial');
+           }
+       }
+        
+       function dep1() {
+           
+           
+           
+           if((j$("[id $='rorc']").val()=='Residential') && (j$("[id $='rpt']").val()=='Condo' || j$("[id $='rpt']").val()=='Apartment')) {
+               j$("[id $='unitnum']").removeAttr("disabled");
+           }else {
+                 j$('[id*=unitnum]').val('');  
+                j$('[id*=unitnum]').attr("disabled","disabled");               
+           }
+           
+           if((j$("[id $='rorc']").val()=='Residential') && (j$("[id $='extint']").val()=='Interior')) {
+               j$("[id $='apap']").removeAttr("disabled");
+                j$("[id *='apap']").css("background-color","White");
+           }else {
+               j$('[id*=apap]').val('');
+                j$('[id*=apap]').attr("disabled","disabled");                          
+            j$("[id *='apap']").css("background-color","#EDEDED");  
+           }
+       }
+       function dep2() {
+           
+           if(j$("[id $='dp']").val()=='Yes') {
+               
+               j$("[id $='frb']").removeAttr("disabled");
+               j$("[id *='frb']").css("background-color","White");
+           
+           }else {
+                j$("[id $='frb']").val('');
+                j$('[id*=frb]').attr("disabled","disabled");   
+                   j$("[id *='frb']").css("background-color","#EDEDED");             
+           }
+           
+          
+       }
+       function mrc2(data) {
+           if(data.value == 'Public Right of Way' ) {
+              if( confirm('This is a Streets issue.')) {
+              
+               j$('[id*=caseRecordType]').val('Illegal Dumping');
+               j$('[id*=SubjectForCase]').val('Illegal Dumping');
+                  j$('[id*=sreq]').val('Illegal Dumping');
+                  j$('[id*=departmnt]').val('Streets Department');
+                  crts();
+              }
+           }
+       }
+       function mrc3() {
+          if(j$("[id $='frb']").val() == 'Yes') {
+              if( confirm('If a home owner is reporting flooding in the basement, the Water Department is responsible for addressing the problem.'))
+               SaveAndServiceNotNeededLI06();
+               
+           }
+       }
+       /*  Commenting as per new requirements Case Number 05012710
+        function address() {
+        if(j$("[id $='hansenAddress']").val() == null || j$("[id $='hansenAddress']").val() == '') {
+        
+                        
+                        if( confirm('A fire code violation case can be submitted only if the exact L&I address key is validated.'))
+               SaveAndServiceNotNeededLI06();
+               
+           }
+       }*/
+       
+       function e19() {
+    
+           if((j$("[id $='rorc']").val()=='Residential')) {
+                j$("[id *='rpt']").removeAttr("disabled");
+                j$("[id *='rpt']").css("background-color","White");
+                 j$("[id *='plhu']").removeAttr("disabled");
+                j$("[id *='plhu']").css("background-color","White");
+           } 
+           else {
+           j$("[id *='rpt']").val('');
+                j$("[id *='rpt']").prop('disabled','disabled') ;  
+                j$("[id *='rpt']").css("background-color","#EDEDED"); 
+           j$("[id *='plhu']").val('');          
+                j$("[id *='plhu']").prop('disabled','disabled') ;  
+                j$("[id *='plhu']").css("background-color","#EDEDED");             
+           }
+       }
+        
+             
+        
+      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="Is code violation in a residential  building or a commercial building?">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Residential_or_Commerical__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Residential_or_Commerical__c}"  StyleClass="RemoveNone" id="rorc" required="false" onchange="mrc1(this);dep1();e19()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                  <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Property_Owner_Name__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Property_Owner_Name__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Property_Owner_Name__c}"  required="false" id="addressOwner"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>    
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Exterior_or_Interior__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Exterior_or_Interior__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Exterior_or_Interior__c}" StyleClass="RemoveNone" required="false" id="extint" onchange="dep1()"   />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Property_Owner_Contact_Information__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Property_Owner_Contact_Information__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Property_Owner_Contact_Information__c}"  required="false" id="addressOwner" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Residential_Property_Type__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Residential_Property_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                     <apex:inputfield value="{!Case.Residential_Property_Type__c}" StyleClass="RemoveNone" required="false" id="rpt" onchange="dep1()"  />
+                      </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                     
+                     
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Drainage_Problem__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Drainage_Problem__c.label}"/> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Drainage_Problem__c}" StyleClass="RemoveNone" required="false" id="dp"  onchange="mrc3();dep2()"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Unit_Number__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Unit_Number__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Unit_Number__c}" required="false" id="unitnum"   />
+                                </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                               
+                               
+                               <apex:inputfield value="{!Case.Flooded_Residential_Basement__c}" required="false" id="frb" StyleClass="RemoveNone"  onchange="mrc3()"  />
+                               
+                               
+                                <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Problem_Location_at_House_or_Unit__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Location_at_House_or_Unit__c.label}"/> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Problem_Location_at_House_or_Unit__c}" StyleClass="RemoveNone"  id="plhu" required="false" onchange="mrc2(this)"  />
+                                </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                               
+                             <!--  <apex:pageBlockSectionItem helpText="If the inspector needs access to view the problem in the interior of a residential property, will an adult (over age of 18) be there to provide access? (An adult must be present.)">
+                                   <apex:outputPanel >
+                                       <div class='requiredInput'>
+                                           <div class='requiredBlock'></div> -->
+                                           
+                                      <!-- </div>
+                               </apex:outputPanel>
+                               </apex:pageBlockSectionItem> -->
+                   <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Adult_Present_to_Provide_Access_to_Inspe__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Adult_Present_to_Provide_Access_to_Inspe__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                     <apex:inputfield value="{!Case.Adult_Present_to_Provide_Access_to_Inspe__c}" StyleClass="RemoveNone" id="apap" required="false"  />
+                     </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                 
+                 
+                      <!--commenting as per new requirements Case Number 05012710   
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                             <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>!-->
+                       <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"/>             
+                 
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Is_Customer_the_Property_Owner__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Is_Customer_the_Property_Owner__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Is_Customer_the_Property_Owner__c}" StyleClass="RemoveNone" required="false" id="po" onchange="mrc3()"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

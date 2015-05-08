@@ -1,0 +1,9 @@
+<!-- 
+  This page is used for redirecting
+  to the specific case edit page 
+  based on the record type selected
+ --> 
+
+<apex:page standardcontroller="Case" extensions="X311CaseEditClrExt" action="{!redir}">
+
+</apex:page>

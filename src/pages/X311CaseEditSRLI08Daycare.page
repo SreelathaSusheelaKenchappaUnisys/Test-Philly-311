@@ -1,0 +1,134 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+      /*  Commenting as per new requirements Case Number 05012710 
+       function address() {
+           if(j$("[id $='hansenAddress']").val() == '' || j$("[id $='hansenAddress']").val() == Null ) {
+             
+          if(confirm('A daycare violation case can be submitted only if the exact L&I address key is validated.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       } */
+       
+       function res(data) {
+           if(data.value=='Residential' ) {
+               j$("[id $='sreq']").val('Daycare Residential');
+           } else if (data.value == 'Commercial') {
+           
+                 j$("[id $='sreq']").val('Daycare Commercial');
+           }
+       }
+        
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="Is this property residential or business?">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Residential_or_Commerical__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Residential_or_Commerical__c}"  StyleClass="RemoveNone" required="false" onchange="res(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Daycare_Business_Name__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Daycare_Business_Name__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Daycare_Business_Name__c}" StyleClass="RemoveNone" required="false" id="daycareName" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                
+                   
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.One_or_Two_Family_Dwelling__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.One_or_Two_Family_Dwelling__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.One_or_Two_Family_Dwelling__c}" StyleClass="RemoveNone" required="false"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                  <apex:inputfield value="{!Case.Hours_of_Operation__c}" required="false"/>
+                      
+                    
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Violation_Type_Daycare__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Violation_Type_Daycare__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Violation_Type_Daycare__c}" StyleClass="RemoveNone" required="false"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      
+                               <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict" />
+                               <!-- ="liDistrict" -->
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                         
+                      
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Family_Daycare_License__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Family_Daycare_License__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Family_Daycare_License__c}" StyleClass="RemoveNone" required="false" id="daycareLicenseActive" />
+                         </div>
+                    </apex:outputPanel>  
+                    </apex:pageblocksectionitem>
+                     
+                                <!--commenting as per new requirements Case Number 05012710   
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                             <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>!-->
+                       <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"/>
+                        
+                     
+                      
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Food_Preparation_and_Service_License__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Food_Preparation_and_Service_License__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Food_Preparation_and_Service_License__c}" StyleClass="RemoveNone" required="false" id="foodLicenseActive"  onchange="address(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                  
+                <apex:pageblocksectionitem />
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

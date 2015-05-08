@@ -1,0 +1,3 @@
+<apex:page >
+  <flow:interview name="Street_Light_Outage"></flow:interview>
+</apex:page>

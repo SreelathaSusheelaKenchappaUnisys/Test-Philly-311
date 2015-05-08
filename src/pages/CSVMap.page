@@ -1,0 +1,136 @@
+<apex:page showHeader="false" sidebar="false" standardStyleSheets="false" cache="false">
+    <script src="//js.arcgis.com/3.9/"></script>
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-1.10.2.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-ui.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/handlebars.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/handlebars.helpers.js')}" />
+    <link rel="stylesheet" href="//js.arcgis.com/3.8/js/esri/css/esri.css"/>
+    
+    <style>
+        html, body,#map {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .feedback {
+            float:right;
+        }
+
+        #map {
+            width:100%;
+            border-right:1px solid #c9c9c9;
+            float: left;
+        }
+        
+        .action-status-wrapper {
+            margin-left: 38%;
+            margin-right: auto;
+            position: absolute;
+            top: 50%;
+            width: 110px;
+        }
+        
+        .infotable {
+            width: 96%;
+            margin: 6px;
+        }
+
+        .infotableproperty {
+            min-width: 120px;
+            max-width: 160px;
+            padding-right: 12px;
+            padding-top: 6px;
+            text-transform: capitalize;
+        }
+      
+    </style>
+    
+    <div id="map">
+        <c:ActionStatus />  
+        
+      <!--  <apex:outputPanel styleClass="feedback" layout="block" >
+            <a href="#" onclick="openFeedback();">Feedback</a>  
+            <c:Feedback config="Default2"/>
+        </apex:outputPanel>  -->
+    </div>
+
+    <script>
+        var map, csv;
+        
+        require([ 
+            "esri/map", 
+            "esri/geometry/Point",
+            "esri/layers/CSVLayer",
+            "esri/Color",
+            "esri/symbols/SimpleMarkerSymbol",
+            "esri/renderers/SimpleRenderer",
+            "esri/InfoTemplate",
+            "esri/urlUtils",
+            "esri/layers/ArcGISTiledMapServiceLayer",
+            "dojo/domReady!"
+          ], function(
+            Map, Point, CSVLayer, Color, SimpleMarkerSymbol, SimpleRenderer, InfoTemplate, urlUtils, ArcGISTiledMapServiceLayer
+          ) {
+           
+            map = new Map("map", {sliderOrientation : "horizontal" });
+            var baseLayer= new ArcGISTiledMapServiceLayer("https://tiles.arcgis.com/tiles/YRlMlhu838MHTM0n/arcgis/rest/services/PhiladelphiaGrayWM/MapServer", {
+              "opacity" : 0.5,
+            });
+            
+            map.addLayer(baseLayer);
+            window.console && console.log(map);
+            
+            var reportName = getParameterByName('report');
+            if (reportName == null || reportName == '')
+                reportName = 'Cases_with_Geodata4';
+                
+            csv = new CSVLayer(
+                "{!URLFOR($Page.XedeReportCSV)}?report=" + reportName,
+                {
+                    copyright : "City of Philadelphia, 2014",
+                    fields : [
+                        {
+                            name : "Service Request ID",
+                            alias : "Id"
+                        }, 
+                        {
+                            name : "Service Request Number",
+                            alias : "Case"
+                        }, 
+                        {
+                            name : "Case Record Type",
+                            alias : "Type"
+                        }, 
+                        {
+                            name : "Street"
+                        }
+                    ]
+                }
+            );
+            var orangeRed = new Color([238, 69, 0, 0.5]); // hex is #ff4500
+            var marker = new SimpleMarkerSymbol("solid", 15, null, orangeRed);
+            var renderer = new SimpleRenderer(marker);
+            csv.setRenderer(renderer);
+            var template = new InfoTemplate("${CaseNumber}", "${CaseRecordType} : <a href=\"/${Id}\" target=\"_blank\">${Address}</a>");
+            csv.setInfoTemplate(template);
+            map.addLayer(csv);
+
+            /*
+            var point = new esri.geometry.Point( { latitude : 39.95241, longitude : -75.163587});
+            console.log(point);
+            map.centerAndZoom(point, 11);
+            */
+            
+            window.console && console.log(csv);
+        });
+      
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+    </script>
+</apex:page>

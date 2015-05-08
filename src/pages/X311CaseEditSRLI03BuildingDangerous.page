@@ -1,0 +1,202 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       function building(data) {
+           if(data.value=="Yes" ) {
+             
+          if(confirm('Hot transfer the customer to 911')){
+               EmergencyTransfer();
+              } 
+           }
+       }
+      function construction(data) {
+           if(data.value=="Yes" ) {
+             
+          if(confirm('If the building is currently under  construction or demolition, submit a Construction Site Task Force service request')){
+                     
+                       j$('[id*=departmnt]').val('License & Inspections');   
+                       j$("[id *='caseRecordType']").val('Construction Site Task Force');
+                       j$('[id*=SubjectForCase]').val('Construction Site Task Force');
+                                                     
+                      
+              
+                     rsChange();            
+             }                       
+           }
+       }  
+          function Emergency(data) {
+               if(data.value=="Yes" ) {
+               
+                   j$('[id*=sreq]').val('Emergency Façade Repair');                                 
+               }               
+           }           
+      
+      
+      function Emergency(data) {
+               if(data.value=="Yes" ) {
+               
+                   j$('[id*=sreq]').val('Emergency Façade Repair');                                 
+               }               
+           }           
+     
+      
+      function Emergency(data) {
+               if(data.value=="Yes" ) {
+               
+                   j$('[id*=sreq]').val('Emergency Façade Repair');                                 
+               }               
+           }           
+      
+      
+                
+      
+      
+      function Vacant(data) {
+               if(data.value=="Vacant" ) {
+               
+                   j$('[id*=sreq]').val('Building Dangerous Vacant');                                 
+               }
+               if(data.value=="Occupied" ) {
+               
+                   j$('[id*=sreq]').val('Building Dangerous Occupied');                                 
+               }               
+           }
+        
+       /*  Commenting as per new requirements Case Number 05012710    
+       function address() {
+           if(j$("[id $='hansenAddress']").val() == '' || j$("[id $='hansenAddress']").val() == Null ) {
+             
+          if(confirm('A zoning violation case can be submitted only if the exact L&I address key is validated.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       }*/
+       
+       
+       
+       function e14()
+       
+       {
+    
+           if((j$("[id $='rc']").val()=='Residential')) {
+                j$("[id *='hac']").removeAttr("disabled");
+                j$("[id *='hac']").css("background-color","White");
+                j$("[id *='smf']").removeAttr("disabled");
+                j$("[id *='smf']").css("background-color","White");
+           } 
+           else {
+               j$("[id *='hac']").val('');
+                j$("[id *='hac']").prop('disabled','disabled') ;  
+                j$("[id *='hac']").css("background-color","#EDEDED"); 
+                  j$("[id *='smf']").val('');
+                j$("[id *='smf']").prop('disabled','disabled') ;  
+                j$("[id *='smf']").css("background-color","#EDEDED");             
+           }
+       }   
+                  
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+            
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Building_Collapsing__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Building_Collapsing__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Building_Collapsing__c}" StyleClass="RemoveNone" required="false" onchange="building(this)"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                
+                  
+                
+                 <apex:pageBlockSectionItem helpText="Is the building residential or commercial?">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Residential_or_Commerical__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Residential_or_Commerical__c}" StyleClass="RemoveNone" required="false" id="rc" onchange="e14()"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Under_Construction_or_Demolition__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Under_Construction_or_Demolition__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Under_Construction_or_Demolition__c}" StyleClass="RemoveNone" required="false" onchange="construction(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                  
+                      
+                    
+                
+                 
+                               <apex:inputfield value="{!Case.House_or_Apartment_Complex__c}" StyleClass="RemoveNone" required="false" id="hac"  />
+                      
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Emergency_Repairs_for_Facade__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Emergency_Repairs_for_Facade__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Emergency_Repairs_for_Facade__c}"  StyleClass="RemoveNone" required="false" onchange="Emergency(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                      
+                     
+                      
+                               <apex:inputfield value="{!Case.Single_or_Multi_Family__c}" StyleClass="RemoveNone" required="false" id="smf"  />
+                     
+               
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Location_of_Dangerous_Condition__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Location_of_Dangerous_Condition__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Location_of_Dangerous_Condition__c}" required="false"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:inputfield value="{!Case.Vacant_or_Occupied__c}" StyleClass="RemoveNone" required="false" onchange="Vacant(this)"/> 
+                 
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                            <!-- <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                          commenting as per new requirements Case Number 05012710  !-->
+                               <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                      
+                  
+                <apex:pageblocksectionitem />
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

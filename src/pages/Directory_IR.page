@@ -1,0 +1,4 @@
+<apex:page standardController="Case"  >
+    <flow:interview name="X311_Script_Directory_IR">
+    </flow:interview>
+</apex:page>

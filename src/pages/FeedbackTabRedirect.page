@@ -1,0 +1,20 @@
+<apex:page >
+	<script>
+	
+		var id= '{!$CurrentPage.parameters.id}';
+ 			 
+ 	 	var uAgent = navigator.userAgent.toLowerCase();
+
+		if (uAgent.search("iphone") > -1 ||
+		    uAgent.search("ipad") > -1 ||
+		    uAgent.search("android") > -1) {
+		    
+		   		window.location="{!$Page.FeedbackTabbed}?id=" + id + "&isdtp=vw";	
+		} 
+		
+		 else {
+			window.location="{!$Page.FeedbackTabbed}?id=" + id ;		   
+		} 
+	
+	</script>
+</apex:page>

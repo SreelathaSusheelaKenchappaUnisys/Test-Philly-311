@@ -1,0 +1,7 @@
+<apex:page showHeader="false" standardController="Case" >
+ 
+ 
+ <flow:interview name="Illegal_Dumping"></flow:interview>
+
+
+</apex:page>

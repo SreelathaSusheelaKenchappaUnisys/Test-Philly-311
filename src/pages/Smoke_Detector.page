@@ -1,0 +1,4 @@
+<apex:page standardController="Case"  >
+    <flow:interview name="Smoke_Detector" id="Sm">
+    </flow:interview>
+</apex:page>

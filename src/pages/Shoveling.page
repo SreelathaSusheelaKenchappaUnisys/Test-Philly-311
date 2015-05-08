@@ -1,0 +1,4 @@
+<apex:page standardController="Case"  >
+    <flow:interview name="Shoveling" id="Shoveling">
+    </flow:interview>
+</apex:page>

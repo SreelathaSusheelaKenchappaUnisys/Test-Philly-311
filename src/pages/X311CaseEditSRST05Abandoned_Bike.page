@@ -1,0 +1,96 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+       <!-- <c:gisConnector recordType="Abandoned_Bike"/> -->
+        <script type="text/javascript">
+            onload = init();
+       
+       
+       
+       function Abandbyk1(data) {
+       if(data.value=='Yes') {
+       if(confirm('If a bike is already tagged with a yellow alert notice, the abandoned bike has already been scheduled for removal')){
+       SaveAndServiceNotNeeded();
+       }
+      } 
+    }
+       function Abandbyk2() {
+       
+          
+ if((j$("[id $='twyan']").val()== 'No')&&(j$("[id $='mdp']").val() != '')&&(j$("[id $='tlis2']").val() != '')&&(j$("[id $='uu']").val() != '')){
+                if((j$("[id $='twyan']").val()== 'No') && (j$("[id $='uu']").val()== 'Yes') && (j$("[id $='mdp']").val()== 'Yes') && (j$("[id $='tlis2']").val()== 'One Month or More')) {
+                    j$("[id $='sreq']").val('Abandoned Bike');   
+                    }            
+                    else {
+                        if(confirm('Abandoned bicycles are those with missing or damaged parts AND in an un-usable condition AND locked in the same location for one month or more.')){
+                        SaveAndServiceNotNeeded();
+                    }
+                  } 
+                }
+              
+      }
+       
+                   
+       
+       
+                         
+
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tagged_With_Yellow_Alert_Notice__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Tagged_With_Yellow_Alert_Notice__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tagged_With_Yellow_Alert_Notice__c}" required="false" StyleClass="RemoveNone" id="twyan" onchange="Abandbyk1(this);Abandbyk2();"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                 <apex:inputfield value="{!Case.LockedTo__c}" StyleClass="RemoveNone" required="false"/>
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Unusable__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Unusable__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Unusable__c}" id="uu" required="false" StyleClass="RemoveNone" onchange="Abandbyk2()"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                      <apex:inputfield value="{!Case.Locked_to_Other__c}"  required="false"/>   
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Missing_Damaged_Parts__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Missing_Damaged_Parts__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Missing_Damaged_Parts__c}" StyleClass="RemoveNone" required="false" id="mdp" onchange="Abandbyk2()"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                        <apex:inputfield value="{!Case.Colorbike__c}" StyleClass="RemoveNone" required="false"/> 
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Time_Locked_in_Same_Location__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Time_Locked_in_Same_Location__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Time_Locked_in_Same_Location__c}" StyleClass="RemoveNone" required="false" id="tlis2" onchange="Abandbyk2()"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                    
+                    
+                      <apex:inputfield value="{!Case.First_Noticedbyk__c}" required="false"/>
+                   
+           
+                                       
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

@@ -1,0 +1,7 @@
+<apex:page >
+  <html>
+  <center>
+  <apex:outputText >Thank you for subscribing to the knowledge article. You will receive updates on the changes made to the knowledge article.    </apex:outputText>
+  </center>
+  </html>
+</apex:page>

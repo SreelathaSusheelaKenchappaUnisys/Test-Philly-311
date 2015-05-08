@@ -1,0 +1,366 @@
+<apex:page StandardController="Case" extensions="GISController" showHeader="false" sidebar="false" standardStyleSheets="false" cache="false">
+	<html>
+		<head>
+			<link href='//serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/dojo/dijit/themes/tundra/tundra.css' rel='stylesheet' type='text/css' />
+		  	<link rel="stylesheet" href="//serverapi.arcgisonline.com/jsapi/arcgis/3.3/js/esri/css/esri.css" />
+			<script type="text/javascript" src="//serverapi.arcgisonline.com/jsapi/arcgis?v=3.3"></script>
+			<apex:includeScript value="{!URLFOR($Resource.XedeDefaultAssets,'js/jquery-1.10.2.min.js')}" />
+			<apex:includeScript value="{!URLFOR($Resource.GISAssets,'cometd/cometd.js')}" />
+			<apex:includeScript value="{!URLFOR($Resource.GISAssets,'cometd/jquery.cometd.js')}" />
+			<apex:includeScript value="{!URLFOR($Resource.GISAssets,'cometd/json2.js')}" />
+
+		</head>
+		
+		
+
+	<script type="text/javascript">
+    	/*
+		This is needed for IE---which doesn't
+		support forEach yet, like the rest of
+		the galaxy.  I mean, who needs to iterate
+		through an array with anything other than for()?
+		*/
+		if ( !Array.prototype.forEach ) {
+				Array.prototype.forEach = function(fn, scope) {
+				for(var i = 0, len = this.length; i < len; ++i) {
+				fn.call(scope, this[i], i, this);
+		    }
+		  }
+		}
+		
+		/*
+		this begins the section for the streaming
+		api notifications of new and updated 
+		cases.
+		*/
+		
+	    (function($){
+	    	
+	    	$(document).ready(function() {
+	    		// Connect to the CometD endpoint
+	            $.cometd.init({
+	               url: window.location.protocol+'//'+window.location.hostname+'/cometd/24.0/',
+	               requestHeaders: { Authorization: 'OAuth {!$Api.Session_ID}'},
+	               appendMessageTypeToURL : false
+	           });
+	
+	           // Subscribe to a topic. JSON-encoded update will be returned
+	           // in the callback
+	           $.cometd.subscribe('/topic/CaseTopic', function(message) {
+	           
+					// mapCase(aMap, id, caseNumber, subject, status, type, x, y) {
+					
+					mapCase(
+						map,
+						message.data.sobject.Id,
+						message.data.sobject.CaseNumber,
+						message.data.sobject.Subject,
+						message.data.sobject.Status,
+						message.data.sobject.Case_Record_Type__c,
+						message.data.sobject.Centerline_2272x__c,
+						message.data.sobject.Centerline_2272y__c
+					);			        
+	            });
+	        });
+	   })(jQuery)
+	</script>
+
+	<script type="text/javascript">
+		var map, initExtent;
+		dojo.require("esri.map");				
+				
+		function Init() {
+				
+			map = new esri.Map("map");
+			initExtent = new esri.geometry.Extent({"xmin":2623566.417909405,"ymin":209420.77379276085,"xmax": 2790233.084576072,"ymax":300783.62101498304,"spatialReference":{"wkid":102729}});
+			map.setExtent(initExtent);
+										
+	        var baseLayer= new esri.layers.ArcGISTiledMapServiceLayer("{!$Setup.GIS__c.BaseMaps__c}", {
+	          	"opacity" : 0.5,      
+			});
+
+			map.addLayer(baseLayer);
+			window.console && console.log(map.extent);
+			  	var resizeTimer; 
+			  	var limit = '{!$CurrentPage.parameters.limit}' ;
+			  	if (limit == '') {
+			  		limit = 6;
+			  	}
+					
+				dojo.connect(map, 'onLoad', function(theMap) {
+
+					map.on("click", function(layer){
+							window.console && console.log(map.extent);
+					});
+					GISController.GetRecentCases(limit, "{!Case.id}" , function(result,event){
+		       			if (event.status){
+								window.console && console.log(result); 
+							for (var i=0 ; i < result.length ; i++) {
+								var x = result[i].Centerline_2272x__c;
+								var y = result[i].Centerline_2272y__c;
+								var symbol = new esri.symbol.SimpleMarkerSymbol();
+								symbol.setStyle("square");
+								var symbolColor ;
+									 
+								switch (result[i].Case_Record_Type__c){
+				                 	case 'Abandoned Vehicle':
+										symbolColor = "#DF6166"; // RED 
+									break;
+									case 'Illegal Dumping':
+										symbolColor = "#DF851B"; // Orange 
+									break;
+									case 'Graffiti Removal':
+										symbolColor = "#FFDA2F"; // YELLOW 
+									break;
+									case 'Rubbish/Recyclable Material Collection':
+										symbolColor = "#4A76EF"; // BLUE
+									break;
+									case 'Street Light Outage':
+										symbolColor = "#57AF6B"; // GREEN 
+									break;
+									default:
+										symbolColor = "#ffffff"; // WHITE 
+									break;
+								}
+									
+								symbol.setColor(new dojo.Color(symbolColor));
+									
+									
+								var point = new esri.geometry.Point(x,y, map.spatialReference); 
+									
+								var attributes = { 
+									description: result[i].Description, 
+									caseNumber: result[i].CaseNumber,
+									caseSubject: result[i].Subject,
+									createdBy: result[i].CreatedBy.Name,
+									createdDay: result[i].CreatedDateString__c,
+									street: result[i].Street__c,
+									status: result[i].Status,
+									id: result[i].Id,
+									caseType: result[i].RecordType.Name
+								};
+									
+								var infoTemplate = new esri.InfoTemplate("${caseSubject}", 
+																			"<div style='overflow:auto;min-height:150px;'>\
+																			Case Number: <a href='/${id}' target='_blank'>${caseNumber}</a> <br />\
+																			Type: ${caseType} <br />\
+																			User: ${createdBy} <br />\
+																			Date: ${createdDay} <br />\
+																			Status: ${status} <br />\
+																			Description: ${description}\
+																			<br />\
+																			</div>"
+																			
+																			);
+								
+								var graphic = new esri.Graphic(point, symbol, attributes, infoTemplate);
+								map.graphics.add(graphic);
+									
+								
+								}
+							}
+		       			});
+						dojo.connect(dijit.byId('map'), 'resize', function() {
+							clearTimeout(resizeTimer);
+							resizeTimer = setTimeout(function() {
+								map.resize();
+								map.reposition();
+							}, 10);
+						});
+					});
+				}
+				dojo.addOnLoad(Init);
+			</script>
+			
+			<script type="text/javascript">
+				function mapCase(aMap, id, caseNumber, subject, status, type, x, y) {
+					window.console && console.log(
+						'mapCase(aMap=' + aMap +
+						' id=' + id + 
+						' caseNumber=' + caseNumber +
+						' subject=' + subject +
+						' status=' + status + 
+						' type=' + type +
+						' x,y=' + x +
+						',' + y +
+						');'
+					);
+					
+					symbol = new esri.symbol.SimpleMarkerSymbol();
+					symbol.setStyle("square");
+					symbolColor = "";					
+											
+					switch (type){
+		                case 'Abandoned Vehicle':
+							symbolColor = "#DF6166"; // RED 
+						break;
+						case 'Illegal Dumping':
+							symbolColor = "#DF851B"; // Orange 
+						break;
+						case 'Graffiti Removal':
+							symbolColor = "#FFDA2F"; // YELLOW 
+						break;
+						case 'Rubbish/Recyclable Material Collection':
+							symbolColor = "#4A76EF"; // BLUE
+						break;
+						case 'Street Light Outage':
+							symbolColor = "#57AF6B"; // GREEN 
+						break;
+						default:
+							symbolColor = "#ffffff"; // WHITE 
+						break;
+					}
+		
+					symbol.setColor(new dojo.Color(symbolColor));
+					
+					point = new esri.geometry.Point(x, y, aMap.spatialReference);
+					window.console && console.log('point');
+					window.console && console.log(point);
+					
+					attributes = { 
+						id: id, 
+						caseNumber: caseNumber,
+						caseSubject: subject,
+						status: status,
+						caseType: type
+					};
+					
+					infoTemplate = new esri.InfoTemplate(
+						"${caseSubject}", 
+						"Case Number: <a href='/${id}' target='_blank'>${caseNumber}</a> <br />\
+						Type: ${caseType} <br />\
+						Status: ${status} <br />\
+						Subject: ${caseSubject} <br />"
+					);
+		
+					graphic = new esri.Graphic(point, symbol, attributes, infoTemplate);
+					window.console && console.log('set graphic=' + graphic);
+					
+					aMap.graphics.add(graphic);		
+				}
+			</script>			
+			
+			<style>
+			html, body,#map {
+        	height: 98%;
+        	width: 100%;
+        	margin: 0;
+        	padding: 0;
+      	}
+			.btn {
+			  	background-color: #92968D;
+			    border-radius: 2px 2px 2px 2px;
+			    cursor: pointer;
+			    float: right;
+			    margin-left: 20px;
+			    padding-bottom: 3px;
+			    padding-left: 4px;
+			    padding-right: 4px;
+			}
+			#map {
+				margin-left:40px;
+				margin-top:40px;
+				border:2px solid #c9c9c9;
+				width:97%;
+				border-radius: 20px;
+				float: left
+			}  
+			#legend {
+				float:left;
+				margin-left:10px;
+				height:165px;
+				border:2px solid #c9c9c9;
+				width:270px;
+				margin-top:40px;
+				border-radius: 20px;
+				z-index:100;
+				position:absolute;
+				right:27px;
+				
+				
+			}
+			#legend span{
+				margin-left: 5px;
+			}
+			
+			#legend img{
+				margin-bottom: 2px;
+			}
+			
+			.legend-item{
+				line-height:20px;
+			}
+			
+			.legend_box{
+				
+    			border: 2px solid #000000;
+    			display: inline-block;
+   				height: 13px;
+    			width: 13px;
+			
+			}
+			.red_box{
+				background: #DF6166;
+			
+			}
+			
+			.orange_box{
+				background: #DF851B;
+			
+			}
+			.yellow_box{
+				background: #FFDA2F;
+			
+			}
+			.blue_box{
+				background: #4A76EF;
+			
+			}
+			.green_box{
+				background: #57AF6B;
+			
+			}
+			
+			.feedback {
+				position:absolute;
+				bottom:20px;
+				z-index:100;
+				font-size:11px;
+				padding: 5px 10px;
+				background-color:#485E70;
+				color:#FFFFFF;
+				
+			}
+	
+.feedback a:link, .feedback a:visited {
+	color:#FFFFFF;
+	text-decoration:none;
+}
+.feedback a:hover{
+	color: #c9c9c9;
+}
+			</style>
+			<body class="tundra">
+				<table id="navTable" width="100%" style="display:none"> </table>
+				<div id="map">
+					<apex:outputPanel styleClass="feedback" layout="block" >
+						<a href="#" onclick="openFeedback();">Feedback</a>  
+						<c:Feedback config="Default2"/>
+					</apex:outputPanel>
+					
+					<div id="legend">
+						<ul style="list-style:none;padding:0px; margin-left:10px; margin-top:10px; font-family:normal; font-size:14px">
+							<li class="legend-item"><div class="legend_box red_box">&nbsp;</div><span>Abandoned Vehicle</span></li>
+							<li class="legend-item"><div class="legend_box orange_box">&nbsp;</div><span>Illegal Dumping</span></li>
+							<li class="legend-item"><div class="legend_box yellow_box">&nbsp;</div><span>Graffiti Removal </span></li>
+							<li class="legend-item"><div class="legend_box blue_box">&nbsp;</div><span>Rubbish/Recyclable Material Collection</span></li>
+							<li class="legend-item"><div class="legend_box green_box">&nbsp;</div><span>Street Light Outage</span></li>
+						</ul>
+					</div>
+				</div>
+				
+				
+			</body>
+		</html>
+	
+</apex:page>

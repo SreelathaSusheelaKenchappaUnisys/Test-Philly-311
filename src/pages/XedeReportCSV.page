@@ -1,0 +1,7 @@
+<apex:page controller="XedeReportTabularController" contentType="text/plain" showHeader="false" sidebar="false" standardStyleSheets="false">
+	<apex:repeat value="{!aReport.header}" var="each" >"{!each}",</apex:repeat>
+
+	<apex:repeat value="{!aReport.row}" var="eachRow" >
+		<apex:repeat value="{!eachRow}" var="eachCol">{!eachCol},</apex:repeat>
+	</apex:repeat>
+</apex:page>

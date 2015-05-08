@@ -1,0 +1,35 @@
+/*
+The Raise() static methods below were copied from XedeException
+*/
+
+public with sharing class GISException extends Exception {	
+	public static void Raise(string aString)
+    {
+        throw new GISException(aString);
+    }
+    
+    public static void Raise(string aString, Exception anException)
+    {
+        throw new GISException(aString, anException);
+    }
+    
+    public static void Raise(string format, object arg1)
+    {
+        Raise(String.Format(format, new string[] { '' + arg1 }));
+    }
+    
+    public static void Raise(string format, object arg1, object arg2)
+    {
+		Raise(String.Format(format, new string[] { '' + arg1, '' + arg2 }));
+    }
+    
+    public static void Raise(string format, object arg1, object arg2, object arg3)
+    {
+        Raise(String.Format(format, new string[] { '' + arg1, '' + arg2, '' + arg3 }));
+    }
+    
+    public static void Raise(string format, object arg1, object arg2, object arg3, object arg4)
+    {
+        Raise(String.Format(format, new string[] { '' + arg1, '' + arg2, '' + arg3, '' + arg4 }));
+    }
+}

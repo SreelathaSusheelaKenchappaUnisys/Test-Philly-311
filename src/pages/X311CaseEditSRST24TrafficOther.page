@@ -1,0 +1,111 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            
+             
+        function tso1(data) {
+           if(data.value=='Yes') {
+               if(confirm('Service Request has been changed to Traffic Signal Emergency.')){
+               j$("[id $='caseRecordType']").val('Traffic Signal Emergency'); 
+              j$('[id*=SubjectForCase]').val('Traffic Signal Emergency'); 
+               j$("[id $='sreq']").val('');               
+               crts();
+              }
+           }
+       }
+       function tso2(data) {
+           if(data.value=='Yes') {
+               if(confirm('Service Request has been changed to Stop Sign Repair.')){
+               j$("[id $='caseRecordType']").val('Stop Sign Repair');
+                 j$('[id*=SubjectForCase]').val('Stop Sign Repair');  
+               j$("[id $='sreq']").val('Stop Sign Repair');             
+               crts();
+               
+               }
+           }
+       }
+       
+       function tso3(data) {
+           if(data.value=='No') {
+               if(confirm('Service Request has been changed to L&I  Zoning Business.')){
+               j$("[id $='caseRecordType']").val('Zoning Business');
+              j$('[id*=SubjectForCase]').val('Zoning Business');
+               crts();
+           }
+       }
+      
+    } 
+    
+    function test2() {
+    
+           if((j$("[id $='mdp']").val()=='Other Signs')) {
+                j$("[id *='signReg']").removeAttr("disabled");
+                j$("[id *='signReg']").css("background-color","White");
+           } 
+           else {
+                j$("[id *='signReg']").prop('disabled','disabled') ;  
+                j$("[id *='signReg']").css("background-color","#EDEDED");             
+           }
+       }   
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Traffic_Signal__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Traffic_Signal__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Traffic_Signal__c}" StyleClass="RemoveNone" required="false" onchange="tso1(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                      <apex:pageBlockSectionItem helpText="Description of the traffic problem.">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Problem_Type__c}" StyleClass="RemoveNone" required="false" id="mdp" onchange="test2()" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                     
+                  
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Stop_Sign__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Stop_Sign__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Stop_Sign__c}" StyleClass="RemoveNone" id="uu" required="false" onchange="tso2(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>    
+                     
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Sign_Regulating_Traffic__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Sign_Regulating_Traffic__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Sign_Regulating_Traffic__c}" id="signReg" StyleClass="RemoveNone" required="false"  onchange="tso3(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                     
+                    
+                  
+                    
+           
+                                       
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

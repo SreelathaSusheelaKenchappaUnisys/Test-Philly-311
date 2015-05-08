@@ -1,0 +1,224 @@
+<apex:page standardController="FAQ1__kav" extensions="RateArticleController" title="FAQ"  sidebar="false">
+<apex:includeScript value="/support/console/22.0/integration.js"/>
+<script>
+sforce.console.setTabTitle("FAQ");
+</script>
+  <apex:includeScript value="/support/console/22.0/integration.js" />
+    <apex:stylesheet value="{!$Resource.rateStar}" />
+    <script src="{!URLFOR($Resource.jQuery)}"></script>
+<html>
+
+<apex:form >
+
+<apex:pagemessages />
+    <script>
+        sforce.console.setTabTitle("FAQ");
+    </script>
+     <apex:pagemessages />
+        <apex:pageBlock id="MainBlockStar">
+            <apex:actionFunction name="rateArticle1" action="{!rateArticle1}"
+                rerender="MainBlockStar" />
+            <apex:actionFunction name="rateArticle2" action="{!rateArticle2}"
+                rerender="MainBlockStar" />
+            <apex:actionFunction name="rateArticle3" action="{!rateArticle3}"
+                rerender="MainBlockStar" />
+            <apex:actionFunction name="rateArticle4" action="{!rateArticle4}"
+                rerender="MainBlockStar" />
+            <apex:actionFunction name="rateArticle5" action="{!rateArticle5}"
+                rerender="MainBlockStar" />
+       <script type="text/javascript">
+           var j$ = jQuery.noConflict();
+           
+           
+           function rateArticleJS1() {
+               j$( "#firstStar" ).attr("class","chosenStar");
+               rateArticle1();
+           }
+           function rateArticleJS2() {
+               j$( "#firstStar,#secondStar" ).attr("class","chosenStar");
+               rateArticle2();
+           }
+           function rateArticleJS3() {
+               j$( "#firstStar,#secondStar,#thirdStar" ).attr("class","chosenStar");
+               rateArticle3();
+           }
+           function rateArticleJS4() {
+               j$( "#firstStar,#secondStar,#thirdStar,#fourthStar" ).attr("class","chosenStar");
+               rateArticle4();
+           }
+           function rateArticleJS5() {
+               j$( "#firstStar,#secondStar,#thirdStar,#fourthStar,#fifthStar" ).attr("class","idleStar");
+               rateArticle5();
+           }
+           
+           function onMouseFirstStar() {
+           
+               j$( "#firstStar" ).hover(
+                   function() {
+                    j$( "#firstStar" ).attr("class","chosenStar");
+                   }, function() {
+                           j$( "#firstStar" ).attr("class","idleStar");
+                      }
+              );
+          }
+          
+          function onMouseSecondStar() {
+              j$( "#secondStar" ).hover(
+                   function() {
+                    j$( "#firstStar,#secondStar" ).attr("class","chosenStar");
+                   }, function() {
+                           j$( "#firstStar,#secondStar" ).attr("class","idleStar");
+                      }
+              );
+                  
+          }
+           function onMouseThirdStar() {
+              j$( "#thirdStar" ).hover(
+                   function() {
+                    j$( "#firstStar,#secondStar,#thirdStar" ).attr("class","chosenStar");
+                   
+                    
+                   }, function() {
+                        j$( "#firstStar,#secondStar,#thirdStar" ).attr("class","idleStar");
+                           
+                      }
+              );
+              
+          }
+          
+          function onMouseFourthStar() {
+              j$( "#fourthStar" ).hover(
+                   function() {
+                        j$( "#firstStar,#secondStar,#thirdStar,#fourthStar" ).attr("class","chosenStar");
+                   }, function() {
+                          j$( "#firstStar,#secondStar,#thirdStar,#fourthStar" ).attr("class","idleStar");
+                      }
+              );
+                  
+          }
+           function onMouseFifthStar() {
+           
+            j$( "#fifthStar" ).hover(
+                   function() {
+                        j$( "#firstStar,#secondStar,#thirdStar,#fourthStar,#fifthStar" ).attr("class","chosenStar");
+                   }, function() {
+                          j$( "#firstStar,#secondStar,#thirdStar,#fourthStar,#fifthStar" ).attr("class","idleStar");
+                      }
+              );
+          
+              
+          }
+          
+          j$( document ).ready(function() {
+                 if('{!rating}' == 1 )
+                     j$( "#firstStar" ).attr("class","chosenStar");
+                 else if('{!rating}' == 2 )
+                     j$( "#firstStar,#secondStar" ).attr("class","chosenStar");
+                 else if('{!rating}' == 3 )
+                     j$( "#firstStar,#secondStar,#thirdStar" ).attr("class","chosenStar");
+                 else if('{!rating}' == 4 )
+                     j$( "#firstStar,#secondStar,#thirdStar,#fourthStar" ).attr("class","chosenStar");
+                 else if('{!rating}' == 5 )
+                     j$( "#firstStar,#secondStar,#thirdStar,#fourthStar,#fifthStar" ).attr("class","chosenStar");
+                     
+                      
+              });
+         
+     </script>
+           <!-- <apex:pageBlockSection title="Rating" showHeader="false" collapsible="true" columns="6"> -->
+            
+            <table>
+                   <tr> 
+                        <td>
+                            <table class="stars mouseOut" >
+        
+                                <tr>
+                                    <td>Rate This Article </td>
+                                    <td><div id="firstStar" class="idleStar"
+                                            onclick="rateArticleJS1();" onmouseover="onMouseFirstStar();"></div></td>
+                                    <td><div id="secondStar" class="idleStar"
+                                            onclick="rateArticle2();" onmouseover="onMouseSecondStar();"></div></td>
+                                    <td><div id="thirdStar" class="idleStar"
+                                            onclick="rateArticle3();" onmouseover="onMouseThirdStar();"></div></td>
+                                    <td><div id="fourthStar" class="idleStar"
+                                            onclick="rateArticle4();" onmouseover="onMouseFourthStar();"></div></td>
+                                    <td><div id="fifthStar" class="idleStar"
+                                            onclick="rateArticle5();" onmouseover="onMouseFifthStar();"></div></td>
+                                
+                                </tr>
+                            </table>
+                        </td>
+                        
+                        <td>                        
+                             
+                             <apex:outputPanel id="renderOutput">
+                                 <apex:outputtext value="{!AverageRating}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Average Rating: &nbsp;</apex:outputtext>)
+                             </apex:outputPanel>
+                       </td>
+                       <td>
+                          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; version: {!FAQ1__kav.VersionNumber}
+                       </td>
+                       
+                </tr>
+             </table>   
+                
+
+      <!--      </apex:pageBlockSection> -->
+
+
+       
+       <div style="font-size : 150%">
+              <apex:pageBlockSection title="Standard Information" showHeader="true" columns="1">
+                    <apex:outputField label="Question" value="{!FAQ1__kav.title}" style="h1"/>
+                    <apex:outputField value="{!FAQ1__kav.Summary}"/>
+                     </apex:pageBlockSection>
+                    
+       
+            <apex:pageBlockSection title="Article Information" showHeader="true" columns="1" >
+                    <apex:outputField value="{!FAQ1__kav.Department__c}" rendered="{!FAQ1__kav.Department__c != null}"/>
+                    <apex:outputField value="{!FAQ1__kav.Special_Info_311__c}" rendered="{!FAQ1__kav.Special_Info_311__c != null}"/>
+                     <apex:outputField value="{!FAQ1__kav.Special_Info_Public__c}" rendered="{!FAQ1__kav.Special_Info_Public__c != null}"/> 
+                    <apex:outputField value="{!FAQ1__kav.Public_Info__c}" rendered="{!FAQ1__kav.Public_Info__c != null}" />
+                    <apex:outputField value="{!FAQ1__kav.Agent_Info__c}" rendered="{!FAQ1__kav.Agent_Info__c != null}" />
+                    <apex:outputField value="{!FAQ1__kav.Supervisor_Info__c}" rendered="{!FAQ1__kav.Supervisor_Info__c != null}"  />
+                    <apex:outputField value="{!FAQ1__kav.City_Employees_Info__c}" rendered="{!FAQ1__kav.City_Employees_Info__c != null}"  />
+                    <apex:outputField value="{!FAQ1__kav.ArticleNumber}" rendered="false"/>
+                    </apex:pageBlockSection>
+              
+               <apex:pageBlockSection title="Additional Information" showHeader="true" columns="1">  
+                   <apex:outputField value="{!FAQ1__kav.Related_Case__c}" />
+                    
+              <apex:outputField value="{!FAQ1__kav.Related_Articles__c}" />
+                   <!-- <apex:inputFile value="{!FAQ1__kav.Attachments__c}"/> !-->
+                   <!--  If the attachment is to be directly downloaded 
+                   <object data="{!URLFOR($Action.FAQ1__kav.FileFieldDownload,FAQ1__kav.Id, ['field'=$ObjectType.FAQ1__kav.fields.Attachements__Body__s.name])}">
+                   <embed src="{!URLFOR($Action.FAQ1__kav.FileFieldDownload,FAQ1__kav.id, ['field'=$ObjectType.FAQ1__kav.fields.Attachements__Body__s.name])}"  width="100%" height="600px"/>
+                   </object> -->
+                    <apex:outputField value="{!FAQ1__kav.Attachments__c}" />
+                   <apex:outputText label="Attachments" >
+                   <apex:outputLink value="{!URLFOR($Action.FAQ1__kav.FileFieldDownload,FAQ1__kav.Id, ['field'=$ObjectType.FAQ1__kav.fields.Attachements2__Body__s.name])}">{!FAQ1__kav.Attachements2__Name__s}</apex:outputLink>
+                   </apex:outputText>                 
+                   
+                   
+                    <apex:outputField value="{!FAQ1__kav.Keywords__c}" rendered="{!FAQ1__kav.Keywords__c != null}"  />
+                    <apex:outputField value="{!FAQ1__kav.Modified_Date_Time__c}" rendered="{!FAQ1__kav.Modified_Date_Time__c!= null}" />
+                   <apex:outputField value="{!FAQ1__kav.Created_Date__c}" rendered="{!FAQ1__kav.Created_Date__c!= null}" /> 
+                   
+                   <apex:outputField value="{!FAQ1__kav.Author_Name__c}" rendered="{!FAQ1__kav.Author_Name__c!= null}" /> 
+                    
+              </apex:pageBlockSection>
+          </div>          
+    </apex:pageBlock>
+  <!--  <apex:outputPanel rendered="{!NOT(ISBLANK(srcUpUrl))}">
+    <script>
+    if(typeof(srcUp)=='function') {
+        //sforce.console.openPrimaryTab(null, '{!srcUpUrl}', true);   
+        srcUp('{!srcUpUrl}?isdtp=vw');
+    } else {
+        parent.location.href='{!srcUpUrl}';
+    }
+    </script> 
+    </apex:outputPanel> -->
+</apex:form>
+</html>
+</apex:page>

@@ -1,0 +1,62 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       function shov1(data) {
+           if(data.value=='Salting or Plowing a Street' ) {
+               if(confirm('The system has changed the Case Record Type to Salting.')){
+               j$("[id $='caseRecordType']").val('Salting');
+               j$('[id*=SubjectForCase]').val('Salting');               
+               crts();  
+           }
+       }
+    }   
+        function shov2(data) {
+           if(data.value=='Yes' ) {
+               if(confirm('The system has changed the Case Record Type to Parks and Rec Safety and Maintenance .')){
+               j$("[id $='caseRecordType']").val('Parks and Rec Safety and Maintenance');
+               j$('[id*=SubjectForCase]').val('Parks and Rec Safety and Maintenance');
+               crts();
+           }
+       }
+             
+     } 
+     
+       
+                         
+
+                      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="Specifies if the problem requires shoveling a sidewalk, or salting and/or plowing a street.">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Problem_Type__c}"  StyleClass="RemoveNone" required="false" onchange="shov1(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Snow_Ice_at_Park_or_Rec_Center__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Snow_Ice_at_Park_or_Rec_Center__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Snow_Ice_at_Park_or_Rec_Center__c}" StyleClass="RemoveNone" required="false" onchange="shov2(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                  
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

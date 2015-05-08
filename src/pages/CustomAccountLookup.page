@@ -1,0 +1,248 @@
+<apex:page standardController="Contact"
+    extensions="CustomAccountLookupController" title="Search"
+    showHeader="false" sideBar="false" tabStyle="Account" id="pg">
+    <apex:pageMessages />
+    <apex:form id="frm">
+        <apex:outputPanel id="page" layout="block"
+            style="margin:5px;padding:10px;padding-top:2px;">
+            <apex:tabPanel switchType="client" selectedTab="name1"
+                id="tabbedPanel">
+
+                <!-- Recently Viewed -->
+
+                <apex:tab label="Recent Contacts" name="tab2" id="tabTwo">
+                    <script>
+                        function s(data) {
+                            if (data.value != null)
+                                data.value = '';
+                        }
+                        function openWindow(data) {
+                            window
+                                    .open(
+                                            '{!URLFOR($Page.SelectContactMail)}?id='
+                                                    + data, 'Popup',
+                                            'height=400,width=1000,left=100,top=100,scrollbars=yes,toolbar=no,status=no');
+                            /*if('{!$Profile.Name}' == 'Department WOM (Field Worker) User' || '{!$Profile.Name}' == 'City Council' || '{!$Profile.Name}' == 'City Department Heads' || '{!$Profile.Name}' == 'Police Department Users' || '{!$Profile.Name}' == 'Police Department Users1' || '{!$Profile.Name}' == 'Police Department Users2' )
+                                window.open('https://philly311--citywide--c.cs10.visual.force.com/internal/SelectContactMail?id='+data,'Popup','height=400,width=1000,left=100,top=100,scrollbars=yes,toolbar=no,status=no'); 
+                            else if('{!$Profile.Name}' == 'Neighborhood Liaisons1' || '{!$Profile.Name}' == 'Neighborhood Liaison Qualified' || '{!$Profile.Name}' == 'Neighborhood Liaison Qualified' || '{!$Profile.Name}' == 'Neighborhood Liaisons'   || '{!$Profile.Name}' == 'State Reps' || '{!$Profile.Name}' == 'Various Civic City Groups, Kensignton CDC, Northern Liberties CDC'  )
+                                window.open('https://philly311--citywide--c.cs10.visual.force.com/liaisons/SelectContactMail?id='+data,'Popup','height=400,width=1000,left=100,top=100,scrollbars=yes,toolbar=no,status=no'); 
+                            else {
+                                 window.open('/apex/SelectContactMail?id='+data,'Popup','height=400,width=1000,left=100,top=100,scrollbars=yes,toolbar=no,status=no');
+                             }*/
+                        }
+                    </script>
+                    <apex:actionRegion >
+                        <apex:outputPanel id="top1" layout="block"
+                            style="margin:5px;padding:10px;padding-top:2px;" />
+                        <apex:outputPanel id="pnlSearchResults1"
+                            style="margin:10px;height:350px;overflow-Y:auto;" layout="block">
+                            <apex:pageBlock id="searchResults1" title="Search Result">
+                                <apex:pageBlockTable value="{!results1}" var="b"
+                                    id="tblResults1">
+                                    <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:outputPanel >Name</apex:outputPanel>
+                                        </apex:facet>
+                                        <!--           onclick="openWindow('{!b.id}')" -->
+                                        <!-- <apex:outputLink value="javascript:top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!b.Id}','{!b.Name}',false)"
+                                            rendered="{!NOT(ISNULL(b.Id))}">{!b.Name}</apex:outputLink> -->
+                                        <apex:outputLink value="javascript:top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!b.Id}','{!JSINHTMLENCODE(b.name)}',false)"
+                                            rendered="{!NOT(ISNULL(b.Id))}">{!b.Name}</apex:outputLink>
+
+                                    </apex:column>
+                                    <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:outputPanel >Phone</apex:outputPanel>
+                                        </apex:facet>
+                                        <apex:outputLink rendered="{!NOT(ISNULL(b.Id))}">{!b.Phone}</apex:outputLink>
+                                    </apex:column>
+                                    <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:outputPanel >Address</apex:outputPanel>
+                                        </apex:facet>
+                                        <apex:outputLink rendered="{!NOT(ISNULL(b.Id))}">{!b.MailingStreet}</apex:outputLink>
+                                    </apex:column>
+                                    <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:outputPanel >Email</apex:outputPanel>
+                                        </apex:facet>
+                                        <apex:outputLink onclick="openWindow('{!b.id}','{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!b.Id}','{!b.Name}')"
+                                            rendered="{!NOT(ISNULL(b.Id))}">{!b.Email}</apex:outputLink>
+                                    </apex:column>
+                                </apex:pageBlockTable>
+                                <apex:pageblocksection >
+                                    <apex:pageblocksectionitem >
+                                        <!-- <apex:outputText rendered="{!NOT(res)}" ><big><b><i>No Results Found</i></b></big><p><big><i>Please enter a valid contact name or create a new contact.</i></big></p></apex:outputText>   -->
+                                    </apex:pageblocksectionitem>
+                                </apex:pageblocksection>
+                            </apex:pageBlock>
+                        </apex:outputPanel>
+                    </apex:actionRegion>
+
+                </apex:tab>
+
+                <!-- SEARCH TAB -->
+                <apex:tab label="Search" name="tab1" id="tabOne">
+                    <script>
+                        function s(data) {
+                            if (data.value != null)
+                                data.value = '';
+                        }
+
+                        function scrip1() {
+
+                            if ('{!flag}' == 'true') {
+                                
+                                //Support ticket fix 09116219 start
+                                //top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!i}','{!nam}',false); - Commented for Support ticket fix 09116219 
+                                top.window.opener
+                                        .lookupPick2('{!FormTag}',
+                                                '{!TextBox}_lkid',
+                                                '{!TextBox}', '{!i}',
+                                                '{!JSINHTMLENCODE(nam)}', false);
+                                //Support ticket fix 09116219 end 
+                                                
+                            }
+                            
+                        }
+                    </script>
+                    <apex:actionRegion >
+                        <apex:outputPanel id="top" layout="block"
+                            style="margin:5px;padding:10px;padding-top:2px;">
+                            <apex:outputLabel value="Search"
+                                style="font-weight:Bold;padding-right:10px;" for="txtSearch" />
+                            <apex:inputText id="txtSearch" value="{!searchString}" />
+                            <span style="padding-left: 5px"> <apex:commandButton id="btnGo" value="Go" action="{!Search}"
+                                    rerender="searchResults"></apex:commandButton>
+                            </span>
+                            <span style="padding-left: 5px"></span>
+                            <!-- <apex:outputLink onclick="s('{!$Component.pg.frm.txtSearch}');">Clear Result</apex:outputLink> -->
+                        </apex:outputPanel>
+
+                        <apex:outputPanel id="pnlSearchResults"
+                            style="margin:10px;height:350px;overflow-Y:auto;" layout="block">
+                            <apex:pageBlock id="searchResults" title="Search Result">
+                                <apex:pageBlockTable value="{!results}" var="a" id="tblResults"
+                                    rendered="{!res}">
+                                    <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:outputPanel >Name</apex:outputPanel>
+                                        </apex:facet>
+                                        <!-- Support ticket fix 09116219 start -->
+                                        <!-- <apex:outputLink value="javascript:top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!a.Id}','{!a.name}',false)"
+                                            rendered="{!NOT(ISNULL(a.Id))}">{!a.Name}</apex:outputLink> "Commented for support ticket 09116219 fix " -->
+                                        <apex:outputLink value="javascript:top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!a.Id}','{!JSINHTMLENCODE(a.name)}',false)"
+                                            rendered="{!NOT(ISNULL(a.Id))}">{!a.Name}</apex:outputLink>
+                                        <!-- Support ticket fix 09116219 end -->
+                                    </apex:column>
+                                    <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:outputPanel >Phone</apex:outputPanel>
+                                        </apex:facet>
+                                        <apex:outputLink rendered="{!NOT(ISNULL(a.Id))}">{!a.Phone}</apex:outputLink>
+                                    </apex:column>
+                                    <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:outputPanel >Address</apex:outputPanel>
+                                        </apex:facet>
+                                        <apex:outputLink rendered="{!NOT(ISNULL(a.Id))}">{!a.MailingStreet}</apex:outputLink>
+                                    </apex:column>
+                                    <apex:column >
+                                        <apex:facet name="header">
+                                            <apex:outputPanel >Email</apex:outputPanel>
+                                        </apex:facet>
+                                        <!-- Support ticket fix 09116219 start -->
+                                        <!-- <apex:outputLink value="javascript:top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!a.Id}','{!a.name}',false)"
+                                            rendered="{!NOT(ISNULL(a.Id))}">{!a.Name}</apex:outputLink> "Commented for support ticket 09116219 fix " -->
+                                        <apex:outputLink rendered="{!NOT(ISNULL(a.Id))}"
+                                            onclick="openWindow('{!a.id}','{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!a.Id}','{!JSINHTMLENCODE(a.name)}')">{!a.Email}</apex:outputLink>
+                                        <!-- Support ticket fix 09116219 end -->    
+                                    </apex:column>
+                                </apex:pageBlockTable>
+                                <apex:pageblocksection >
+                                    <apex:pageblocksectionitem >
+                                        <apex:outputText rendered="{!NOT(res)}">
+                                            <big><b><i>No Results Found</i></b></big>
+                                            <p>
+                                                <big><i>Please enter a valid contact name or
+                                                        create a new contact.</i></big>
+                                            </p>
+                                        </apex:outputText>
+                                    </apex:pageblocksectionitem>
+                                </apex:pageblocksection>
+                            </apex:pageBlock>
+                        </apex:outputPanel>
+                    </apex:actionRegion>
+
+                </apex:tab>
+
+
+                <!-- NEW CONTACT TAB -->
+                <apex:tab label="New Contact" name="tab3" id="tabThree">
+                    <apex:pageBlock id="newAccount" title="New Contact">
+
+                        <apex:pageBlockButtons >
+                            <!-- <input type="submit" value="submit" onclick ="saveAccount(); " oncomplete="javascript:top.window.opener.lookupPick2('{!FormTag}','{!TextBox}_lkid','{!TextBox}','{!i}','{!nam}', false);"/> -->
+                            <apex:commandButton value="Save" action="{!validateEmail}"
+                                oncomplete="scrip1();" reRender="page" />
+                            <!-- oncomplete="checkcontact()" -->
+                            <!-- <apex:actionFunction name="saveAccount" action="{!validateEmail}" oncomplete="scrip1();" /> -->
+                        </apex:pageBlockButtons>
+
+
+
+                        <apex:pageBlockSection title="Contact Information" columns="2">
+                            <apex:outputfield value="{!Contact.OwnerId}" />
+                            <apex:pageblocksectionitem />
+
+                            <apex:pageblocksectionitem >
+                                <apex:outputlabel value="First Name" />
+                                <apex:outputpanel >
+                                    <apex:inputfield value="{!Contact.Salutation}" required="false" />
+                                    <apex:inputfield value="{!Contact.FirstName}" required="false" />
+                                </apex:outputpanel>
+                            </apex:pageblocksectionitem>
+                            <apex:inputfield value="{!Contact.HomePhone}" required="false" />
+                            <apex:inputfield value="{!Contact.LastName}" required="true" />
+                            <apex:inputfield value="{!Contact.MobilePhone}" required="false" />
+                            <apex:inputfield value="{!Contact.Phone}" required="false" />
+                            <apex:inputfield value="{!Contact.Title}" required="false" />
+                            <apex:inputfield value="{!Contact.Fax}" required="false" />
+                            <apex:inputfield value="{!Contact.Department}" required="false" />
+                            <apex:inputfield value="{!Contact.Email}" required="false" />
+                            <apex:inputfield value="{!Contact.email2__c}" required="false" />
+                            <apex:inputfield value="{!Contact.email3__c}" required="false" />
+                            <apex:inputfield value="{!Contact.email4__c}" required="false" />
+                            <apex:inputfield value="{!Contact.email5__c}" required="false" />
+
+                            <apex:inputfield value="{!Contact.Contact_Enabled__c}"
+                                required="false" />
+                            <!-- <apex:inputfield value="{!Contact.Source__c}" required="false"/> -->
+                            <apex:inputfield value="{!Contact.Contact_Type__c}"
+                                required="false" />
+                            <apex:inputfield value="{!Contact.Website__c}" required="false" />
+
+                            </apex:pageblocksection>
+                            <apex:pageblocksection title="Address Information"
+                                showheader="true" columns="1">
+
+                                <apex:inputfield value="{!Contact.MailingStreet}"
+                                    required="false" />
+                                <apex:inputfield value="{!Contact.MailingCity}" required="false" />
+                                <apex:inputfield label="MailingState"
+                                    value="{!Contact.MailingStatecode}" required="false" />
+                                <apex:inputfield value="{!Contact.MailingPostalCode}"
+                                    required="false" />
+                                <apex:inputfield label="MailingCountry"
+                                    value="{!Contact.MailingCountrycode}" required="false" />
+                                <apex:inputfield value="{!Contact.PhillyRisingArea__c}"
+                                    required="false" />
+                            </apex:pageblocksection>
+                    </apex:pageBlock>
+
+                </apex:tab>
+            </apex:tabPanel>
+        </apex:outputPanel>
+    </apex:form>
+
+</apex:page>

@@ -1,0 +1,83 @@
+<apex:page standardcontroller="Case" extensions="X311CaseEditClrExt">
+    <apex:sectionheader title="{!$ObjectType.Case.label} Edit" subtitle="{!IF(ISNULL(Case.casenumber), 'New Case',Case.casenumber)}"/>
+     <table>
+            <tr>
+                <td valign="top" height="100%" width="25%" style="background-color:#F5F5F8" id="FlowTableData">
+                    <div style="overflow:scroll;height:100%;width=30%" >
+                        <apex:outputPanel id="flowPanelDiv" >
+                            <apex:include pageName="Support_Flow"/>  
+                        </apex:outputPanel>
+                    </div>
+                </td>    
+                
+                <td valign="top" id="NonFlowData">
+                  <div style="width=45%;height:100%" id="divNonFlowData">
+                    <apex:form >
+                        <apex:pageblock mode="edit" title="{!$ObjectType.Case.label} Edit">
+                            <apex:pageblockbuttons >
+                                <apex:commandbutton value="Save" action="{!CustomSave}"/>
+                                <apex:commandbutton value="Save & Close" action="{!SaveAndClose}"/>
+                                <apex:commandbutton value="Cancel" action="{!Cancel}"/>
+                            </apex:pageblockbuttons>
+                
+                            <apex:outputpanel >
+                                <apex:outputPanel id="caseInformation"> 
+                
+                                    <apex:pageblocksection title="Case Information" showheader="true" columns="2">
+                                        <apex:outputfield value="{!Case.OwnerId}"/>          
+                                        <apex:outputfield value="{!Case.CaseNumber}"/>                  
+                                        <apex:inputfield value="{!Case.User__c}"/>
+                                    <!--    <apex:inputfield value="{!Case.Priority}" required="true"/>  -->
+                                        <apex:inputfield value="{!Case.Status}" required="true" />
+                                        <apex:inputfield value="{!Case.Type_of_Issue__c}" required="true" />
+                                        <apex:inputfield value="{!Case.Severity__c}" required="true"/>
+                                        <apex:inputfield value="{!Case.Case_Type__c}" required="true"/>
+                                        <apex:inputfield value="{!Case.Ready__c}" required="false"/>
+                                        <apex:inputfield value="{!Case.Tested_By__c}"/>
+                                        <apex:inputfield value="{!Case.ParentId}" required="false" id="parentId_lkid" />
+                                      <!--   <apex:inputfield value="{!Case.Support_Case_Source__c}" required="false"/> -->
+                                        <apex:pageblocksectionitem />
+                                    </apex:pageblocksection>
+                                </apex:outputPanel>
+                            
+                                <apex:pageblocksection title="Description Information" showheader="true" columns="2">
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputLabel value="{!$ObjectType.Case.Fields.Subject.label}" />                        
+                                        <apex:outputPanel >
+                                            <div class='requiredInput'>
+                                                <div class='requiredBlock'></div>
+                                                <apex:inputfield value="{!Case.Subject}" style="height:15px ; width:300px" />
+                                            </div>
+                                        </apex:outputPanel>
+                                    </apex:pageBlockSectionItem>           
+                
+                                    <apex:pageblocksectionitem />
+                                    <apex:pageBlockSectionItem >
+                                        <apex:outputLabel value="{!$ObjectType.Case.Fields.Description.label}" />                   
+                                             <apex:inputfield value="{!Case.Description}" style="height:50px ; width:400px" />
+                                    </apex:pageBlockSectionItem>
+                                    
+                                    <apex:pageblocksectionitem />
+                                    
+                                    <apex:inputfield value="{!Case.Action_Item__c}" style="height:50px ; width:400px"/>
+                                    <apex:pageblocksectionitem /> 
+                                  
+                                      <apex:pageblocksectionitem />
+                                      <apex:pageblocksectionitem />
+                                      <apex:pageblocksectionitem />
+                                      <apex:pageblocksectionitem />
+                                      <apex:pageblocksectionitem />  
+                                      <apex:pageblocksectionitem />
+                                      <apex:pageblocksectionitem />
+                                      <apex:pageblocksectionitem />
+                                      <apex:pageblocksectionitem />
+                                      <apex:pageblocksectionitem />
+                                  </apex:pageblocksection>    
+                              </apex:outputpanel>
+                       </apex:pageblock>
+                    </apex:form>
+                   </div>
+            </td>
+        </tr>
+    </table> 
+</apex:page>

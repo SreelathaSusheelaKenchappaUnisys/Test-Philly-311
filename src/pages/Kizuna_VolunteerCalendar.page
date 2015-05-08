@@ -1,0 +1,661 @@
+<apex:page standardStylesheets="false" showheader="false" doctype="html-5.0">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
+  <apex:includeScript value="{!URLFOR($Resource.kizuna_resource, 'libs/jquery-2.1.1.min.js')}"/>
+  
+  <apex:stylesheet value="{!URLFOR($Resource.kizuna_resource, 'libs/dhtmlxScheduler/dhtmlxscheduler.css')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.kizuna_resource, 'libs/dhtmlxScheduler/dhtmlxscheduler.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.kizuna_resource, 'libs/dhtmlxScheduler/ext/dhtmlxscheduler_all_timed.js')}"/>
+
+  <apex:stylesheet value="{!URLFOR($Resource.kizuna_resource, 'libs/bootstrap/bootstrap.min.css')}"/>
+  <apex:stylesheet value="{!URLFOR($Resource.kizuna_resource, 'libs/bootstrap/bootstrap-theme.min.css')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.kizuna_resource, 'libs/bootstrap/bootstrap.min.js')}"/>
+  
+  <apex:include pageName="Kizuna_VolunteerCalendar_Css"/>
+  <body style="overflow: hidden;">
+
+    <section id="dhtmlxcalender" class="position-normal">
+      <p id="message" />
+      <div id="scheduler_here" class="dhx_cal_container">
+        <div class="dhx_cal_navline">
+          <div class="dhx_cal_prev_button">&nbsp;</div>
+          <div class="dhx_cal_next_button">&nbsp;</div>
+          <div class="dhx_cal_today_button"></div>
+          <div class="dhx_cal_date"></div>
+        </div>
+        <div class="dhx_cal_header">
+        </div>
+        <div class="dhx_cal_data">
+        </div>
+      </div>
+    </section>
+
+<!-- description -->
+    <section id="event-detail" style="overflow-y: scroll;" class="position-down">
+      <div class="container">
+        <div class="row clearfix">
+          <div class="col-md-12 column">
+            <h3 class="event-title text-center text-primary"></h3>
+            <h2 id="noRemainingMessaage" class="text-center text-danger">{!$Label.kizuna_fixedMessage}</h2>
+            <div class="mybutton returnToCalendarButton">{!$Label.kizuna_back}</div>
+          </div>
+        </div>
+        <div class="row clearfix">
+          <div class="col-md-6 column">
+            <div class="form-horizontal">
+              <fieldset class="form-group">
+                <p>
+                  <label for="description">{!$ObjectType.Volunteer__c.fields.Description__c.label}</label>
+                  <div id="descriptionVal" class="event-detail-text" name="description" />
+                </p>
+                <p>
+                  <label for="start_end_date">{!$ObjectType.Volunteer__c.fields.Term__c.label}</label>
+                  <div id="start_end_dateVal" class="event-detail-text" name="start_end_date" />
+                </p>
+                <p>
+                  <label for="meetplace">{!$ObjectType.Volunteer__c.fields.MeetPlace__c.label}</label>
+                  <div id="meetplaceVal" class="event-detail-text" name="meetplace" />
+                </p>
+                <p>
+                  <label for="meetplace">{!$ObjectType.Volunteer__c.fields.NumberOfPositions__c.label}</label>
+                  <div id="numberOfPositionsVal" class="event-detail-text" name="numberOfPositionsVal" />
+                </p>
+                <p>
+                  <label for="meetplace">{!$Label.kizuna_NumberOfRemainingPosition}</label>
+                  <div id="numberOfRemainingPositionVal" class="event-detail-text" name="numberOfRemainingPositionVal" />
+                </p>
+              </fieldset>
+            </div>
+          </div>
+          <div class="col-md-6 column">
+            <div class="form-horizontal">
+              <fieldset class="form-group">
+                <p>
+                  <label for="article">{!$ObjectType.Volunteer__c.fields.Article__c.label}</label>
+                  <div id="articleVal" class="event-detail-text" name="article" />
+                </p>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+        <div id="entryStartButton" class="btn-block mybutton submitButton">{!$Label.kizuna_Entry}</div>
+      </div>
+    </section>
+
+<!-- form1 mail-->
+    <section id="mail-form" style="overflow-y: scroll;" class="position-down">
+      <div class="container">
+        <div class="row clearfix">
+          <div class="col-md-12 column">
+            <h3 class="event-title text-center text-primary"></h3>
+            <div class="mybutton returnToCalendarButton">{!$Label.kizuna_back}</div>
+            <p style="margin-top: 30px;">{!$Label.Kizuna_explain_Confirmationcode}</p>
+          </div>
+        </div>
+        <div class="row clearfix">
+          <div class="col-md-12 column">
+            <div class="form-group">
+              <label for="inputEmail1" class="control-label">{!$ObjectType.Candidate__c.fields.Email__c.label}</label>
+              <input type="email" id="inputEmail1" class="form-control mail-form-input" required ="true" />
+            </div>
+
+            <div class="form-group">
+              <label for="inputFirstName1" class="control-label">{!$ObjectType.Candidate__c.fields.FirstName__c.label}</label>
+              <input type="text" id="inputFirstName1" class="form-control mail-form-input" />
+            </div>
+
+            <div class="form-group">
+              <label for="inputLastName1" class="control-label">{!$ObjectType.Candidate__c.fields.LastName__c.label}</label>
+              <input type="text" id="inputLastName1" class="form-control mail-form-input" />
+            </div>
+            <button id="sendEmailButton" class="mybutton submitButton">{!$Label.kizuna_send}</button>
+
+            <div id='confirmcodeinput' style="display:none">
+              <p style="margin-top: 20px;">{!$Label.Kizuna_Allow_Input_Confirmationcode}</p>
+              <div class="form-group">
+                <label for="inputConfirmationCode1" class="control-label">{!$ObjectType.Candidate__c.fields.ConfirmationCode__c.label}</label>
+                <input type="text" id="inputConfirmationCode1" class="form-control mail-form-input" required ="true"/>
+              </div>
+              <button id="sendConfirmCode" class="mybutton submitButton">{!$Label.kizuna_send}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<!-- form2 Candidate Information -->
+    <section id="entry-form" style="overflow-y: scroll;" class="position-down">
+      <div class="container">
+        <div class="row clearfix">
+          <div class="col-md-12 column">
+            <h3 class="event-title text-center text-primary"></h3>
+            <div class="mybutton returnToCalendarButton">{!$Label.kizuna_back}</div>
+          </div>
+        </div>
+        <div class="row clearfix data">
+          <div class="col-md-6 column">
+            <div class="form-group">
+              <label for="inputLastName2" class="control-label">{!$ObjectType.Candidate__c.fields.LastName__c.label}</label>
+              <input type="text" id="inputLastName2" class="form-control entry-form-input" required ="true"/>
+            </div>
+            <div class="form-group">
+              <label for="inputFirstName2" class="control-label">{!$ObjectType.Candidate__c.fields.FirstName__c.label}</label>
+              <input type="text" id="inputFirstName2" class="form-control entry-form-input" required ="true"/>
+            </div>
+          </div>
+
+          <div class="col-md-6 column">
+            <div class="form-group">
+              <label for="inputGender2" class="control-label">{!$ObjectType.Candidate__c.fields.Gender__c.label}</label>
+              <select id="inputGender2" class="form-control entry-form-input">
+                <option>Male</option>
+                <option>Female</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inputBloodType2" class="control-label">{!$ObjectType.Candidate__c.fields.BloodType__c.label}</label>
+              <select id="inputBloodType2" class="form-control entry-form-input">
+                <option>A</option>
+                <option>B</option>
+                <option>AB</option>
+                <option>O</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inputBirthOfDate2" class="control-label">{!$ObjectType.Candidate__c.fields.BirthOfDate__c.label}</label>
+              <input type="date" id="inputBirthOfDate2" class="form-control entry-form-input"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="row clearfix data">
+          <div class="col-md-6 column">
+            <div class="form-group">
+              <label for="inputPostalCode2" class="control-label">{!$ObjectType.Candidate__c.fields.PostalCode__c.label}</label>
+              <input type="text" id="inputPostalCode2" class="form-control entry-form-input" />
+            </div>
+            <div class="form-group">
+              <label for="inputState2" class="control-label">{!$ObjectType.Candidate__c.fields.State__c.label}</label>
+              <input type="text" id="inputState2" class="form-control entry-form-input" />
+            </div>
+            <div class="form-group">
+              <label for="inputCity2" class="control-label">{!$ObjectType.Candidate__c.fields.City__c.label}</label>
+              <input type="text" id="inputCity2" class="form-control entry-form-input" />
+            </div>
+          </div>
+
+          <div class="col-md-6 column">
+            <div class="form-group">
+              <label for="inputStreet2" class="control-label">{!$ObjectType.Candidate__c.fields.Street__c.label}</label>
+              <input type="text" id="inputStreet2" class="form-control entry-form-input" />
+            </div>
+            <div class="form-group">
+              <label for="inputBuilding2" class="control-label">{!$ObjectType.Candidate__c.fields.Building__c.label}</label>
+              <input type="text" id="inputBuilding2" class="form-control entry-form-input"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="row clearfix data">
+          <div class="col-md-6 column">
+            <div class="form-group">
+              <label for="inputPhone2" class="control-label">{!$ObjectType.Candidate__c.fields.Phone__c.label}</label>
+              <input type="tel" id="inputPhone2" class="form-control entry-form-input" />
+            </div>
+            <div class="form-group">
+              <label for="inputMobilePhone2" class="control-label">{!$ObjectType.Candidate__c.fields.MobilePhone__c.label}</label>
+              <input type="tel" id="inputMobilePhone2" class="form-control entry-form-input" />
+            </div>
+          </div>
+          <div class="col-md-6 column">
+            <div class="form-group">
+              <label for="inputEmail2" class="control-label">{!$ObjectType.Candidate__c.fields.Email__c.label}</label>
+              <input type="text" id="inputEmail2" class="form-control entry-form-input" readonly="true"/>
+            </div>
+            <div class="form-group">
+              <label for="inputFax2" class="control-label">{!$ObjectType.Candidate__c.fields.Fax__c.label}</label>
+              <input type="text" id="inputFax2" class="form-control entry-form-input"/>
+            </div>
+          </div>
+        </div>
+
+        <div class="row clearfix data">
+          <div class="col-md-6 column">
+            <div class="form-group">
+              <label for="inputEmargencyContactAddress2" class="control-label">{!$ObjectType.Candidate__c.fields.EmargencyContactAddress__c.label}</label>
+              <input type="text" id="inputEmargencyContactAddress2" class="form-control entry-form-input" />
+            </div>
+            <div class="form-group">
+              <label for="inputEmargencyContactPhone2" class="control-label">{!$ObjectType.Candidate__c.fields.EmargencyContactPhone__c.label}</label>
+              <input type="text" id="inputEmargencyContactPhone2" class="form-control entry-form-input" />
+            </div>
+          </div>
+          <div class="col-md-6 column">
+            <div class="form-group">
+              <label for="inputEmargencyContactType2" class="control-label">{!$ObjectType.Candidate__c.fields.OtherEmargencyContactType__c.label}</label>
+              <select id="inputEmargencyContactType2" class="form-control entry-form-input">
+                <option>Home</option>
+                <option>Relative</option>
+                <option>Dormitory</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inputEmargencyContactName2" class="control-label">{!$ObjectType.Candidate__c.fields.EmargencyContactName__c.label}</label>
+              <input type="text" id="inputEmargencyContactName2" class="form-control entry-form-input"/>
+            </div>
+            <div class="form-group">
+              <label for="inputEmargencyContactRelation2" class="control-label">{!$ObjectType.Candidate__c.fields.EmargencyContactRelation__c.label}</label>
+              <select id="inputEmargencyContactRelation2" class="form-control entry-form-input">
+                <option>Parents</option>
+                <option>Spouse</option>
+                <option>Child</option>
+                <option>Relative</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="submitButton" class="btn-block mybutton submitButton">{!$Label.kizuna_Submit}</div>
+      </div>
+    </section>
+
+    <section id="thankyou" style="overflow-y: scroll;" class="position-down">
+      <div class="container">
+        <div class="row clearfix">
+          <div class="col-md-12 column">
+            <h3 class="event-title text-center text-primary"></h3>
+            <div class="mybutton returnToCalendarButton">{!$Label.kizuna_back}</div>
+
+            <h2 class="text-center text-primary">Thank you!</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </body>
+
+  <apex:remoteObjects >
+    <apex:remoteObjectModel name="Volunteer__c" fields="Id,Name,IsPublic__c,Description__c,Article__c,Status__c,CancelReason__c,StartDate__c,EndDate__c,StartDate_w__c,EndDate_w__c,Term__c,MeetTime__c,MeetPlace__c,StartTime__c,ActivityStatus__c,Notes__c,ParentVolunteer__c,NumberOfParticipant__c,NumberOfPositions__c,NumberOfCheckin__c"/>
+    <apex:remoteObjectModel name="Candidate__c" fields="Id,LastName__c,FirstName__c,BirthOfDate__c,Gender__c,BloodType__c,PostalCode__c,State__c,City__c,Street__c,Building__c,Phone__c,MobilePhone__c,Fax__c,Email__c,EmargencyContactType__c,OtherEmargencyContactType__c,EmargencyContactAddress__c,EmargencyContactPhone__c,EmargencyContactName__c,EmargencyContactRelation__c,ConfirmationCode__c,isConfirmCodeSentFlg__c"/>
+    <apex:remoteObjectModel name="Participant__c" fields="Id,Volunteer__c,Candidate__c,EntryDate__c,Email_UseForWorkflowProcess__c"/>
+
+  </apex:remoteObjects>
+
+  <script>
+    j$ = jQuery.noConflict();
+    var volunteerId = '';
+    var candidate = '';
+
+    j$(function(){
+      var carendarJson = [];
+      var carendarSObj = new SObjectModel.Volunteer__c();
+      carendarSObj.retrieve({ 
+          limit:100,
+          where : {
+            IsPublic__c: { eq: true}
+          }
+        },
+        function(error, records){
+          if(error === null && records.length > 0){
+            console.log('data retrieve Success!');
+            j$.each( records, function( i, record ) {
+              var startdatetime = new Date(
+                record.get('StartDate_w__c').getFullYear(),
+                record.get('StartDate_w__c').getMonth(),
+                record.get('StartDate_w__c').getDate(),
+                00,00, 00, 00);
+              if(record.get('StartTime__c') != null){
+                startdatetime.setHours(record.get('StartTime__c').split(':')[0]);
+                startdatetime.setMinutes(record.get('StartTime__c').split(':')[1]);
+              }
+              var enddatetime = new Date(
+                record.get('EndDate_w__c').getFullYear(),
+                record.get('EndDate_w__c').getMonth(),
+                record.get('EndDate_w__c').getDate(),
+                00,00, 00, 00);
+                enddatetime.setHours(24);
+                enddatetime.setMinutes(00);
+              var remainingPosition = record.get('NumberOfPositions__c') - record.get('NumberOfParticipant__c');
+
+              var data = {
+                'id' : record.get('Id'),
+                'text' : record.get('Name') + '(' + remainingPosition + ')',
+                'description' : record.get('Description__c'),
+                'start_date' : startdatetime,
+                'end_date' : enddatetime,
+                'start_time' :  record.get('StartTime__c'),
+                'end_time' :  record.get('EndTime__c'),
+                'article' : record.get('Article__c'),
+                'meetplace' : record.get('MeetPlace__c'),
+                'meettime' : record.get('MeetTime__c'),
+                'numberOfPositions' : record.get('NumberOfPositions__c'),
+                'numberOfParticipant' : record.get('NumberOfParticipant__c'),
+                'remainingPosition' : remainingPosition,
+                'color' : remainingPosition > 0 ? '#3CD4F3' : '#aabbcc'
+              }
+              carendarJson.push(data);
+              console.log(data);
+
+              j$('#scheduler_here').css('height', window.innerHeight);
+              j$('#scheduler_here').css('width', window.innerWidth);
+              
+              initscheduler(carendarJson);
+            });
+          }else if(error === null && records.length > 0){
+            j$('#message').text('There is no active volunteer');
+          }else{
+            j$('#message').text('There is no active volunteer');
+            console.log('data retrieve Error');
+            console.log(error);
+          }
+        }
+      );
+
+      j$('.returnToCalendarButton').on('click', function(){
+        initRegistInfo()
+        initPositions();
+      });
+
+      j$('#entryStartButton').on('click', function(){
+        j$('#event-detail').removeClass('position-normal');
+        j$('#event-detail').addClass('position-up');
+        j$('#mail-form').removeClass('position-down');
+        j$('#mail-form').addClass('position-normal');
+      });
+
+      j$('#sendEmailButton').on('click', function(){
+        if(j$('#inputEmail1').val() == ''){
+          alert('{!JSENCODE($Label.Kizuna_Alert_Email)}');
+        }else{
+          seachCandidate(j$('#inputEmail1').val(), j$('#inputFirstName1').val(), j$('#inputLastName1').val());
+        }
+      });
+
+      j$('#sendConfirmCode').on('click', function(){
+        if(j$('#inputConfirmationCode1').val() == ''){
+          alert('{!JSENCODE($Label.Kizuna_Alert_ConfirmCode)}');
+        }else{
+          confirmCandidate_with_code(j$('#inputEmail1').val(), j$('#inputConfirmationCode1').val());
+        }
+      });
+
+      j$('#submitButton').on('click', function(){
+        submitVolunteer();
+      });
+
+    });
+ 
+    function initscheduler(calendarJson) {
+      scheduler.config.xml_date="%Y-%m-%d %H:%i";
+      scheduler.xy.margin_top = 30;
+
+      scheduler.config.all_timed = "short"; // only events < 24 hours will be displayed as usual ones
+      scheduler.config.multi_day = true; // rest of multiday events would be displayed at the top
+
+      scheduler.config.first_hour = 2;
+      scheduler.config.last_hour = 20;
+
+      scheduler.config.edit_on_create = false;
+      scheduler.config.drag_move = false;
+      scheduler.config.drag_resize= false;
+      scheduler.config.dblclick_create = false;
+      scheduler.config.drag_create = false;
+
+      scheduler.attachEvent("onBeforeLightbox", function(id, e) {
+        var ev = scheduler.getEvent(id);
+        renderCampaign(ev);
+        j$('#dhtmlxcalender').removeClass('position-normal');
+        j$('#dhtmlxcalender').addClass('position-up');
+        j$('#event-detail').removeClass('position-down');
+        j$('#event-detail').addClass('position-normal');
+      });
+
+      scheduler.init('scheduler_here',new Date(),"month");
+      scheduler.parse(calendarJson,"json");
+    }
+
+    function renderCampaign(ev){
+      initRegistInfo();
+
+      var formatFunc = scheduler.date.date_to_str("%Y/%m/%d");
+
+      var datetimeInfo = formatFunc(new Date(ev.start_date));
+      if(ev.start_time){
+        datetimeInfo += '(' + ev.start_time +')';
+      }
+      datetimeInfo += ' 〜 ' + formatFunc(new Date(ev.end_date)) ;
+      if(ev.end_time){
+        datetimeInfo += '(' + ev.end_time + ')'
+      }
+
+      volunteerId = ev.id;
+      j$('.event-title').text(ev.text);
+      j$('#descriptionVal').text(ev.description);
+      j$('#start_end_dateVal').text(datetimeInfo);
+      j$('#articleVal').append(unescapeHTML(ev.article));
+      j$('#meetplaceVal').text(ev.meetplace);
+      j$('#numberOfPositionsVal').text(ev.numberOfPositions);
+      j$('#numberOfRemainingPositionVal').text(ev.remainingPosition);
+
+      if(ev.remainingPosition == "0"){
+        j$('#noRemainingMessaage').show();
+        j$('#entryStartButton').hide();
+      }else{
+        j$('#noRemainingMessaage').hide();
+        j$('#entryStartButton').show();
+      }        
+    }
+    
+    function initRegistInfo(){
+      volunteerId = '';
+      j$('.event-title').text('');
+      j$('.event-detail-text').text('');
+    }
+
+    function unescapeHTML(str) {
+      return j$('<div>').html(str).text();
+    }
+
+    function initPositions(){
+      volunteer = '';
+      candidate = '';
+      j$('#dhtmlxcalender').removeClass();
+      j$('#event-detail').removeClass();
+      j$('#mail-form').removeClass();
+      j$('#entry-form').removeClass();
+      j$('#thankyou').removeClass();
+
+      j$('#dhtmlxcalender').addClass('position-normal');
+      j$('#event-detail').addClass('position-down');
+      j$('#mail-form').addClass('position-down');
+      j$('#entry-form').addClass('position-down');
+      j$('#thankyou').addClass('position-down');
+
+      j$('#sendEmailButton').show();
+      j$('#confirmcodeinput').hide();
+      j$('#inputEmail1').prop('readonly', false);
+      j$('#inputFirstName1').prop('readonly', false);
+      j$('#inputLastName1').prop('readonly', false);
+
+      j$('.mail-form-input').val('');
+      j$('.entry-form-input').val('');
+    }
+
+    function seachCandidate(mail, fastname, lastname){
+      var candidateSobj = new SObjectModel.Candidate__c();
+        candidateSobj.retrieve({ 
+          limit:1, 
+          where :{
+            Email__c: { eq: mail}
+          }
+        }, 
+        function(error, records){
+          if(error === null){
+            console.log('data retrieve Success!');
+            console.log(records);
+
+            var confirmCode = String(100 + Math.floor( Math.random()*100 )).slice(1,3) + String(100 + Math.floor( Math.random()*100 )).slice(1,3) + String(100 + Math.floor( Math.random()*100 )).slice(1,3);
+            if(records.length ==1){
+              var updateCandidateSobj = new SObjectModel.Candidate__c(); 
+              updateCandidateSobj.set('Id', records[0].get('Id'));
+              updateCandidateSobj.set('ConfirmationCode__c', confirmCode);
+              updateCandidateSobj.set('isConfirmCodeSentFlg__c', false);
+              updateCandidateSobj.update(function(error, result, event){
+                if(error === null){
+                  console.log('data update Success!');
+                  console.log(result);
+                  j$('#sendEmailButton').hide();
+                  j$('#confirmcodeinput').show();
+                  j$('#inputEmail1').prop('readonly', true);
+                  j$('#inputFirstName1').prop('readonly', true);
+                  j$('#inputLastName1').prop('readonly', true);
+                  j$('#inputConfirmationCode1').focus();
+                }else{
+                  console.log('data retrieve Error');
+                  console.log(error);
+                }
+              });
+            }else{
+              var insertCandidateSobj = new SObjectModel.Candidate__c();
+              var fname = fastname != '' ? fastname : 'noname';
+              var lname = lastname != '' ? lastname : 'noname';
+              insertCandidateSobj.set('Email__c', mail);
+              insertCandidateSobj.set('FirstName__c', fname);
+              insertCandidateSobj.set('LastName__c', lname);
+              insertCandidateSobj.set('ConfirmationCode__c', confirmCode);
+              insertCandidateSobj.set('isConfirmCodeSentFlg__c', false);
+              insertCandidateSobj.create(function(error, result, event){
+                if(error === null){
+                  console.log('data create Success!');
+                  console.log(result);
+                  j$('#sendEmailButton').hide();
+                  j$('#confirmcodeinput').show();
+                  j$('#inputEmail1').prop('readonly', true);
+                  j$('#inputFirstName1').prop('readonly', true);
+                  j$('#inputLastName1').prop('readonly', true);
+                }else{
+                  console.log(error);
+                }
+              });
+            }
+          }else{
+            console.log('data retrieve Error');
+            console.log(error);
+          }
+        }
+      );
+    }
+
+    function confirmCandidate_with_code(mail, code){
+      var candidateSobj = new SObjectModel.Candidate__c();
+        candidateSobj.retrieve({ 
+          limit:1,
+          where :{
+            Email__c: { eq: mail},
+            ConfirmationCode__c: { eq: code}
+          }
+        }, 
+        function(error, records){
+          if(error === null){
+            console.log('data retrieve Success!');
+            console.log(records);
+
+            if(records.length != 1){
+              alert('{!JSENCODE($Label.Kizuna_Alert_ConfirmCode2)}');
+            }else{
+              candidate = records[0];
+              j$('#inputBloodType2').val(records[0].get('BloodType__c'));
+              if(records[0].get('BirthOfDate__c')){
+                j$('#inputBirthOfDate2').val(
+                  records[0].get('BirthOfDate__c').getFullYear()+"-"
+                  + String(records[0].get('BirthOfDate__c').getMonth() + 101).slice(1,3)+"-"
+                  + String(records[0].get('BirthOfDate__c').getDate() + 100).slice(1,3)
+                );
+              }
+              j$('#inputMobilePhone2').val(records[0].get('MobilePhone__c'));
+              j$('#inputPhone2').val(records[0].get('Phone__c'));
+              j$('#inputCity2').val(records[0].get('City__c'));
+              j$('#inputEmail2').val(records[0].get('Email__c'));
+              j$('#inputEmargencyContactAddress2').val(records[0].get('EmargencyContactAddress__c'));
+              j$('#inputEmargencyContactPhone2').val(records[0].get('EmargencyContactPhone__c'));
+              j$('#inputEmargencyContactType2').val(records[0].get('EmargencyContactType__c'));
+              j$('#inputFirstName2').val(records[0].get('FirstName__c'));
+              j$('#inputLastName2').val(records[0].get('LastName__c'));
+              j$('#inputOtherEmargencyContactType2').val(records[0].get('OtherEmargencyContactType__c'));
+              j$('#inputPostalCode2').val(records[0].get('PostalCode__c'));
+              j$('#inputState2').val(records[0].get('State__c'));
+              j$('#inputStreet2').val(records[0].get('Street__c'));
+              j$('#inputBuilding2').val(records[0].get('Building__c'));
+              j$('#inputEmargencyContactName2').val(records[0].get('EmargencyContactName__c'));
+              j$('#inputEmargencyContactRelation2').val(records[0].get('EmargencyContactRelation__c'));
+              j$('#inputFax2').val(records[0].get('Fax__c'));
+
+              j$('#mail-form').removeClass('position-normal');
+              j$('#mail-form').addClass('position-up');
+              j$('#entry-form').removeClass('position-down');
+              j$('#entry-form').addClass('position-normal');
+            }
+          }else{
+            console.log('data retrieve Error');
+            console.log(error);
+          }
+        }
+      );
+    }
+
+    function submitVolunteer(){
+      candidate.set('BloodType__c', j$('#inputBloodType2').val());
+      if(j$('#inputBirthOfDate2').val() != ''){
+        candidate.set('BirthOfDate__c', Date.parse(j$('#inputBirthOfDate2').val()));
+      }else{
+        candidate.set('BirthOfDate__c', '');
+      }
+      candidate.set('MobilePhone__c', j$('#inputMobilePhone2').val());
+      candidate.set('Phone__c', j$('#inputPhone2').val());
+      candidate.set('Gender__c', j$('#inputGender2').val());
+      candidate.set('City__c', j$('#inputCity2').val());
+      candidate.set('Email__c', j$('#inputEmail2').val());
+      candidate.set('EmargencyContactAddress__c', j$('#inputEmargencyContactAddress2').val());
+      candidate.set('EmargencyContactPhone__c', j$('#inputEmargencyContactPhone2').val());
+      candidate.set('EmargencyContactType__c', j$('#inputEmargencyContactType2').val());
+      candidate.set('FirstName__c', j$('#inputFirstName2').val());
+      candidate.set('LastName__c', j$('#inputLastName2').val());
+      candidate.set('OtherEmargencyContactType__c', j$('#inputOtherEmargencyContactType2').val());
+      candidate.set('PostalCode__c', j$('#inputPostalCode2').val());
+      candidate.set('State__c', j$('#inputState2').val());
+      candidate.set('Street__c', j$('#inputStreet2').val());
+      candidate.set('Building__c', j$('#inputBuilding2').val());
+      candidate.set('EmargencyContactName__c', j$('#inputEmargencyContactName2').val());
+      candidate.set('EmargencyContactRelation__c', j$('#inputEmargencyContactRelation2').val());
+      candidate.set('Fax__c', j$('#inputFax2').val());
+      candidate.set('ConfirmationCode__c', '');
+      candidate.update(function(error, result, event){
+        if(error === null){
+          console.log('data update Success!');
+          console.log(result);
+
+          var insertparticipant = new SObjectModel.Participant__c();
+          insertparticipant.set('Volunteer__c', volunteerId);
+          insertparticipant.set('Candidate__c', candidate.get('Id'));
+          insertparticipant.set('Email_UseForWorkflowProcess__c', candidate.get('Email__c'));
+          insertparticipant.create(function(error, result, event){
+            if(error === null){
+              console.log('data create Success!');
+              console.log(result);
+              j$('#entry-form').removeClass('position-normal');
+              j$('#entry-form').addClass('position-up');
+              j$('#thankyou').removeClass('position-down');
+              j$('#thankyou').addClass('position-normal');
+            }else{
+              console.log(error);
+            }
+          });
+        }else{
+          console.log('data retrieve Error');
+          console.log(error);
+        }
+      });
+    }
+  </script>
+</apex:page>

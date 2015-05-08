@@ -1,0 +1,21 @@
+<apex:page showHeader="false" sidebar="false" title="Feedback Test">
+
+<!-- 
+Copyright 2012, Xede Consulting Group, Inc.
+-->
+
+<p>
+This is a simple page that demonstrates how to connect the feedback
+link to a VisualForce page.  Check out the source.
+</p>
+
+<p>
+Notice how this page doesn't require any controllers or
+extensions, and neither does the component.
+</p>
+    
+<a href="#" onclick="openFeedback();">Provide Feedback</a>  
+
+<c:Feedback config="Default2"/>
+    
+</apex:page>

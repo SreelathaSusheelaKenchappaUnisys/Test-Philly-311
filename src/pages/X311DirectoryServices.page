@@ -1,0 +1,29 @@
+<apex:page standardcontroller="Case" extensions="X311CaseEditClrExt">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+           <script type="text/javascript">
+                
+                function c ()    {
+                   //rerenderDirLay();
+                }
+                
+           </script> 
+           <apex:actionFunction name="rerenderDirLay" rerender="dirLay" />
+           <apex:outputpanel id="dirLay">
+           <apex:pageblocksection title="Directory Contact Details" rendered="{!srtypeinfo}" showheader="true" collapsible="true" columns="2">
+                <apex:outputfield value="{!Case.Name_DirectoryAssistance__c}"/>
+                <apex:outputfield value="{!Case.First_Name__c}"/>
+                <apex:outputfield value="{!Case.Department_Directory_Assistance__c}"/>
+                <apex:outputfield value="{!Case.Last_Name__c}"/>
+                <apex:outputfield value="{!Case.Department_Code__c}"/>
+                 <apex:outputfield value="{!Case.Location_Directory__c}"/>
+                <apex:outputfield value="{!Case.Unit__c}"/>
+                <apex:outputfield value="{!Case.Phone__c}"/>
+                <apex:outputfield value="{!Case.Unit_Code__c}"/>
+                <apex:outputfield value="{!Case.Bold__c}"/>
+                <apex:outputfield value="{!Case.Title__c}"/>
+           </apex:pageblocksection>     
+           </apex:outputpanel>     
+        </apex:define>
+    </apex:composition>
+</apex:page>

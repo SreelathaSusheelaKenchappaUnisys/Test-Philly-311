@@ -1,0 +1,93 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       function ost1(data) {
+           if(data.value=='Push-Up' || data.value=='Wear Out' ) {
+               if(confirm('Service Request has been changed to Street Defect')){
+               j$("[id $='caseRecordType']").val('Street Defect');
+               j$('[id*=SubjectForCase]').val('Street Defect');
+               crts();
+           } 
+       }
+    }
+        function ost2(data) {
+            if(data.value=='Leaf Collection') {
+               if(confirm('Service Request has been changed to Rubbish Collection')){
+               j$("[id $='caseRecordType']").val('Rubbish/Recyclable Material Collection');
+               j$('[id*=SubjectForCase]').val('Rubbish/Recyclable Material Collection');
+              crts();
+           } 
+       }
+    } 
+    
+    function e17() {
+    
+           if((j$("[id $='pt']").val()=='Sanitation')) {
+                j$("[id *='pts']").removeAttr("disabled");
+                j$("[id *='pts']").css("background-color","White");
+           } 
+           else {
+           j$("[id *='pts']").val('');
+                j$("[id *='pts']").prop('disabled','disabled') ;  
+                j$("[id *='pts']").css("background-color","#EDEDED");             
+           }
+       }
+       
+       function e18() {
+    
+           if((j$("[id $='pt']").val()=='Highway')) {
+                j$("[id *='pth']").removeAttr("disabled");
+                j$("[id *='pth']").css("background-color","White");
+           } 
+           else {
+           j$("[id *='pth']").val('');
+                j$("[id *='pth']").prop('disabled','disabled') ;  
+                j$("[id *='pth']").css("background-color","#EDEDED");             
+           }
+       }
+           
+      
+      </script>
+        
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                <apex:pageBlockSectionItem helpText="What type of problem is being reported?">
+                    <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type__c.label}" /> 
+                    <apex:outputPanel >
+                       <div class='requiredInput'>
+                           <div class='requiredBlock'></div>
+                           <apex:inputfield value="{!Case.Problem_Type__c}" StyleClass="RemoveNone" id="pt" required="false" onchange="e17();e18()"  />
+                       </div>
+                    </apex:outputPanel>  
+                </apex:pageblocksectionitem>
+             <!--   
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Problem_Type_Sanitation__c.inlineHelpText}">
+                    <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type_Sanitation__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                            <apex:inputfield value="{!Case.Problem_Type_Sanitation__c}" id="pts" StyleClass="RemoveNone" required="false" onchange="ost2(this)"  />
+                        </div>
+                    </apex:outputPanel>  
+                </apex:pageblocksectionitem>
+                     
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Problem_Type_Highways__c.inlineHelpText}">
+                    <apex:outputLabel value="{!$ObjectType.Case.Fields.Problem_Type_Highways__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                            <apex:inputfield value="{!Case.Problem_Type_Highways__c}" id="pth" StyleClass="RemoveNone" required="false" onchange="ost1(this)" />
+                        </div>
+                    </apex:outputPanel>  
+                </apex:pageblocksectionitem>
+                -->
+            </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

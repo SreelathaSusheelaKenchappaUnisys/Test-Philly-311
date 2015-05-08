@@ -1,0 +1,204 @@
+<apex:page standardController="Contact" extensions="SelectContactMailController" sidebar="false"  showHeader="false" standardStylesheets="true"  >
+ 
+  <script src="{!URLFOR($Resource.jQuery)}"></script> 
+  <apex:pageBlock title="Please Choose Which Email Is to Be Made Primary" id="emailTabForPrimaryEmail" >
+  <apex:form >
+   
+  <apex:pageMessages />
+  <apex:pageBlock >
+      
+     <apex:outputPanel title="{!contact.lastName}" >
+     
+  
+     <script type="text/javascript">
+        
+     var j$ = jQuery.noConflict();
+            
+        function CloseWindow() {                   
+             if('{!closeFlag}' == 'true') {
+                 
+                 window.top.close();
+                 window.parent.opener.location.reload(true);
+             }   
+        }
+        function chkboxDisable1() {
+          if ( j$('[id*=ic1]').is(':checked')) {
+              j$("[id $='ic2']").attr("disabled","disabled");        
+              j$("[id $='ic3']").attr("disabled","disabled");        
+              j$("[id $='ic4']").attr("disabled","disabled");        
+              j$("[id $='ic5']").attr("disabled","disabled");        
+            } else {
+                j$("[id $='ic2']").removeAttr("disabled");        
+                j$("[id $='ic3']").removeAttr("disabled");        
+                j$("[id $='ic4']").removeAttr("disabled");        
+                j$("[id $='ic5']").removeAttr("disabled");        
+            }
+        }
+        function chkboxDisable2() {
+          if ( j$('[id*=ic2]').is(':checked')) {
+              j$("[id $='ic3']").attr("disabled","disabled");        
+              j$("[id $='ic4']").attr("disabled","disabled");        
+              j$("[id $='ic5']").attr("disabled","disabled");        
+              j$("[id $='ic1']").attr("disabled","disabled");        
+            } else {
+                j$("[id $='ic3']").removeAttr("disabled");        
+                j$("[id $='ic4']").removeAttr("disabled");        
+                j$("[id $='ic5']").removeAttr("disabled");        
+                j$("[id $='ic1']").removeAttr("disabled");        
+            }
+        }
+        function chkboxDisable3() {
+          if ( j$('[id*=ic3]').is(':checked')) {
+              j$("[id $='ic1']").attr("disabled","disabled");        
+              j$("[id $='ic2']").attr("disabled","disabled");        
+              j$("[id $='ic4']").attr("disabled","disabled");        
+              j$("[id $='ic5']").attr("disabled","disabled");        
+            } else {
+                j$("[id $='ic1']").removeAttr("disabled");        
+                j$("[id $='ic2']").removeAttr("disabled");        
+                j$("[id $='ic4']").removeAttr("disabled");        
+                j$("[id $='ic5']").removeAttr("disabled");        
+            }
+        }
+        function chkboxDisable4() {
+          if ( j$('[id*=ic4]').is(':checked')) {
+              j$("[id $='ic1']").attr("disabled","disabled");        
+              j$("[id $='ic2']").attr("disabled","disabled");        
+              j$("[id $='ic3']").attr("disabled","disabled");        
+              j$("[id $='ic5']").attr("disabled","disabled");        
+            } else {
+                j$("[id $='ic1']").removeAttr("disabled");        
+                j$("[id $='ic2']").removeAttr("disabled");        
+                j$("[id $='ic3']").removeAttr("disabled");        
+                j$("[id $='ic5']").removeAttr("disabled");        
+            }
+        }
+        function chkboxDisable5() {
+          if ( j$('[id*=ic5]').is(':checked')) {
+              j$("[id $='ic1']").attr("disabled","disabled");        
+              j$("[id $='ic2']").attr("disabled","disabled");        
+              j$("[id $='ic3']").attr("disabled","disabled");        
+              j$("[id $='ic4']").attr("disabled","disabled");        
+            } else {
+                j$("[id $='ic1']").removeAttr("disabled");        
+                j$("[id $='ic2']").removeAttr("disabled");        
+                j$("[id $='ic3']").removeAttr("disabled");        
+                j$("[id $='ic4']").removeAttr("disabled");        
+            }
+        }
+        </script>
+     
+      <apex:pageblockSection title="{!contact.lastName}">
+         
+         
+            <apex:pageBlockSectionItem >
+           
+          <apex:outputPanel >
+              <table>
+              
+              <tr>
+                  <td>
+                      <apex:outputLabel >Email* </apex:outputLabel>
+                  </td>
+                  
+                  <td>
+                      <apex:inputcheckbox id="ic1" value="{!chkbox1}" onchange="chkboxDisable1();" /> 
+                  </td>
+                  <td>
+                      <apex:inputfield value="{!contact.Email}" required="true"  id="it1" /> 
+                  </td>
+              </tr>
+              </table>
+           </apex:outputPanel>
+          </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+           
+           <apex:outputpanel >
+              <table>
+              
+                  <tr>
+                      <td>
+                          <apex:outputLabel >Email1</apex:outputLabel>
+                      </td>
+                      
+                      <td>
+                          <apex:inputcheckbox id="ic2" value="{!chkbox2}" onchange="chkboxDisable2();"/> 
+                      </td>
+                      <td>
+                          <apex:inputfield value="{!contact.email2__c}"  id="it2"  /> 
+                      </td>
+                  </tr>
+              </table>
+          </apex:outputpanel> 
+          </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+           
+           <apex:outputpanel >
+              <table>
+              
+                  <tr>
+                      <td>
+                          <apex:outputLabel >Email2</apex:outputLabel>
+                      </td>
+                  
+                      <td>
+                          <apex:inputcheckbox id="ic3" value="{!chkbox3}" onchange="chkboxDisable3();" /> 
+                      </td>
+                      <td>
+                          <apex:inputfield value="{!contact.email3__c}"  id="it3"  /> 
+                      </td>
+                  </tr>
+              </table>
+          </apex:outputpanel> 
+          </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+           
+           <apex:outputpanel >
+              <table>
+              
+                  <tr>
+                      <td>
+                          <apex:outputLabel >Email3</apex:outputLabel>
+                      </td>
+                      
+                      <td>
+                          <apex:inputcheckbox id="ic4" value="{!chkbox4}" onchange="chkboxDisable4();"  /> 
+                      </td>
+                      <td>
+                          <apex:inputfield value="{!contact.email4__c}"  id="it4"  /> 
+                      </td>
+                      </tr>
+              </table>
+          </apex:outputpanel> 
+          </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem >
+           
+           <apex:outputpanel >
+              <table>
+              
+                  <tr>
+                      <td>
+                          <apex:outputLabel >Email4</apex:outputLabel>
+                      </td>
+                      
+                      <td>
+                          <apex:inputcheckbox id="ic5" value="{!chkbox5}" onchange="chkboxDisable5();" /> 
+                      </td>
+                      <td>
+                          <apex:inputfield value="{!contact.email5__c}"  id="it5"/> 
+                      </td>
+                  </tr>
+              </table>
+          </apex:outputpanel> 
+          </apex:pageBlockSectionItem>
+          
+      </apex:pageblockSection>
+    
+      <apex:commandButton value="Submit" action="{!getEmails}" oncomplete="CloseWindow();" id="mitsub" reRender="emailTabForPrimaryEmail" > 
+     
+      </apex:commandButton>
+      </apex:outputPanel>
+</apex:pageBlock>
+</apex:form>
+</apex:pageBlock>
+</apex:page>

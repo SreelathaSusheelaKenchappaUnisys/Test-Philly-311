@@ -1,0 +1,285 @@
+<apex:page standardcontroller="Case">
+
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+        
+        <script type="text/javascript">
+            onload = init();
+       
+       function salt1(data) {
+           if(data.value=='Yes' ) {
+               j$("[id $='sreq']").val('Salting');
+           } else if(data.value=='No') {
+                 if(confirm('You can enter a Salting case only after a supervisor has directed agents to accept these cases.'))
+                 SaveAndServiceNotNeededLI06(); 
+             }
+       }
+        function salt2(data) {
+           if(data.value != 'Primary' ) {
+               if(confirm('You can enter a Salting case only if it is on Primary Street.'))
+               SaveAndServiceNotNeededLI06();
+               
+           }
+       }
+             
+       function tree1(data) {
+           if(data.value == 'Yes' ) {
+               if(confirm('Hot transfer the constituent to 911.'))
+               SaveAndServiceNotNeededLI06();
+               
+           }
+       }
+       /*  Commenting as per new requirements Case Number 05012710
+        function address() {
+           if(j$("[id $='hansenAddress']").val() == '' || j$("[id $='hansenAddress']").val() == Null ) {
+             
+          if(confirm('A zoning violation case can be submitted only if the exact L&I address key is validated.'))
+               SaveAndServiceNotNeeded();
+               
+           }
+       }*/
+     function tree2(data) {
+           if(data.value == 'Yes') {
+               if(confirm('The system has changed the Case Record Type to Street Trees.')){
+              
+               j$("[id $='caseRecordType']").val('Street Trees');
+                j$('[id*=SubjectForCase]').val('Street Trees');
+               j$('[id*=sreq]').val('Street Trees');
+                j$('[id*=departmnt]').val('Parks & Recreation');                 
+                crts();      
+              } 
+           }
+       }
+   
+       function tree4(data) {
+           if(data.value == 'Yes' ) {
+               if(confirm('Contact PECO at 800-841-4141 and describe the incident to them.'))
+               SaveAndServiceNotNeededLI06();
+           }
+       }  
+       function tree5(data) {
+           if(data.value == 'Yes' ) {
+               if(confirm('Call Municipal Radio for assistance with dispatching Street Tree Crews.'))
+               SaveAndServiceNotNeededLI06();
+           }
+       }  
+       function tree6(data) {
+           if(data.value == 'Yes' ) {
+               if(confirm('Customers cannot report dangerous trees on their own properties. The property owner is responsible for maintaining and removing trees from private property.'))
+               SaveAndServiceNotNeededLI06();
+           }
+       }                        
+        function tree7(data) {
+           if(data.value == 'Yes' ) {
+               if(confirm('The system has changed the Case Record Type to Maintenance Residential.')){
+                j$('[id*=departmnt]').val('License & Inspections');   
+                j$("[id $='caseRecordType']").val('Maintenance Residential or Commercial');
+                 j$('[id*=SubjectForCase]').val('Maintenance Residential or Commercial');
+                
+               j$('[id*=sreq]').val('');
+                              
+                crts();     
+               }
+           }
+       }    
+       function tree8(data) {
+           if(data.value == 'Yes' ) {
+               if(confirm('The system has changed the Case Record Type to Building Dangerous Vacant.')){
+                j$("[id $='caseRecordType']").val('Building Dangerous');
+                  j$('[id*=SubjectForCase]').val('Building Dangerous');
+                j$('[id*=departmnt]').val('License & Inspections');   
+                
+                
+               j$('[id*=sreq]').val('');
+                              
+                crts(); 
+              }
+           }
+       }   
+       function tree9(data) {
+           if(j$("[id $='bbe']").val() == 'No' || j$("[id $='lss']").val() == 'Yes' || j$("[id $='alt']").val() == 'Yes'|| j$("[id $='ive']").val() == 'Alive')  {
+               j$("[id $='ive']").val('Alive');
+               if(confirm('The system has changed the Case Record Type to Maintenance Residential.')){
+               j$("[id $='caseRecordType']").val('Maintenance Residential or Commercial');
+               j$('[id*=SubjectForCase]').val('Maintenance Residential or Commercial');
+                j$('[id*=departmnt]').val('License & Inspections');   
+                
+                
+               j$('[id*=sreq]').val('');
+                              
+                crts();
+                
+              }  
+           }
+       }                 
+      </script>
+       
+            <apex:pageblocksection title="Service Request Information" showheader="true" collapsible="true" columns="2">
+                
+                
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Life_Threatening_Condition__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Life_Threatening_Condition__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Life_Threatening_Condition__c}" StyleClass="RemoveNone" required="false" onchange="tree1(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Branches_Break_Easily__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Branches_Break_Easily__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Branches_Break_Easily__c}"  StyleClass="RemoveNone" required="false" id="bbe" onchange="tree9(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                     
+                     
+                     
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tree_Between_Sidewalk_and_Curb_TreeDange__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_Between_Sidewalk_and_Curb_TreeDange__c .label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tree_Between_Sidewalk_and_Curb_TreeDange__c}" StyleClass="RemoveNone" required="false" onchange="tree2(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Leaves_in_Spring_and_Summer__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Leaves_in_Spring_and_Summer__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Leaves_in_Spring_and_Summer__c}" StyleClass="RemoveNone" required="false" id="lss" onchange="tree9(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tree_on_Power_Lines_No_Smoke_Fire__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_on_Power_Lines_No_Smoke_Fire__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tree_on_Power_Lines_No_Smoke_Fire__c}" StyleClass="RemoveNone" required="false" onchange="tree4(this)"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                    
+             <!--    <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Tree_on_Side_Street__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Tree_on_Side_Street__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Tree_on_Side_Street__c}" required="false" onchange="tree2(this)"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> !-->
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Animals_Living_in_Tree__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Animals_Living_in_Tree__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Animals_Living_in_Tree__c}" StyleClass="RemoveNone" required="false" id="alt" onchange="tree9(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem> 
+                 
+               
+                  <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Blocked_Street_Sidewalk_Home_Access__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Blocked_Street_Sidewalk_Home_Access__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Blocked_Street_Sidewalk_Home_Access__c}" StyleClass="RemoveNone" required="false" onchange="tree5(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Dead_or_Alive_Tree__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Dead_or_Alive_Tree__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Dead_or_Alive_Tree__c}" StyleClass="RemoveNone" required="false" id="ive" onchange="tree9(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.On_Property_of_Person_Making_Report__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.On_Property_of_Person_Making_Report__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.On_Property_of_Person_Making_Report__c}" StyleClass="RemoveNone" required="false" onchange="tree6(this)" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                      
+                     
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.How_Many_Trees__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.How_Many_Trees__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.How_Many_Trees__c}" required="false" />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Overgrown_or_Aready_Fallen__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Overgrown_or_Aready_Fallen__c.label}"/> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Overgrown_or_Aready_Fallen__c}" StyleClass="RemoveNone" required="false"  onchange="tree7(this)"  />
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                      
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_District__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_District__c.label}" /> 
+                    <apex:outputPanel >
+                       
+                               <apex:inputfield value="{!Case.L_I_District__c}" required="false" id="liDistrict"/>
+                         
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                      <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Growing_in_Vacant_Building__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Growing_in_Vacant_Building__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Growing_in_Vacant_Building__c}" StyleClass="RemoveNone" required="false" onchange="tree8(this)"/>
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>
+                     
+                     
+                     <!--commenting as per new requirements Case Number 05012710   
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.L_I_Address__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.L_I_Address__c.label}" /> 
+                    <apex:outputPanel >
+                        <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                             <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress" onchange="address()"  /> 
+                         </div>
+                    </apex:outputPanel>  
+                     </apex:pageblocksectionitem>!-->
+                       <apex:inputfield value="{!Case.L_I_Address__c}" required="false" id="hansenAddress"/>
+                  
+                      
+                     
+                     
+                   
+                
+                </apex:pageblocksection>     
+                
+        </apex:define>
+    </apex:composition>
+</apex:page>

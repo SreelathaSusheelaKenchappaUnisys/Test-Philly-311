@@ -1,0 +1,396 @@
+<apex:page showHeader="false" sidebar="false" controller="Open311Ext" title="Philly Open 311">
+
+    <!-- Header Page -->
+    <apex:include pageName="brandingexample" />
+     
+    <!-- Including Jquery Library    -->
+    <script src="{!URLFOR($Resource.jQuery)}"></script> 
+    
+    <apex:form >
+        <apex:inputHidden value="{!url}" id="url"/>    
+        <apex:inputHidden value="{!params}" id="params"/>
+        <apex:inputHidden value="{!method}" id="method"/>
+        <apex:inputHidden value="{!result}" id="result"/>    
+    </apex:form>        
+    
+    <style type="text/css" >
+        table { 
+            margin: 0 auto; 
+            border-collapse: separate; 
+            border-spacing: 10px;
+        }
+        #geoReportSelection {
+            padding-top: 5%;
+        }
+        #mainPage    {
+           min-height: 200px;
+           width:100%;
+        } 
+        #load    {
+            width: 9%;
+            margin: 0 auto;
+        }
+        #list b {
+            text-decoration: none;
+            padding:5px;
+        }
+        #list b:hover {
+            text-decoration: underline;
+            color: red;
+            font-size: 125%;
+        }
+        #list    {
+            width: 10%;
+            margin: 0 auto;
+        }
+    </style>
+    
+    <script type="text/javascript">
+       var j$ = jQuery.noConflict();
+       var baseURL1 = "https://philadelphia.secure.force.com/apps/services/apexrest/v2/";
+       var baseURL = "https://test-philadelphia.cs22.force.com/apps/services/apexrest/v2";
+    
+       function coordinate(caseNumber, lat, long)    {
+           this.caseNumber = caseNumber;
+           this.lat = lat;
+           this.long = long;
+       }
+       
+       var serviceList =[];    
+       var serviceReqList = []; 
+       var serviceReq = [];
+       var locationList = []; 
+         
+       j$(function() { 
+           j$("#load").hide();
+           j$("#inputText").hide();
+       });  
+       
+       function goBack() {
+           j$("#geoReportSelection").show();
+           j$("#output").children().remove();
+           j$("#load").hide();
+       }
+       
+       function list(i,method)    {
+           displaySerReqList(i*10,method);  
+       }
+       
+       function displaySerReqList(index, method)    {
+           var size = Math.ceil((serviceReqList.length)/10);
+           var p = "<p id='list'>";
+           for(var is = 0; is < size; is++)    {
+               if(method == 'GeoSerReqs')
+                   p += "<b id='"+ (is+1) + "' onclick='list(" + is +",\"GeoSerReqs\")'>" + (is+1) + "</b>";
+               else     
+                   p += "<b id='"+ (is+1) + "' onclick='list(" + is +",\"GeoSerList\")'>" + (is+1) + "</b>";
+           }    
+           p += "</p>";
+           var t = null;
+           if(method == 'GeoSerReqs')    {
+               t = "<table id='outTable'> <tr> <th>Ser Req ID</th> <th>Status</th> <th> Status Notes </th> <th>Service Name</th>  <th>Service Code</th>" +
+                       "<th>Description</th> <th>Agency Responsible</th> <th>Service Notice</th> <th>Requested DateTime</th> <th>Updated DateTime</th>" +
+                       "<th>Expected DateTime</th> <th>Address</th> <th>Zipcode</th> <th>Latitude</th> <th>Longitude</th>" +
+                       "</tr>";    
+               j$.each(serviceReqList, function(i) {
+                   if(i >= index && i < index+10)    {
+                       t += "<tr><td> " + this.service_request_id+ "</td>";
+                       t += "<td> " + this.status + "</td>";
+                       t += "<td> " + this.status_notes + "</td>";
+                       t += "<td> " + this.service_name + "</td>";
+                       t += "<td> " + this.service_code + "</td>";
+                       t += "<td> " + this.description + "</td>";
+                       t += "<td> " + this.agency_responsible + "</td>";
+                       t += "<td> " + this.service_notice + "</td>";
+                       t += "<td> " + this.requested_datetime + "</td>";
+                       t += "<td> " + this.updated_datetime + "</td>";
+                       t += "<td> " + this.expected_datetime + "</td>";
+                       t += "<td> " + this.address + "</td>";
+                //     t += "<td> " + this.address_id + "</td>";
+                       t += "<td> " + this.zipcode + "</td>";
+                       t += "<td> " + this.lat + "</td>";
+                       t += "<td> " + this.long + "</td>";
+                  //   t += "<td> " + this.media_url+ "</td>";
+                       t += "</tr>"; 
+                   }
+                   if(this.lat != null && this.long != null)    {
+                       var l = new coordinate(this.caseNumber, this.lat, this.long);
+                       locationList[locationList.length] = l;
+                   }
+               });
+           }
+           else if(method == 'GeoSerList')    {
+               t = "<table id='outTable'> <tr> <th>Service Code</th> <th>Service Name</th> <th>Description</th> <th>Metadata</th> <th>Type</th> <th>Keywords</th> <th>Group</th> </tr>";  
+               j$.each(serviceReqList, function(i) {
+                   if(i >= index && i < index+10)    {
+                       t += "<tr><td> " + this.service_code + "</td>";
+                       t += "<td> " + this.service_name + "</td>";
+                       t += "<td> " + this.description + "</td>";
+                       t += "<td> " + this.metadata + "</td>";
+                       t += "<td> " + this.type + "</td>";
+                       t += "<td> " + this.keywords + "</td>";
+                       t += "<td> " + this.group + "</td></tr>"; 
+                   }
+               });    
+           }    
+           t += "</table>";
+           j$("#load").hide();
+           if(j$("#output").children().size() > 0)
+               j$("#output").children().remove(); 
+           j$("#output").append(p);     
+           j$("#output").append(t);
+           j$("#output").append(p);    
+       }
+       
+       /*
+       function redirect()    {
+           if(j$("#selInquiry").is(':checked'))    {
+               j$("#inquirySelection").show();
+               j$("#geoReportSelection").hide(); 
+               j$("#selectionSection").hide();
+           }    
+           else if(j$("#selGeoReport").is(':checked'))    {
+               j$("#geoReportSelection").show(); 
+               j$("#inquirySelection").hide();
+               j$("#selectionSection").hide();
+           }    
+           else    {
+               alert("Select one");      
+           }    
+       }      */ 
+       
+       function htmlDecode(value) {
+           if(value) {
+               return j$('<div />').html(value).text();
+           } 
+           else {
+               return '';
+           }
+       }
+
+       function georeport()    {
+           j$("#load").show();
+           if(j$("#output").children().size() > 0)
+               j$("#output").children().remove(); 
+           var meth = '';
+           var params = '';
+           if(j$("[id^='GeoSer']").is(':checked'))    {
+              if(j$("#GeoSerList").is(':checked'))    {
+                   urlToCall = baseURL + "services/json";
+                   meth = 'GeoSerList';
+               }
+               else if(j$("#GeoSerMeta").is(':checked'))    {
+                   urlToCall = baseURL + "all/json";
+                   meth = 'GeoSerMeta';
+               }
+               else if(j$("#GeoSerReq").is(':checked'))    {
+                   var cs = j$("#inputT").val().trim();
+                   if(cs == null)    {
+                       alert('Enter Case Number');
+                       j$("#load").hide();
+                   }    
+                   else {    
+                       urlToCall = baseURL + "requests/" + cs + "/json";
+                       meth = 'GeoSerReq';
+                   } 
+               }
+               else if(j$("#GeoSerReqTok").is(':checked'))    {
+                   urlToCall = baseURL + "services/all/json";
+                   meth = 'GeoSerReqTok';
+               }
+               else if(j$("#GeoSerReqs").is(':checked'))    {
+                   urlToCall = baseURL + "requests/json";
+                   meth = 'GeoSerReqs';
+               }               
+               Open311Ext.makeCallout(urlToCall, params , meth, handleCall);
+               function handleCall(result,event) {
+                   if(event.type != 'exception') { 
+                       result = htmlDecode(result);    
+                       err = [];
+                       serviceList = []; 
+                       serviceReqList = [];      
+                       serviceReq = [];          
+                       result = result.substring(1,result.length-1);
+                       if(meth != 'GeoSerReq')  {                           
+                           var sList = result.split("},");
+                           j$.each( sList , function(i) {
+                               if(sList.length != i+1)
+                                    val = this + '}';
+                               var a = JSON.parse(val);
+                               if(meth != 'GeoSerReqs' && meth != 'GeoSerList')
+                                   serviceList.push(a);
+                               else
+                                   serviceReqList.push(a);    
+                               
+                           });
+                       }
+                       else     {
+                           var a = JSON.parse(result);
+                           serviceReq.push(a);
+                       }
+                       if(meth != 'GeoSerReqs' && meth != 'GeoSerList' && meth != 'GeoSerReq')    {
+                           var t = "<table id='outTable'> <tr> <th>ID</th> <th>Service Name</th> <th>Expiration</th> <th>Brief Description</th> </tr>";    
+                           j$.each(serviceList, function(i) {
+                               t += "<tr><td> " + this.id + "</td>";
+                               t += "<td> " + this.service_name + "</td>";
+                               t += "<td> " + this.expiration + "</td>";
+                               t += "<td> " + this.brief_description + "</td></tr>"; 
+                           });   
+                           t += "</table>";
+                           j$("#load").hide();
+                           j$("#output").append(t);
+                           j$("#output").append(p);    
+                       }
+                       else if(meth == 'GeoSerReq')    {
+                           
+                           var errFlag = "false";
+                           var errt = "";
+                           var t = "<table id='outTable'> <tr> <th>Ser Req ID</th> <th>Status</th> <th> Status Notes </th> <th>Service Name</th>  <th>Service Code</th>" +
+                                   "<th>Description</th> <th>Agency Responsible</th> <th>Service Notice</th> <th>Requested DateTime</th> <th>Updated DateTime</th>" +
+                                   "<th>Expected DateTime</th> <th>Address</th> <th>Zipcode</th> <th>Latitude</th> <th>Longitude</th>" +
+                                   "</tr>";    
+                           j$.each(serviceReq, function(i) {
+                               if(this.service_request_id != undefined && this.service_request_id != null)    {
+                                   t += "<tr><td> " + this.service_request_id+ "</td>";
+                                   t += "<td> " + this.status + "</td>";
+                                   t += "<td> " + this.status_notes + "</td>";
+                                   t += "<td> " + this.service_name + "</td>";
+                                   t += "<td> " + this.service_code + "</td>";
+                                   t += "<td> " + this.description + "</td>";
+                                   t += "<td> " + this.agency_responsible + "</td>";
+                                   t += "<td> " + this.service_notice + "</td>";
+                                   t += "<td> " + this.requested_datetime + "</td>";
+                                   t += "<td> " + this.updated_datetime + "</td>";
+                                   t += "<td> " + this.expected_datetime + "</td>";
+                                   t += "<td> " + this.address + "</td>";
+                            //     t += "<td> " + this.address_id + "</td>";
+                                   t += "<td> " + this.zipcode + "</td>";
+                                   t += "<td> " + this.lat + "</td>";
+                                   t += "<td> " + this.long + "</td>";
+                              //   t += "<td> " + this.media_url+ "</td>";
+                                   t += "</tr>"; 
+                               }
+                               else {
+                                   errFlag = "true";
+                                   errt = "<p align='center'> <b>Error: " + this.errors + "</b> </p>";
+                               }    
+                           });
+                           t += "</table>";
+                           j$("#load").hide();
+                           if(errFlag == "false")    {
+                               j$("#output").append(t);
+                               j$("#output").append(p);  
+                           }
+                           else
+                               j$("#output").append(errt);     
+                       }
+                       else if(meth == 'GeoSerList')    {
+                           displaySerReqList(0,'GeoSerList');
+                       }    
+                       else    {
+                           displaySerReqList(0,'GeoSerReqs');
+                       }        
+                       
+                   }
+                   else 
+                       alert(event.message);    
+               }        
+           }    
+           else {
+               alert("Select any options");
+           }
+       }
+       
+       function reset()    {
+           j$('input[type=radio]').prop('checked', false);
+           j$("#output").children().remove(); 
+           j$("#load").hide();
+           j$("#inputText").hide();
+       }
+       
+       function addCaseNo(method)    {
+           serviceList =[];    
+           serviceReqList = []; 
+           serviceReq = [];
+           locationList = [];
+           j$("#output").children().remove();
+           if(method == 'GeoSerReq')    {
+               j$("#inputText").show();
+               j$("#inputT").val('');
+           }    
+           else
+               j$("#inputText").hide();     
+       }
+    </script>
+
+    <!-- Main Body -->
+    <div id="mainPage" >
+       
+       <!-- GeoReport Section -->
+       <div id="geoReportSelection" >
+           <table border="0" class="table" align="center" style="font-size: 18px">
+               <tr>
+                   <td colspan="3" width="100%" align="center"><font size="6"><b>GeoReport API</b></font></td>
+               </tr>
+               <tr>
+                   <td colspan="3" width="100%"><hr /></td>
+               </tr>
+               <tr>
+                   <td align="center" width="33%">
+                       <input id="GeoSerList" type="radio" name="type" value="services" title="Get Service List provide a list of acceptable 311 service request types and their associated service codes." onclick="addCaseNo('GeoSerList')"/>
+                       GET Service List
+                   </td>
+                  <!-- <td align="center" width="25%">
+                       <input id="GeoSerMeta" type="radio" name="type" value="metadata" 
+                           title="This call is only necessary if the Service selected has metadata set as true from the GET Services response." onclick="addCaseNo('GeoSerMeta')"/>GET
+                       Service Definition
+                   </td>   -->
+                   <td align="center" width="33%">
+                       <input id="GeoSerReq" type="radio" name="type" value="request" 
+                           title="GET Service Request is used to query the current status of an individual request." onclick="addCaseNo('GeoSerReq')"/>GET
+                       Service Request
+                   </td>
+                   <td align="center" width="33%">
+                       <input id="GeoSerReqs" type="radio" name="type" value="requests" 
+                           title="GET Service Requests is used to query the current status of multiple requests." onclick="addCaseNo('GeoSerReqs')"/>GET
+                           Service Requests
+                       </td>
+          <!--         <td align="center" width="25%">
+                       <input id="GeoSerReqTok" type="radio" name="type" value="token" 
+                           title="Get the service_request_id from a temporary token. This is unnecessary if the response from creating a service request does not contain a token. This call is only necessary if the response from POST Service Request contains a token." onclick="addCaseNo('GeoSerReqTok')"/>GET
+                       Service Requests Id From Token
+                   </td>    -->
+               </tr>
+               <tr>
+                   <td colspan="3"><hr /></td>
+               </tr>
+              <!-- <tr id="inputText">
+                   <td colspan="5"><input type="text" name="inputT" placeholder="Case Number" /></td>
+               </tr> -->
+               <tr id="inputText">
+                   <td colspan="3"><div id="abc" align="center" class="abc"><input type="text" id="inputT" placeholder="Case Number" /></div></td>
+               </tr>
+               <tr>
+                   <td colspan="3"><hr /></td>
+               </tr>
+               <tr>
+                   <td colspan="3" align="center">
+                       <button class="reset" onclick="reset()"> Reset </button> &nbsp; 
+                       <button class="submit" onclick="georeport()"> Submit </button> &nbsp;
+                     <!--  <button class="goBack" onclick="goBack()"> Go Back </button>-->
+                   </td>
+               </tr>
+           </table>        
+       </div>
+       
+       <!-- To display output -->
+       <div id ="load">
+           <img src="{!URLFOR($Resource.loading)}" alt="Loading...." height="100" width="100" />
+       </div>    
+       <div id="output">  </div>
+       <div id="map"> </div>
+   </div>
+    
+    <!-- Footer Page -->
+    <apex:include pageName="brandingfooter" />
+</apex:page>

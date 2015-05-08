@@ -1,0 +1,82 @@
+<!-- This is a visualforce page that contains all the fields specific to the service request type
+     DEAD ANIMAL IN STREET ST-10 -->
+
+<apex:page standardcontroller="Case" id="page">
+    <apex:composition template="X311CaseEdit">
+        <apex:define name="typeSpecific">
+            
+            <script type="text/javascript">
+               // onload= init();
+              
+                function DeadAnimal1(data) { 
+                    if((data.value == 'Private Property')  || (data.value == 'Alley')) {   
+                        if(confirm('Property owners are responsible for removing dead animals from private property.'))
+                            SaveAndServiceNotNeeded();  <!--  Removed || (data.value == 'Sidewalk') due to process change. A dead animal will be picked up see SR# 05013927 -->     
+                    } 
+                    else if(data.value == 'State Highway') {   
+                        if(confirm('To report a dead animal on a highway contact PennDOT at 1-800-349-7623 or 215-225-1415,  8:00-4:30 pm, Monday through Friday.')) 
+                            SaveAndServiceNotNeeded(); 
+                    }
+                     else if(data.value == 'In Home') {   
+                        if(confirm('To report a dead animal in a home, contact the Animal Care and Control Team (ACCT) at 267-385-3800.')) 
+                            SaveAndServiceNotNeeded(); 
+                    }                   
+                    
+                 }
+                
+               function DeadAnimal2(data)    {
+                  if(data.value == 'No') {   
+                        if(confirm('Property owners are responsible for removing dead animals from vacant lots when the animals are not visible and accessible.'))
+                            SaveAndServiceNotNeeded(); 
+                    }
+               } 
+               
+               function e3() {
+    
+           if((j$("[id $='al']").val()=='Vacant Lot')) {
+                j$("[id *='ava']").removeAttr("disabled");
+                j$("[id *='ava']").css("background-color","White");
+           } 
+           else {
+               j$("[id *='ava']").val('');
+                j$("[id *='ava']").prop('disabled','disabled') ;  
+                j$("[id *='ava']").css("background-color","#EDEDED");             
+           }
+       }
+                
+             </script>
+             
+             <!-- Input Fields specific to Street Light Outage service request type-->
+                    <apex:pageblocksection title="Service Request Information" showheader="true" columns="2" id="pgbk">
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Animal_Location__c.inlineHelpText}">
+                     <apex:outputLabel value="{!$ObjectType.Case.Fields.Animal_Location__c.label}" /> 
+                        <apex:outputPanel >
+                      <!--  <apex:actionFunction action="{!Save}" name="af"/> -->
+                         <div class='requiredInput'>
+                            <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Animal_Location__c}" StyleClass="RemoveNone" required="false" id="al" onchange="DeadAnimal1(this);e3()"/>
+                         </div>
+                      </apex:outputPanel>  
+                      </apex:pageblocksectionitem>
+                      
+                      <apex:pageblocksectionitem />
+                     
+                     
+                     <apex:inputfield value="{!Case.Animal_is_Visible_and_Accessible__c}" StyleClass="RemoveNone" required="false" id="ava" onchange="DeadAnimal2(this)"/>
+                           
+                     <apex:pageblocksectionitem />
+                     
+                     <apex:pageBlockSectionItem helpText="{!$ObjectType.Case.Fields.Animal_Type__c.inlineHelpText}">
+                       <apex:outputLabel value="{!$ObjectType.Case.Fields.Animal_Type__c.label}" /> 
+                         <apex:outputPanel >
+                            <div class='requiredInput'>
+                             <div class='requiredBlock'></div>
+                               <apex:inputfield value="{!Case.Animal_Type__c}" StyleClass="RemoveNone" required="false" />
+                             </div>
+                         </apex:outputPanel>
+                     </apex:pageblocksectionitem> 
+                  
+            </apex:pageblocksection>
+        </apex:define>
+    </apex:composition>
+</apex:page>

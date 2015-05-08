@@ -1,0 +1,4 @@
+<apex:page >
+    <flow:interview name="Fire_Residential_or_Commercial">
+    </flow:interview>
+</apex:page>

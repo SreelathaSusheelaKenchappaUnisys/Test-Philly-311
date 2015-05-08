@@ -1,0 +1,433 @@
+<apex:page showHeader="false" standardStylesheets="false">
+    <!-- <style>
+   /* PRE HEADER */
+   
+   .preheader { height:26px; background:#373737; border-bottom:1px solid #e3e3e3;}
+   .preheader .contentCentered { width:960px; margin:0 auto; padding:0px; height:25px; overflow:hidden;}
+   .preheader .contentCentered ul { padding:0px; width:630px; float:right; margin:0 auto; height:25px; display:block;}
+   .preheader .contentCentered ul li { padding:0px; margin:2px 0px 0px 0px; height:24px; display:inline; float:left; clear:none !important;}
+   .preheader .contentCentered ul li.separator { width:1px; height:14px; padding:0px; margin:6px 0px; border-left:1px solid #8a8a8a;}
+   .preheader .contentCentered ul li a { 
+    padding:3px 15px; 
+    margin:2px; 
+    font-size:10px; 
+    line-height:11px; 
+    height:15px; 
+    color:#cfcece; 
+    text-align:center; 
+    text-decoration:none; 
+    display:block;
+    }
+    .preheader .contentCentered ul li a:hover,
+    .preheader .contentCentered ul li a.active {background: #272a2a; color:#EEE;}
+    
+    .grid_20 {
+    display: inline;
+    float: left;
+    position: relative;
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+
+/* COPYRIGHT */
+
+
+   .copyright { font-size:12px; padding:0px; margin:0px; background:#373737; color:#ffffff; border-top:3px solid #282a2a; height:35px; }
+.copyright .page {  width:960px; padding:10px 0px 5px 0px; margin:0 auto; }
+.copyright .page a { font-size:12px; color:#ffffff; text-decoration:underline; }
+.copyright .page a:hover { text-decoration:none; }
+
+
+/* PAGE */
+
+.page html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    font-size: 100%;
+    /* vertical-align: baseline; */
+}
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+    background: transparent;
+    border: 0;
+}
+body {
+    line-height: 1;
+}
+.page ol, ul {
+    list-style: none;
+}
+.page blockquote, q {
+    quotes: none;
+}
+.page blockquote:before, blockquote:after, q:before, q:after {
+    content: '';
+    content: none;
+}
+/* remember to define focus styles! */
+.page :focus {
+    outline: 0;
+}
+/* remember to highlight inserts somehow! */
+.page ins {
+    text-decoration: none;
+}
+.page del {
+    text-decoration: line-through;
+}
+/* tables still need 'cellspacing="0"' in the markup */
+.page table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.page .grid_4 {
+    width: 180px;
+}
+
+
+/* FOOTER */
+.footer { background: url(/PublishingImages/footerBGgradient.jpg) repeat-x top #4069ab; 
+min-height:315px; margin:20px 0px 0px 0px; display:block;}
+.footer .page { width: 960px; padding:0px; margin: 0 auto;  margin-top: 0px; display:block; }
+.footer ul li {  list-style:none; }
+
+
+/* SITEMAP AREA */
+.footer .page .siteMapArea { padding:15px 0px 20px 0px; margin:0px; height:auto; float:left; }
+.footer .page .siteMapArea ul { list-style-position:outside; }
+.footer .page .siteMapArea ul li { color: #a4a4a4; padding:2px 0px; margin:2px 0px; }
+.footer .page .siteMapArea ul li.sectionTitle { font-family: Rockwell, Times New Roman, serif; font-size:16px; font-weight:normal; color: #ffffff; }
+.footer .page .siteMapArea ul li.sectionTitle a { font-size:16px; }
+.footer .page .siteMapArea ul li.first {}
+.footer .page .siteMapArea ul li a { font-size:12px; color:#ffffff; text-decoration:none; }
+.footer .page .siteMapArea ul li a:hover { text-decoration:underline !important; }
+.footer .page .siteMapArea .localMap {}
+.footer .page .siteMapArea .domainMap {}
+.footer .page .siteMapArea .domainMap .grid_4 { }
+
+
+
+.ms-WPBody
+{
+font-size:8pt;
+font-family:verdana,arial,helvetica,sans-serif;
+}
+.ms-WPBody TABLE,.ms-TPBody TABLE
+{
+font-size:1em;
+}
+.ms-WPBody A:link,.ms-WPBody A:visited
+{
+color:#003399;
+text-decoration:none;
+}
+.ms-WPBody A:hover
+{
+color:#000000;
+text-decoration:underline;
+}
+.ms-WPBody th,.ms-TPBody th
+{
+font-weight:bold;
+}
+.ms-WPBody td
+{
+font-size:8pt;
+font-family:verdana,arial,helvetica,sans-serif;
+}
+.ms-WPBody h1,.ms-TPBody h1
+{
+font-weight:bold;
+font-size:200%;
+}
+.ms-WPBody h2,.ms-TPBody h2
+{
+font-weight:bold;
+font-size:150%;
+}
+.ms-WPBody h3,.ms-TPBody h3
+{
+font-weight:bold;
+font-size:120%;
+}
+.ms-WPBody h4,.ms-TPBody h4
+{
+font-weight:bold;
+font-size:100%;
+}
+.ms-WPBody h5,.ms-TPBody h5
+{
+font-weight:bold;
+font-size:80% 
+}
+.ms-WPBody h6,.ms-TPBody h6
+{
+font-weight:bold;
+font-size:65%;
+}
+
+
+   
+   
+   </style> -->
+    <apex:stylesheet value="{!URLFOR($Resource.philacss, 'core.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.philacss, 'min.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.philacss, 'reset.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.philacss, 'gridfixed.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.philacss, 'typography.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.philacss, 'navigation.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.philacss, 'design.css')}" />
+
+
+
+
+
+
+
+
+
+    <div class="header">
+
+        <!-- BRANDING, GLOBAL NAV AND USER FORMS (LOGIN AND SEARCH) GOES HERE -->
+        <meta name="description"
+            content="Official site of the City of Philadelphia, includes information on municipal services, permits, licenses, records for citizens and businesses" />
+        <meta name="keywords"
+            content="City of Philadelphia, Municipal Services, Permits, Licenses, Mayor Michael Nutter" />
+        <meta name="copyright"
+            content="Copyright City of Philadelphia 2000 - 2012" />
+        <meta name="author" content="City of Philadelphia" />
+        <meta name="email" content="webissues@phila.gov" />
+        <meta name="Rating" content="General" />
+        <script type="text/javascript">
+                    var logorendererror = 0;
+                    function ProcessImn() {
+                        if (typeof (ctx) == "undefined")
+                            return;
+                        if (ctx.CurrentUserId == -1)
+                            return;
+                        if (EnsureIMNControl() && IMNControlObj.PresenceEnabled) {
+                            imnElems = document.getElementsByName("imnmark");
+                            imnElemsCount = imnElems.length;
+                            ProcessImnMarkers();
+                        }
+                    }
+                </script>
+        <script type="text/javascript">
+                    $(document).ready(
+                            function() {
+                                $("#ctl00_explitLogout_ExplicitLogin").attr(
+                                        "style", "");
+
+                                $('form input:not([type="submit"])').keypress(
+                                        function(e) {
+                                            if (e.keyCode == 13) {
+                                                e.preventDefault();
+                                                return false;
+                                            }
+                                        });
+
+                                $("searchBTN").click(function(e) {
+                                    RunSearch();
+                                    e.preventDefault();
+                                    return false;
+                                });
+
+                                $('#q').keydown(function(event) { //prevent submission when enter key pressed   
+                                    if (event.keyCode == '13') {
+                                        RunSearch();
+                                    }
+                                });
+
+                                $("#q").keyup(function(event) {
+                                    if (event.keyCode == 13) {
+                                        RunSearch();
+                                    }
+
+                                });
+
+                            });
+                </script>
+        <script
+            src="http://www.google.com/jsapi?key=ABQIAAAAwIrgcqAWeu8VLyab0LgIjxRprDDezePNMIWajciELQd3rzocgBTvXIRr6rGpERi5qhp2zplgtvJnPg"
+            type="text/javascript"></script>
+        <script type="text/javascript">
+                    (function($) {
+                        $.fn.getFeed = function(settings) {
+                            var instance = this;
+                            var config = {
+                                rssurl : '',
+                                readmore : 'More &#187;',
+                                maxentries : 3,
+                                contentlength : 200,
+                                renderimage : false
+                            };
+                            if (settings) {
+                                $.extend(config, settings);
+                            }
+
+                            var g = new google.feeds.Feed(config.rssurl);
+                            $(".newsHeader a").attr("href",
+                                    config.rssurl.replace("/feed", ""));
+                            $(".linkToFeed").attr("href", config.rssurl);
+                            var f = function(result) {
+                                if (!result.error) {
+                                    var data = result.feed.entries;
+                                    if (config.maxentries > data.length)
+                                        config.maxentries = data.length;
+                                    for ( var i = 0; i < config.maxentries; i++) {
+                                        instance
+                                                .append('<!--div class=&amp;quot;title&amp;quot;&amp;gt;&amp;lt;h3&amp;gt;'
+                                                        + data[i].link
+                                                        + '&amp;lt;/h3&amp;gt;&amp;lt;/div-->');
+
+                                        if (config.renderimage == true) {
+                                            instance.append(data[i].content);
+                                        }
+
+                                        var desc = data[i].content + "";
+                                        desc = desc.substr(0,
+                                                config.contentlength)
+                                                + "...";
+
+                                        if (parent.location.protocol == 'https:') {
+                                            desc = desc.replace(/http:/g,
+                                                    "https:");
+                                        }
+
+                                        instance
+                                                .append('<div class="description">'
+                                                        + desc + '</div>');
+                                        instance
+                                                .append('<a target="_blank" href="' + data[i].link + '">'
+                                                        + config.readmore
+                                                        + '</a>');
+                                    }
+                                } else
+                                    alert("Error fetching feeds!");
+                            };
+
+                            g.load(f);
+                            return this;
+                        };
+                    })(jQuery);
+                </script>
+        <script type="text/javascript">
+                    function RunSearch() {
+                        var queryString = document.getElementById("q").value;
+                        var baseUrl = "http://www.google.com/cse?oe=utf8&ie=utf8&source=uds&start=0&cx=012281970149422056935%3Ae3col_wgefa&hl=en&";
+                        document.location = baseUrl + "q=" + queryString;
+                        return 0;
+                    }
+                </script>
+        <script language="javascript" type="text/javascript">
+                    function MSOLayout_GetRealOffset(StartingObject,
+                            OffsetType, EndParent) {
+                        var realValue = 0;
+                        if (!EndParent)
+                            EndParent = document.body;
+                        for ( var currentObject = StartingObject; currentObject
+                                && currentObject != EndParent
+                                && currentObject != document.body; currentObject = currentObject.offsetParent) {
+                            var offset = eval('currentObject.offset'
+                                    + OffsetType);
+                            if (offset)
+                                realValue += offset;
+                        }
+                        return realValue;
+                    }
+                </script>
+        <!--HEADER-->
+        <div class="preheader">
+            <div class="contentCentered">
+                <ul>
+                    <li class="CoP"><a href="http://www.phila.gov/" class="active">City
+                            of Philadelphia</a></li>
+                    <li class="separator"></li>
+                    <li><a href="http://www.phila.gov/mayor">Mayor's Office</a></li>
+                    <li class="separator"></li>
+                    <li><a href="http://www.phila.gov/cityCouncil">City
+                            Council</a></li>
+                    <li class="separator"></li>
+                    <li><a href="http://www.courts.phila.gov/">Courts</a></li>
+                    <li class="separator"></li>
+                    <li><a href="http://www.phila.gov/districtattorney/index.html">District
+                            Attorney</a></li>
+                    <li class="separator"></li>
+                    <li><a href="http://www.officeofphiladelphiasheriff.com/"
+                        target="_blank">Sheriff</a></li>
+                </ul>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="page">
+            <div class="grid_20">
+                <div class="logo grid_2 alpha omega">
+                    <a href="javascript:void(0);"
+                        onclick="this.href=(window.location.pathname.split('/')[1] != 'Pages'  ? '/' + window.location.pathname.split('/')[1]  : '/' ); return true;">
+                        <img
+                        src="http://www.phila.gov/PublishingImages/Icons/cityLogo.png"
+                        title="City of Philadelphia" alt="City of Philadelphia"
+                        class="cityLogo" />
+                    </a>
+                </div>
+                <div class="branding grid_5 alpha omega">
+                    <h1>
+                        <a class="parentSiteLink" href="javascript:void(0);"
+                            onclick="this.href=(window.location.pathname.split('/')[1] != 'Pages'  ? '/' + window.location.pathname.split('/')[1]  : '/' ); return true;">
+                            <img
+                            src="http://www.phila.gov/PublishingImages/Icons/cityLogoMark-210x45.png"
+                            onerror="if (logorendererror == 0) {this.src=(window.location.pathname.split('/')[1] != 'Pages'  ? '/' + window.location.pathname.split('/')[1] + '/PublishingImages/Icons/cityLogoMark-210x45.png' : '/PublishingImages/Icons/cityLogoMark-210x45.png' ); logorendererror = 1;}"
+                            title="City of Philadelphia" alt="City of Philadelphia" />
+                        </a>
+                    </h1>
+                </div>
+                <div class="globalNavigation grid_10">
+                    <ul>
+                        <li class="first home"><a href="/Pages/default.aspx"
+                            title="Phila.Gov Home Page"><img
+                                src="http://www.phila.gov/PublishingImages/Icons/icon_HOME.png"
+                                title="Visit the City's Homepage"
+                                alt="Visit the City's Homepage" name="Home Icon" border="0"
+                                id="Home Icon" /></a></li>
+                        <li class="first"><a href="/Topics/" title="Topics"
+                            class="topLevelNav">Topics</a></li>
+                        <li><a href="http://www.phila.gov/Business"
+                            title="Businesses" class="topLevelNav">Businesses</a></li>
+                        <li><a href="http://www.phila.gov/residents"
+                            title="Residents" class="topLevelNav">Residents</a></li>
+                        <li><a href="http://www.phila.gov/visitors" title="Visitors"
+                            class="topLevelNav">Visitors</a></li>
+                        <li><a href="http://www.phila.gov/agencies"
+                            title="Government" class="topLevelNav">Government</a></li>
+                    </ul>
+
+                </div>
+                <div class="globalSearch grid_4 omega">
+                    <!--input name=&amp;quot;q&amp;quot; type=&amp;quot;text&amp;quot; id=&amp;quot;q&amp;quot; style=&amp;quot;float:left;&amp;quot; /-->
+                    <!--LOGIN
+                    &amp;lt;div class=&amp;quot;loginArea&amp;quot;&amp;gt;Register / Login&amp;lt;/div&amp;gt;
+                    -->
+                    <!--SEARCH AND REGISTER AREA-->
+                    <!--form class=&amp;quot;search&amp;quot; action=&amp;quot;&amp;quot; method=&amp;quot;get&amp;quot; name=&amp;quot;frmSearch&amp;quot; id=&amp;quot;frmSearch&amp;quot; onsubmit=&amp;quot;RunSearch(); return false;&amp;quot;-->
+                    <div class="search">
+                        <input name="q" type="text" class="searchField" id="q" /> <input
+                            type="image" name="searchBTN" id="searchBTN" class="searchBTN"
+                            src="http://www.phila.gov/Style%20Library/Images/searchBTN.png"
+                            onclick="RunSearch(); return false;" align="right" />
+                    </div>
+                </div>
+                <div class="clear"></div>
+                <!--/form-->
+            </div>
+        </div>
+
+
+
+
+
+
+    </div>
+
+
+</apex:page>
