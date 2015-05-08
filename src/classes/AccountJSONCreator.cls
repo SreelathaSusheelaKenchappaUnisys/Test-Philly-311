@@ -1,4 +1,4 @@
-/* Class to create JSON with account details.....
+/* Class to create JSON with account details
 */
 
 public with sharing class AccountJSONCreator {
